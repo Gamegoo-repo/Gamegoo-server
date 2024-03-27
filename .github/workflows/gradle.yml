@@ -1,11 +1,4 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
-name: Java CI with Gradle
+name: Java CI with Gradle & Docker
 
 on:
   push:
@@ -15,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,7 +23,6 @@ jobs:
       # Spring Boot 어플리케이션 Build (1)
       - name: Spring Boot Build
         run: ./gradlew clean build -x test --warning-mode=all --stacktrace
-
 
       # Docker 이미지 Build (2)
       - name: docker image build
