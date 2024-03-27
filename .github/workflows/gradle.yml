@@ -24,6 +24,7 @@ jobs:
         with:
             java-version: '17'
             distribution: 'temurin'
+
       - name: Checkout
         uses: actions/checkout@v3
 
