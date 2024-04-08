@@ -64,7 +64,7 @@ jobs:
       - name: AWS EC2 Connection
         uses: appleboy/ssh-action@master
         with:
-          host : 3.39.194.35
+          host : ec2-3-39-194-35.ap-northeast-2.compute.amazonaws.com
           username : root
           password : pwd
           port : 22
