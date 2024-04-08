@@ -45,7 +45,7 @@ jobs:
       # GET GitHub IP (5)
       - name: get GitHub IP
         id: ip
-        uses: rimi3226/public-ip@v1.2
+        uses: Gamegoo-repo/public-ip@v1.2
 
       # Configure AWS Credentials (6) - AWS 접근 권한 취득(IAM)
       - name: Configure AWS Credentials
