@@ -66,15 +66,14 @@ jobs:
         with:
           host : ec2-3-39-194-35.ap-northeast-2.compute.amazonaws.com
           username : root
-          password : pwd
+          key : ${{ secrets.EC2_PEM_KEY }}
           port : 22
 #          host: ${{ secrets.EC2_HOST }}
 #          username: ${{ secrets.EC2_USERNAME }}
 #          password: ${{ secrets.EC2_PASSWORD }}
 #          port: ${{ secrets.EC2_SSH_PORT }}
           timeout: 60s
-          script:
-            cd
+          script: whoami
 #            sudo docker stop gamegoo
 #            sudo docker rm gamegoo
 #            sudo docker run -it -d -p 8080:8080 --name rimi3226 rimi3226/gamegoo
