@@ -5,9 +5,11 @@ on:
   #   branches: [ "develop", "feat/*", "cicd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
   pull_request:
     types : [ closed ]
+  workflow_dispatch: # 수동 실행 가능
 jobs:
   build:
     runs-on: ubuntu-latest
+    # develop 기반 브랜치가 PR이 merge 됐을 경우에만 진행
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
 
     steps:
