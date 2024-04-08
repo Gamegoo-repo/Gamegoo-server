@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # develop 기반 브랜치가 PR이 merge 됐을 경우에만 진행
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+    # 개발 이후에 if 문 붙이기.. if문 있으면 Status skipped 됨
+    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
 
     steps:
       - name: Set up JDK 17
