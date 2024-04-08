@@ -62,13 +62,13 @@ jobs:
 
       # AWS EC2 Server Connect & Docker 명령어 실행 (8)
       - name: AWS EC2 Connection
-        uses: appleboy/ssh-action@v0.1.6
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           password: ${{ secrets.EC2_PASSWORD }}
           port: ${{ secrets.EC2_SSH_PORT }}
-          timeout: 60s
+          timeout: 30s
           script:
             sudo docker stop gamegoo
             sudo docker rm gamegoo
