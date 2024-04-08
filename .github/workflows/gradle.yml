@@ -70,9 +70,10 @@ jobs:
           port: 22
           timeout: 60s
           script: |
-            sudo docker stop gamegoo
-            sudo docker rm gamegoo
-            sudo docker run -it -d -p 8080:8080 --name rimi3226 rimi3226/gamegoo
+            cd
+#            sudo docker stop gamegoo
+#            sudo docker rm gamegoo
+#            sudo docker run -it -d -p 8080:8080 --name rimi3226 rimi3226/gamegoo
 
       # REMOVE Github IP FROM security group (9)
       - name: Remove IP FROM security group
