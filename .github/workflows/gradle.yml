@@ -2,7 +2,7 @@ name: Java CI with Gradle & Docker
 
 on:
   push:
-    branches: [ "develop", "feat/*", "cicd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
+    branches: [ "develop", "feat/*", "cd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
   pull_request:
     types : [ closed ]
   workflow_dispatch: # 수동 실행 가능
