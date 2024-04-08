@@ -72,7 +72,7 @@ jobs:
 #          username: ${{ secrets.EC2_USERNAME }}
 #          password: ${{ secrets.EC2_PASSWORD }}
 #          port: ${{ secrets.EC2_SSH_PORT }}
-          timeout: 60s
+          timeout: 50s
           script: whoami
 #            sudo docker stop gamegoo
 #            sudo docker rm gamegoo
