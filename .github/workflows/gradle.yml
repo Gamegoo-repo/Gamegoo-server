@@ -64,19 +64,15 @@ jobs:
       - name: AWS EC2 Connection
         uses: appleboy/ssh-action@master
         with:
-          host : ec2-3-39-194-35.ap-northeast-2.compute.amazonaws.com
-          username : root
+          host : ${{ secrets.EC2_HOST }}
+          username : ${{ secrets.EC2_USERNAME }}
           key : ${{ secrets.EC2_PEM_KEY }}
-          port : 22
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ${{ secrets.EC2_USERNAME }}
-#          password: ${{ secrets.EC2_PASSWORD }}
-#          port: ${{ secrets.EC2_SSH_PORT }}
+          port : ${{ secrets.EC2_SSH_PORT }}
           timeout: 50s
-          script: whoami
-#            sudo docker stop gamegoo
-#            sudo docker rm gamegoo
-#            sudo docker run -it -d -p 8080:8080 --name rimi3226 rimi3226/gamegoo
+          script: |
+            sudo docker stop gamegoo
+            sudo docker rm gamegoo
+            sudo docker run -it -d -p 8080:8080 --name rimi3226 rimi3226/gamegoo
 
       # REMOVE Github IP FROM security group (9)
       - name: Remove IP FROM security group
