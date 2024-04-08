@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TestController {
 
-    @GetMapping("/test/hell11o")
+    @GetMapping("/test/hell1o")
     @Operation(summary = "swagger 테스트용 API 입니다.", description = "simple API for swagger test!")
     public String hello() {
         return "Swagger Setting Success~~!";
