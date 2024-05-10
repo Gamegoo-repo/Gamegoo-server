@@ -53,14 +53,12 @@ jobs:
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
       # Elastic Beanstalk Deploy
-      - name: Beanstalk Deploy
-        uses: einaregilsson/beanstalk-deploy@ebe3476a4ce991d54336935e75e78dd9d86f9408
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v14
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          region: ${{ env.AWS_REGION }}
-          environment_name: ${{ env.EB_ENVIRONMENT_NAME }}
-          application_name: ${{ env.EB_APPLICATION_NAME }}
-          deployment_package: ${{ env.EB_DEPLOYMENT_PACKAGE }}
-          wait_for_deployment: 60
-
+          application_name: MyApplicationName
+          environment_name: MyApplication-Environment
+          version_label: 12345
+          region: ap-northeast-2
