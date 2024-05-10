@@ -57,4 +57,4 @@ jobs:
           environment_name: Gamegoo-env
           region: ap-northeast-2
           version_label: 'v0.0.1'
-          deployment_package: /elasticbeanstalk/docker-compose.yml
+          deployment_package: ./elasticbeanstalk/docker-compose.yml
