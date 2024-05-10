@@ -47,12 +47,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Build 번호 부여
+      # Build 번호 부여 (7)
       - name: Build Number
         id: build-number
         run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
-      # Elastic Beanstalk Deploy with docker
+      # Elastic Beanstalk Deploy with docker (8)
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
         with:
