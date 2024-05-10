@@ -47,11 +47,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Build 번호 부여
-      - name: Build Number
-        id: build-number
-        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
-
       # Elastic Beanstalk Deploy
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
@@ -61,4 +56,5 @@ jobs:
           application_name: Gamegoo
           environment_name: Gamegoo-env
           region: ap-northeast-2
+          version_label: 'v0.0.1'
           deployment_package: /elasticbeanstalk/docker-compose.yml
