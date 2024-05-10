@@ -1,24 +1,21 @@
-name: Java CI with Gradle & Docker
+name: Java CICD with Gradle & Docker
 
 on:
   push:
-    branches: [ "develop", "feat/*", "cicd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
+    branches: [ "develop", "feat/*", "cd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
   pull_request:
     types : [ closed ]
   workflow_dispatch: # 수동 실행 가능
 jobs:
-  build:
+  build-and-push-image:
     runs-on: ubuntu-latest
-    # develop 기반 브랜치가 PR이 merge 됐을 경우에만 진행
-    # 개발 이후에 if 문 붙이기.. if문 있으면 Status skipped 됨
-    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
 
     steps:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-            java-version: '17'
-            distribution: 'temurin'
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,11 +39,6 @@ jobs:
       - name: docker Hub push
         run: docker push rimi3226/gamegoo
 
-      # GET GitHub IP (5)
-      - name: get GitHub IP
-        id: ip
-        uses: rimi3226/public-ip@v1.2
-
       # Configure AWS Credentials (6) - AWS 접근 권한 취득(IAM)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -55,26 +47,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Add github ip to AWS (7)
-      - name: Add GitHub IP to AWS
-        run: |
-          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+      # Build 번호 부여 (7)
+      - name: Build Number
+        id: build-number
+        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
 
-      # AWS EC2 Server Connect & Docker 명령어 실행 (8)
-      - name: AWS EC2 Connection
-        uses: appleboy/ssh-action@v0.1.6
+      # Elastic Beanstalk Deploy with docker (8)
+      - name: Deploy to EB
+        uses: einaregilsson/beanstalk-deploy@v20
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          password: ${{ secrets.EC2_PASSWORD }}
-          port: ${{ secrets.EC2_SSH_PORT }}
-          timeout: 60s
-          script: |
-            sudo docker stop boot-prac-ci
-            sudo docker rm boot-prac-ci
-            sudo docker run -it -d -p 8080:8080 --name boot-prac-ci lucaskang134/boot-prac-ci
-
-      # REMOVE Github IP FROM security group (9)
-      - name: Remove IP FROM security group
-        run: |
-          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: Gamegoo
+          environment_name: Gamegoo-env
+          region: ap-northeast-2
+          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
+          deployment_package: ./elasticbeanstalk/docker-compose.yml

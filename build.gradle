@@ -1,7 +1,18 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.7'
+	id 'com.google.cloud.tools.jib' version '3.2.1'
 	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+jib{
+	from{
+		image="adoptopenjdk/openjdk16:x86_64-alpine-jdk-16.0.1_9"
+	}
+	to{
+		image="rimi3226/gamegoo2"
+		tags=["latest"]
+	}
 }
 
 group = 'com'
