@@ -14,8 +14,8 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-            java-version: '17'
-            distribution: 'temurin'
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,6 +47,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+      # Build 번호 부여
+      - name: Build Number
+        id: build-number
+        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+
       # Elastic Beanstalk Deploy with docker
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
@@ -56,5 +61,5 @@ jobs:
           application_name: Gamegoo
           environment_name: Gamegoo-env
           region: ap-northeast-2
-          version_label: 'v0.0.1'
+          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
           deployment_package: ./elasticbeanstalk/docker-compose.yml
