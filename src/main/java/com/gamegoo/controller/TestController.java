@@ -18,7 +18,7 @@ public class TestController {
     @GetMapping("/test/hello")
     @Operation(summary = "swagger 테스트용 API 입니다.", description = "simple API for swagger test!")
     public String hello() {
-        return "Swagger Setting Success!!!";
+        return "Swagger Setting Success!";
     }
 
     @GetMapping("/test/error")
