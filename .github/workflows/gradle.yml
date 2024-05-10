@@ -47,7 +47,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Elastic Beanstalk Deploy
+      # Elastic Beanstalk Deploy with docker
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v20
         with:
