@@ -1,25 +1,25 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.champion;
 
+import com.gamegoo.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "MemberGameStyle")
 @Getter
 @Setter
-public class MemberGameStyle {
-
+@Entity
+@Table(name = "MemberChampion")
+public class MemberChampion {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "member_gamestyle_id", nullable = false)
+    @Column(name = "member_champion_id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gamestyle_id", nullable = false)
-    private GameStyle gameStyle;
+    @JoinColumn(name = "champion_id", nullable = false)
+    private Champion champion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
