@@ -1,4 +1,4 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.gamestyle;
 
 import lombok.Getter;
 import lombok.Setter;
