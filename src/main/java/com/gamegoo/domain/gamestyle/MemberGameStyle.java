@@ -18,6 +18,13 @@ public class MemberGameStyle {
     @Column(name = "member_gamestyle_id", nullable = false)
     private Long id;
 
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gamestyle_id", nullable = false)
     private GameStyle gameStyle;
@@ -25,10 +32,4 @@ public class MemberGameStyle {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }
