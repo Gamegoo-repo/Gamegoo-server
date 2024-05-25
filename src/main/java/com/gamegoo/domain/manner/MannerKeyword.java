@@ -2,7 +2,6 @@ package com.gamegoo.domain.manner;
 
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class MannerKeyword extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "manner_keyword_id")
     private Long id;
 
