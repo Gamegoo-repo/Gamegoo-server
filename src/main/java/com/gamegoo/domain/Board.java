@@ -1,7 +1,6 @@
 package com.gamegoo.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -9,17 +8,12 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "Board")
 @Getter
-@Setter
 public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "board_id", nullable = false)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
 
     @Column(name = "mode", nullable = false)
     private Integer mode;
@@ -45,5 +39,9 @@ public class Board {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+    
 }
 

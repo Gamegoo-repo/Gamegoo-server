@@ -1,10 +1,16 @@
 package com.gamegoo.domain;
 
+import com.gamegoo.domain.champion.MemberChampion;
+import com.gamegoo.domain.gamestyle.GameStyle;
+import com.gamegoo.domain.manner.MannerRating;
+import com.gamegoo.domain.notification.Notification;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -49,6 +55,21 @@ public class Member {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Member> boardList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<MemberChampion> memberChampionList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<GameStyle> gameStyleList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL)
+    private List<MannerRating> mannerRatingList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Notification> notificationList = new ArrayList<>();
 
 }
 
