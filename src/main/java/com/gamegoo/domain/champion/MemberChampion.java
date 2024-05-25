@@ -17,6 +17,12 @@ public class MemberChampion {
     @Column(name = "member_champion_id", nullable = false)
     private Long id;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "champion_id", nullable = false)
     private Champion champion;
@@ -24,10 +30,4 @@ public class MemberChampion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

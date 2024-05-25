@@ -36,5 +36,5 @@ public class MatchingRecord extends BaseDateTimeEntity {
     private Integer tier;
 
     @Column(name = "is_complete", nullable = false)
-    private Boolean is_complete;
+    private Boolean isComplete;
 }
