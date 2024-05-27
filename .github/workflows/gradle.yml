@@ -1,10 +1,8 @@
 name: Java CICD with Gradle & Docker
 
 on:
-  push:
-    branches: [ "develop", "feat/*", "cd/*", "fix/*", "hotfix/*", "refactor/*", "chore/*", "docs/*", "style/*", "test/*" ]
   pull_request:
-    types : [ closed ]
+    types: [ closed ]
   workflow_dispatch: # 수동 실행 가능
 jobs:
   build-and-push-image:
