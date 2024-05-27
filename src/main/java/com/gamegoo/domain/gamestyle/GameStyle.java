@@ -1,8 +1,7 @@
 package com.gamegoo.domain.gamestyle;
 
 import com.gamegoo.domain.Member;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
 @Table(name = "GameStyle")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class GameStyle {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
