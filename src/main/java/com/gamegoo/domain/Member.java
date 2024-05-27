@@ -50,7 +50,7 @@ public class Member extends BaseDateTimeEntity {
     private Integer tier;
 
     @Column(name = "winrate", nullable = false)
-    private Integer winRate;
+    private double winRate;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
