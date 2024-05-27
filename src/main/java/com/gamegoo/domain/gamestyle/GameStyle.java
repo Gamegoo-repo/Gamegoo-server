@@ -1,5 +1,6 @@
 package com.gamegoo.domain.gamestyle;
 
+import com.gamegoo.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,5 +25,9 @@ public class GameStyle {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
 }

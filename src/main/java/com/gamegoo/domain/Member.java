@@ -57,7 +57,7 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Member> boardList = new ArrayList<>();
+    private List<Board> boardList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberChampion> memberChampionList = new ArrayList<>();
