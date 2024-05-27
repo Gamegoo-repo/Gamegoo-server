@@ -2,6 +2,7 @@ package com.gamegoo.domain;
 
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
@@ -40,8 +41,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "blind", nullable = false)
     private Boolean blind = false;
 
-    @Column(name = "login_type", nullable = false, length = 50)
-    private String loginType = "General";
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)", nullable = false)
+    private LoginType loginType;
 
     @Column(name = "gameuser_name", nullable = true, length = 100)
     private String gameuserName;
