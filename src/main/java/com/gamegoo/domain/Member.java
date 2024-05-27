@@ -1,14 +1,14 @@
 package com.gamegoo.domain;
 
 import com.gamegoo.domain.champion.MemberChampion;
+import com.gamegoo.domain.common.BaseDateTimeEntity;
+import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +17,22 @@ import java.util.List;
 @Table(name = "Member")
 @Getter
 @Setter
-public class Member {
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Member extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email", nullable = false, length = 30)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 50)
+    @Column(name = "password", nullable = false, length = 500)
     private String password;
 
-    @Column(name = "profile_image", length = 10)
+    @Column(name = "profile_image", length = 30)
     private String profileImage;
 
     @Column(name = "manner_level")
@@ -38,26 +41,21 @@ public class Member {
     @Column(name = "blind", nullable = false)
     private Boolean blind = false;
 
-    @Column(name = "login_type", nullable = false, length = 30)
-    private String loginType = "General";
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(50)", nullable = false)
+    private LoginType loginType;
 
-    @Column(name = "gameuser_name", nullable = true, length = 30)
+    @Column(name = "gameuser_name", nullable = true, length = 100)
     private String gameuserName;
 
     @Column(name = "tier", nullable = false)
     private Integer tier;
 
     @Column(name = "winrate", nullable = false)
-    private Integer winRate;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private double winRate;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<Member> boardList = new ArrayList<>();
+    private List<Board> boardList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberChampion> memberChampionList = new ArrayList<>();
