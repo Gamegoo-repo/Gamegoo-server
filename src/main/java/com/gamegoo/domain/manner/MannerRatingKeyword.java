@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class MannerRatingKeyword extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "manner_rating_keyword_id")
+    @Column(name = "manner_rating_keyword_id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,7 +21,7 @@ public class MannerRatingKeyword extends BaseDateTimeEntity {
     private MannerRating mannerRating;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manner_rating_keyword_id", nullable = false)
-    private MannerRatingKeyword mannerRatingKeyword;
+    @JoinColumn(name = "manner_keyword_id", nullable = false)
+    private MannerKeyword mannerKeyword;
 
 }
