@@ -16,4 +16,12 @@ public class Block extends BaseDateTimeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "block_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blocker_id", nullable = false)
+    private Member blocker;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blocked_id", nullable = false)
+    private Member blocked;
 }
