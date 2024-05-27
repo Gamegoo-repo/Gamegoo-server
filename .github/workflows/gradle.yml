@@ -18,6 +18,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # 환경 변수 설정 (0)
+      - name: Set Yaml
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application.yml
+        env:
+          spring.datasource.url: ${{ secrets.DB_URL }}
+          spring.datasource.username: ${{ secrets.DB_USERNAME }}
+          spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+
       # Spring Boot 어플리케이션 Build (1)
       - name: Spring Boot Build
         run: ./gradlew clean build -x test --warning-mode=all --stacktrace
