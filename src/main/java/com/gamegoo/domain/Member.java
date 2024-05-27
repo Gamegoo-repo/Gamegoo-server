@@ -25,13 +25,13 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "email", nullable = false, length = 30)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 50)
+    @Column(name = "password", nullable = false, length = 500)
     private String password;
 
-    @Column(name = "profile_image", length = 10)
+    @Column(name = "profile_image", length = 30)
     private String profileImage;
 
     @Column(name = "manner_level")
@@ -40,10 +40,10 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "blind", nullable = false)
     private Boolean blind = false;
 
-    @Column(name = "login_type", nullable = false, length = 30)
+    @Column(name = "login_type", nullable = false, length = 50)
     private String loginType = "General";
 
-    @Column(name = "gameuser_name", nullable = true, length = 30)
+    @Column(name = "gameuser_name", nullable = true, length = 100)
     private String gameuserName;
 
     @Column(name = "tier", nullable = false)
