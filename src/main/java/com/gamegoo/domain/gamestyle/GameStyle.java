@@ -19,7 +19,7 @@ public class GameStyle extends BaseDateTimeEntity {
     @Column(name = "gamestyle_id", nullable = false)
     private Long id;
 
-    @Column(name = "style_name", nullable = false, length = 30)
+    @Column(name = "style_name", nullable = false, length = 100)
     private String styleName;
 
     @ManyToOne(fetch = FetchType.LAZY)
