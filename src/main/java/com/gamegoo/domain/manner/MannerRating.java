@@ -19,7 +19,7 @@ public class MannerRating extends BaseDateTimeEntity {
     @Column(name = "manner_rating_id")
     private Long id;
 
-    @OneToMany(mappedBy = "mannerRatingKeyword", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "mannerRating", cascade = CascadeType.ALL)
     private List<MannerRatingKeyword> mannerRatingKeywordList = new ArrayList<>();
 
 
