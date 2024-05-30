@@ -1,29 +1,24 @@
 package com.gamegoo.domain.gamestyle;
 
 import com.gamegoo.domain.Member;
-import lombok.Getter;
-import lombok.Setter;
+import com.gamegoo.domain.common.BaseDateTimeEntity;
+import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "MemberGameStyle")
 @Getter
 @Setter
-public class MemberGameStyle {
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class MemberGameStyle extends BaseDateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_gamestyle_id", nullable = false)
     private Long id;
-
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gamestyle_id", nullable = false)
