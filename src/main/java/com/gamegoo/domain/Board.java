@@ -1,7 +1,7 @@
 package com.gamegoo.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.gamegoo.domain.common.BaseDateTimeEntity;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
 @Table(name = "Board")
 @Getter
 @Setter
-public class Board {
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+public class Board extends BaseDateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,7 +35,7 @@ public class Board {
     @Column(name = "voice", nullable = false)
     private Boolean voice;
 
-    @Column(name = "content", nullable = false, length = 5000)
+    @Column(name = "content", nullable = false, length = 3000)
     private String content;
 
     @Column(name = "created_at")
