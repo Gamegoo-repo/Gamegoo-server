@@ -3,7 +3,6 @@ package com.gamegoo.domain.report;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
-import org.w3c.dom.Text;
 
 import javax.persistence.*;
 
@@ -19,12 +18,12 @@ public class Report extends BaseDateTimeEntity {
     @Column(name = "report_id")
     private Long id;
 
-    @Column(name = "report_content", nullable = false)
-    private Text reportContent;
+    @Column(name = "report_content", nullable = false, length = 1000)
+    private String reportContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_type_id", nullable = false)
-    private Report reportType;
+    private ReportType reportType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
