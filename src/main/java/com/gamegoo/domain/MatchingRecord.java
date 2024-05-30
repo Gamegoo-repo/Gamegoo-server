@@ -37,4 +37,8 @@ public class MatchingRecord extends BaseDateTimeEntity {
 
     @Column(name = "is_complete", nullable = false)
     private Boolean isComplete;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 }
