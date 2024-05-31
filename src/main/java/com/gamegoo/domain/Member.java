@@ -6,6 +6,7 @@ import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
+import com.gamegoo.domain.report.Report;
 import lombok.*;
 
 import javax.persistence.*;
@@ -68,6 +69,12 @@ public class Member extends BaseDateTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Notification> notificationList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Block> blockList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Report> reportList = new ArrayList<>();
 
 }
 
