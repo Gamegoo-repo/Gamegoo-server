@@ -4,24 +4,21 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Board")
+@Table(name = "MatchingRecord")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Board extends BaseDateTimeEntity {
-
+public class MatchingRecord extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "board_id", nullable = false)
+    @Column(name = "matching_id", nullable = false)
     private Long id;
 
-    @Column(name = "mode", nullable = false)
-    private Integer mode;
+    @Column(name = "game_mode", nullable = false)
+    private Integer gameMode;
 
     @Column(name = "main_position", nullable = false)
     private Integer mainPosition;
@@ -32,20 +29,16 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "want_position", nullable = false)
     private Integer wantPosition;
 
-    @Column(name = "voice", nullable = false)
-    private Boolean voice;
+    @Column(name = "mike", nullable = false)
+    private Boolean mike;
 
-    @Column(name = "content", nullable = false, length = 3000)
-    private String content;
+    @Column(name = "tier", nullable = false)
+    private Integer tier;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "is_complete", nullable = false)
+    private Boolean isComplete;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
 }
-
