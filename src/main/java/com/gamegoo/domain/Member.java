@@ -70,10 +70,10 @@ public class Member extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Notification> notificationList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "blocker", cascade = CascadeType.ALL)
     private List<Block> blockList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reporter", cascade = CascadeType.ALL)
     private List<Report> reportList = new ArrayList<>();
 
 }
