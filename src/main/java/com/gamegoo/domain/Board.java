@@ -4,7 +4,6 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Board")
@@ -35,13 +34,8 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "voice", nullable = false)
     private Boolean voice;
 
-    @Column(name = "content", nullable = false, length = 3000)
+    @Column(name = "content", nullable = false, length = 5000)
     private String content;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
