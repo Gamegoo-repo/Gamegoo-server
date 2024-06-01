@@ -3,7 +3,7 @@ package com.gamegoo.domain;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import com.gamegoo.domain.enums.LoginType;
-import com.gamegoo.domain.gamestyle.GameStyle;
+import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.report.Report;
@@ -62,7 +62,7 @@ public class Member extends BaseDateTimeEntity {
     private List<MemberChampion> memberChampionList = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<GameStyle> gameStyleList = new ArrayList<>();
+    private List<MemberGameStyle> memberGameStyleList = new ArrayList<>();
 
     @OneToMany(mappedBy = "toMember", cascade = CascadeType.ALL)
     private List<MannerRating> mannerRatingList = new ArrayList<>();
