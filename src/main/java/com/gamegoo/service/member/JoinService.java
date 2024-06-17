@@ -1,4 +1,4 @@
-package com.gamegoo.service;
+package com.gamegoo.service.member;
 
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
