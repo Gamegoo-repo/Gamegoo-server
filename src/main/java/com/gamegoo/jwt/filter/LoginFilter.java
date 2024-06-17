@@ -1,9 +1,10 @@
-package com.gamegoo.jwt;
+package com.gamegoo.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.dto.member.CustomMemberDetails;
+import com.gamegoo.jwt.util.JWTUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,8 +52,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 사용자 id 불러오기
         Long id = customUserDetails.getId();
 
-        // jwt 토큰 생성
-        String token = jwtUtil.createJwt(id, 60 * 60 * 1000L);
+        // jwt 토큰 생성 (만료시간 10시간)
+        String token = jwtUtil.createJwt(id, 60 * 60 * 10000L);
 
         // 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);
