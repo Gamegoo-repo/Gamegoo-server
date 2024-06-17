@@ -20,7 +20,6 @@ public class JoinService {
     }
 
     // 회원가입 로직
-
     public void JoinProcess(JoinDTO joinDTO) {
 
         // DTO로부터 데이터 받기
