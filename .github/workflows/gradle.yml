@@ -27,6 +27,7 @@ jobs:
           spring.datasource.url: ${{ secrets.DB_URL }}
           spring.datasource.username: ${{ secrets.DB_USERNAME }}
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
+          spring.jwt.secret: ${{ secrets.JWT_SECRET }}
 
       # Spring Boot 어플리케이션 Build (1)
       - name: Spring Boot Build
