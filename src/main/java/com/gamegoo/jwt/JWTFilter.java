@@ -56,11 +56,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // jwt 토큰에서 id 획득
         Long id = jwtUtil.getId(token);
+        System.out.println(id);
 
         // Member를 생성하여 값 set
         Member member = new Member();
         member.setId(id);
-        member.setPassword("temppassword");
 
         //UserDetails에 회원 정보 객체 담기
         CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
