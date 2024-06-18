@@ -19,7 +19,7 @@ public class JoinController {
 
     @PostMapping("/join/local")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<Object> joinProcess(JoinDTO joinDTO) {
+    public ApiResponse<Object> joinMember(JoinDTO joinDTO) {
         joinService.JoinMember(joinDTO);
         return ApiResponse.onSuccess(null);
     }
