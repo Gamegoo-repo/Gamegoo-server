@@ -3,7 +3,7 @@ package com.gamegoo.service.member;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.dto.member.JoinDTO;
-import com.gamegoo.repository.MemberRepository;
+import com.gamegoo.repository.member.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
