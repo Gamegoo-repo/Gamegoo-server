@@ -2,7 +2,7 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.domain.Member;
 import com.gamegoo.dto.member.CustomMemberDetails;
-import com.gamegoo.repository.MemberRepository;
+import com.gamegoo.repository.member.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
