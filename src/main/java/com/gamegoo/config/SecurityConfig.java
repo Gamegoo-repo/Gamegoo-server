@@ -1,8 +1,8 @@
 package com.gamegoo.config;
 
-import com.gamegoo.jwt.filter.JWTFilter;
-import com.gamegoo.jwt.filter.LoginFilter;
-import com.gamegoo.jwt.util.JWTUtil;
+import com.gamegoo.jwt.JWTFilter;
+import com.gamegoo.jwt.JWTUtil;
+import com.gamegoo.security.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
