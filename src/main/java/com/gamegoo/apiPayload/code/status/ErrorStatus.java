@@ -19,7 +19,12 @@ public enum ErrorStatus implements BaseErrorCode {
 
 
     // 테스트
-    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트");
+    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
+
+    // 비밀번호 불일치 에러
+    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "PASSWORD001", "비밀번호가 불일치합니다."),
+    PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "PASSWORD002", "해당 사용자를 찾을 수 없습니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
@@ -31,7 +36,8 @@ public enum ErrorStatus implements BaseErrorCode {
                 .message(message)
                 .code(code)
                 .isSuccess(false)
-                .build();    }
+                .build();
+    }
 
     @Override
     public ErrorReasonDTO getReasonHttpStatus() {
@@ -40,5 +46,6 @@ public enum ErrorStatus implements BaseErrorCode {
                 .code(code)
                 .isSuccess(false)
                 .httpStatus(httpStatus)
-                .build();    }
+                .build();
+    }
 }

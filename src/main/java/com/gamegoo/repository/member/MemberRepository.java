@@ -1,4 +1,4 @@
-package com.gamegoo.repository;
+package com.gamegoo.repository.member;
 
 import com.gamegoo.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

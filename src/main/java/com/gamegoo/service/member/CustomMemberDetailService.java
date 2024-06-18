@@ -1,7 +1,7 @@
 package com.gamegoo.service.member;
 
 import com.gamegoo.domain.Member;
-import com.gamegoo.repository.MemberRepository;
+import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomMemberDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
