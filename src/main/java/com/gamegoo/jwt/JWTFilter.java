@@ -1,8 +1,7 @@
-package com.gamegoo.jwt.filter;
+package com.gamegoo.jwt;
 
 import com.gamegoo.domain.Member;
-import com.gamegoo.dto.member.CustomMemberDetails;
-import com.gamegoo.jwt.util.JWTUtil;
+import com.gamegoo.security.CustomMemberDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

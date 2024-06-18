@@ -20,13 +20,13 @@ public class JoinService {
     }
 
     // 회원가입 로직
-    public void JoinProcess(JoinDTO joinDTO) {
+    public void JoinMember(JoinDTO joinDTO) {
 
         // DTO로부터 데이터 받기
         String email = joinDTO.getEmail();
         String password = joinDTO.getPassword();
 
-        // 중복 확인은 이메일 인증 코드 발급 API에서 진행
+        // 중복 확인은 이메일 인증 코드 발급 API에서 진행 (로직이 이메일 인증 API -> 회원가입 API)
 
         // DB에 넣을 정보 설정
         Member member = Member.builder()
