@@ -12,8 +12,14 @@ spring:
       # show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
+  jwt:
+    secret: ${JWT_SECRET}
 
 springdoc:
   swagger-ui:
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
+
+
+
+

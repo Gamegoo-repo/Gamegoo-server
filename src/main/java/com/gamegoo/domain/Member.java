@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @AllArgsConstructor
 public class Member extends BaseDateTimeEntity {
     @Id
@@ -34,7 +34,7 @@ public class Member extends BaseDateTimeEntity {
     private String password;
 
     @Column(name = "profile_image", length = 30)
-    private String profileImage;
+    private String profileImage = "default";
 
     @Column(name = "manner_level")
     private Integer mannerLevel = 0;
@@ -46,13 +46,13 @@ public class Member extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(50)", nullable = false)
     private LoginType loginType;
 
-    @Column(name = "gameuser_name", nullable = true, length = 100)
+    @Column(name = "gameuser_name", length = 100)
     private String gameuserName;
 
-    @Column(name = "tier", nullable = false)
+    @Column(name = "tier")
     private Integer tier;
 
-    @Column(name = "winrate", nullable = false)
+    @Column(name = "winrate")
     private double winRate;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
