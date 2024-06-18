@@ -1,6 +1,5 @@
-package com.gamegoo.jwt.util;
+package com.gamegoo.security;
 
-import com.gamegoo.dto.member.CustomMemberDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

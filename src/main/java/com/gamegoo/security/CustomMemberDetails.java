@@ -1,4 +1,4 @@
-package com.gamegoo.dto.member;
+package com.gamegoo.security;
 
 import com.gamegoo.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
