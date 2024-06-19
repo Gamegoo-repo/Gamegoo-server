@@ -1,6 +1,7 @@
 package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.MemberNotFoundExceptionHandler;
 import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
@@ -27,7 +28,7 @@ public class CustomMemberDetailService implements UserDetailsService {
         Member memberData = memberRepository.findByEmail(email);
 
         if (memberData == null) {
-            throw new UsernameNotFoundException("User not found with email: " + email);
+            throw new MemberNotFoundExceptionHandler(ErrorStatus.MEMBER_NOT_FOUND);
         }
 
         if (memberData.getBlind()) {
