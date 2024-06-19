@@ -3,6 +3,7 @@ package com.gamegoo.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
 import com.gamegoo.jwt.JWTUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,13 +71,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        // 실패 응답 생성
-        ApiResponse<String> apiResponse = ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED.getCode(), "사용자의 정보가 없거나 비밀번호가 불일치합니다.", null);
+        ErrorStatus errorStatus;
 
-        // 응답 설정
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (failed instanceof UserDeactivatedExceptionHandler) {
+            errorStatus = ErrorStatus.USER_DEACTIVATED;
+        } else {
+            errorStatus = ErrorStatus.TEMP_EXCEPTION; // 일반적인 오류로 처리
+        }
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), "탈퇴처리된 회원입니다.", null);
+
+        response.setStatus(errorStatus.getHttpStatus().value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         new ObjectMapper().writeValue(response.getWriter(), apiResponse);
+
     }
 }
