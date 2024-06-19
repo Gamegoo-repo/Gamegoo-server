@@ -2,7 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.dto.member.PasswordDTO;
-import com.gamegoo.jwt.util.SecurityUtil;
+import com.gamegoo.security.SecurityUtil;
 import com.gamegoo.service.member.PasswordService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class PasswordController {
         Long currentUserId = SecurityUtil.getCurrentUserId();
 
         passwordService.updatePassword(currentUserId, passwordDTO.getPassword());
-        
+
         return ApiResponse.onSuccess(null);
     }
 

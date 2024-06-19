@@ -4,6 +4,7 @@ import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.dto.member.JoinDTO;
 import com.gamegoo.repository.member.MemberRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ public class JoinService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // 생성자
+    @Autowired
     public JoinService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.memberRepository = memberRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;

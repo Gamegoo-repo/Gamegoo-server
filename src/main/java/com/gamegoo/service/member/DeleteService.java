@@ -5,37 +5,29 @@ import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class PasswordService {
-
+public class DeleteService {
     private final MemberRepository memberRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public PasswordService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+
+    public DeleteService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public boolean checkPasswordById(Long userId, String password) {
-        return memberRepository.findById(userId)
-                .map(member -> bCryptPasswordEncoder.matches(password, member.getPassword()))
-                .orElse(false);
-    }
-
-    public void updatePassword(Long userId, String newPassword) {
+    public void deleteMember(Long userId) {
         Optional<Member> optionalMember = memberRepository.findById(userId);
         if (optionalMember.isPresent()) {
             Member member = optionalMember.get();
-            member.setPassword(bCryptPasswordEncoder.encode(newPassword));
+            member.setBlind(true);
             memberRepository.save(member);
         } else {
             throw new UserDeactivatedExceptionHandler(ErrorStatus.MEMBER_NOT_FOUND);
         }
+
     }
 }
