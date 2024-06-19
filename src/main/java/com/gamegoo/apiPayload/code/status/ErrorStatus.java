@@ -22,9 +22,14 @@ public enum ErrorStatus implements BaseErrorCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
     // Member 관련 에러
-    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER001", "비밀번호가 불일치합니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER002", "해당 사용자를 찾을 수 없습니다."),
-    USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER003", "해당 사용자는 탈퇴한 사용자입니다.");
+    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 사용자를 찾을 수 없습니다."),
+    USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER403", "해당 사용자는 탈퇴한 사용자입니다."),
+
+    // JWT 관련 에러
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "jwt 토큰이 만료되었습니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT400", "유효하지 않은 jwt 토큰입니다.");
+
 
     private final HttpStatus httpStatus;
     private final String code;
