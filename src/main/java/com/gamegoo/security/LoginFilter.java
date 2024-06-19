@@ -15,6 +15,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 // 로그인 시 실행되는 로그인 필터
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -70,13 +71,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        // 실패 응답 생성
-        ApiResponse<String> apiResponse = ApiResponse.onFailure(ErrorStatus._UNAUTHORIZED.getCode(), "사용자의 정보가 없거나 비밀번호가 불일치합니다.", null);
+        ErrorStatus errorStatus;
 
-        // 응답 설정
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (Objects.equals(failed.getMessage(), "해당 사용자는 탈퇴한 사용자입니다.")) {
+            errorStatus = ErrorStatus.USER_DEACTIVATED;
+        } else if (Objects.equals(failed.getMessage(), "해당 사용자를 찾을 수 없습니다.")) {
+            errorStatus = ErrorStatus.MEMBER_NOT_FOUND;
+        } else if (Objects.equals(failed.getMessage(), "자격 증명에 실패하였습니다.")) {
+            errorStatus = ErrorStatus.PASSWORD_INVALID;
+        } else {
+            errorStatus = ErrorStatus._UNAUTHORIZED;
+        }
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getMessage(), null);
+
+        response.setStatus(errorStatus.getHttpStatus().value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         new ObjectMapper().writeValue(response.getWriter(), apiResponse);
+
     }
 }
