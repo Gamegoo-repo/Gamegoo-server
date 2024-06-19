@@ -56,7 +56,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // jwt 토큰에서 id 획득
         Long id = jwtUtil.getId(token);
-        System.out.println(id);
 
         // Member를 생성하여 값 set
         Member member = new Member();

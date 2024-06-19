@@ -1,5 +1,7 @@
 package com.gamegoo.service.member;
 
+import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomMemberDetails;
@@ -21,15 +23,18 @@ public class CustomMemberDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        //DB에서 조회
+        // DB에서 조회
         Member memberData = memberRepository.findByEmail(email);
 
-        if (memberData != null) {
-
-            //memberDetails에 담아서 return하면 AutneticationManager가 검증 함
-            return new CustomMemberDetails(memberData);
+        if (memberData == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
-        return null;
+        if (memberData.getBlind()) {
+            throw new UserDeactivatedExceptionHandler(ErrorStatus.USER_DEACTIVATED);
+        }
+
+        // memberDetails에 담아서 return하면 AuthenticationManager가 검증함
+        return new CustomMemberDetails(memberData);
     }
 }

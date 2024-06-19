@@ -21,10 +21,10 @@ public enum ErrorStatus implements BaseErrorCode {
     // 테스트
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
-    // 비밀번호 불일치 에러
-    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "PASSWORD001", "비밀번호가 불일치합니다."),
-    PASSWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "PASSWORD002", "해당 사용자를 찾을 수 없습니다.");
-
+    // Member 관련 에러
+    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER001", "비밀번호가 불일치합니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER002", "해당 사용자를 찾을 수 없습니다."),
+    USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER003", "해당 사용자는 탈퇴한 사용자입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
