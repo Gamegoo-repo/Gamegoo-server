@@ -1,4 +1,5 @@
 spring:
+  # DB 설정
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: ${DB_URL}?useUnicode=true&characterEncoding=utf8mb4
@@ -12,14 +13,30 @@ spring:
       # show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
+
+  # JWT Secret key 설정
   jwt:
     secret: ${JWT_SECRET}
+
+  # Gmail 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gamegoo0707@gmail.com
+    password: ${GMAIL_PWD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
 
 springdoc:
   swagger-ui:
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
     operations-sorter: alpha      # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
-
 
 
 
