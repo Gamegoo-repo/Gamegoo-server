@@ -17,7 +17,6 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
-
     // 테스트
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
@@ -28,9 +27,16 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // JWT 관련 에러
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "jwt 토큰이 만료되었습니다."),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT400", "유효하지 않은 jwt 토큰입니다.");
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT400", "유효하지 않은 jwt 토큰입니다."),
 
+    // GameStyle 관련 에러
+    GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE404", "해당 게임 스타일을 찾을 수 없습니다."),
 
+    // Position 관련 에러
+    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
+
+    // Profile_Image 관련 에러
+    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

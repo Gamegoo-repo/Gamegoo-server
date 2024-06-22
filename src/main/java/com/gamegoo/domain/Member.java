@@ -55,6 +55,12 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "winrate")
     private double winRate;
 
+    @Column(name = "main_position")
+    private int mainPosition;
+
+    @Column(name = "sub_position")
+    private int subPosition;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 
