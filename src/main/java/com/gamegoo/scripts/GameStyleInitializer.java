@@ -1,7 +1,7 @@
 package com.gamegoo.scripts;
 
 import com.gamegoo.domain.gamestyle.GameStyle;
-import com.gamegoo.repository.gamestyle.GameStyleRepository;
+import com.gamegoo.repository.member.GameStyleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
