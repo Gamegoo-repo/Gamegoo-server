@@ -33,8 +33,10 @@ public enum ErrorStatus implements BaseErrorCode {
     GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE404", "해당 게임 스타일을 찾을 수 없습니다."),
 
     // Position 관련 에러
-    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다.");
+    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
 
+    // Profile_Image 관련 에러
+    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;
