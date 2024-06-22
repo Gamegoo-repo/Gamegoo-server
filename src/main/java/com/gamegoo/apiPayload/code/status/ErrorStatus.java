@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 사용자를 찾을 수 없습니다."),
     USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER403", "해당 사용자는 탈퇴한 사용자입니다."),
+    MEMBER_CONFLICT(HttpStatus.CONFLICT, "MEMBER409", "이미 있는 사용자입니다."),
 
     // JWT 관련 에러
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "jwt 토큰이 만료되었습니다."),

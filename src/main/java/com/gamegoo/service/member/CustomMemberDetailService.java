@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 // 로그인 DB 로직
 @Service
 public class CustomMemberDetailService implements UserDetailsService {
@@ -25,15 +27,20 @@ public class CustomMemberDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         // DB에서 조회
-        Member memberData = memberRepository.findByEmail(email);
+        Optional<Member> member = memberRepository.findByEmail(email);
+        Member memberData;
 
-        if (memberData == null) {
+        if (member.isPresent()) {
+            memberData = member.get();
+
+            if (memberData.getBlind()) {
+                throw new UserDeactivatedExceptionHandler(ErrorStatus.USER_DEACTIVATED);
+            }
+        } else {
             throw new MemberNotFoundExceptionHandler(ErrorStatus.MEMBER_NOT_FOUND);
+
         }
 
-        if (memberData.getBlind()) {
-            throw new UserDeactivatedExceptionHandler(ErrorStatus.USER_DEACTIVATED);
-        }
 
         // memberDetails에 담아서 return하면 AuthenticationManager가 검증함
         return new CustomMemberDetails(memberData);
