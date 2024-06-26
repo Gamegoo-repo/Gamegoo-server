@@ -19,9 +19,19 @@ public class Block extends BaseDateTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocker_id", nullable = false)
-    private Member blocker;
+    private Member blockerMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blocked_id", nullable = false)
-    private Member blocked;
+    private Member blockedMember;
+
+    // 연관관계 편의 메소드
+    public void setBlockerMember(Member member) {
+        if (this.blockerMember != null) {
+            this.blockerMember.getBlockList().remove(this);
+        }
+        this.blockerMember = member;
+        member.getBlockList().add(this);
+
+    }
 }
