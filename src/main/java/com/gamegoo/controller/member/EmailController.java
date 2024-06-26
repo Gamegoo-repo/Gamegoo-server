@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class EmailController {
 
     @PostMapping("/email")
     @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for email verification")
-    public ApiResponse<Object> verifyEmail(EmailDTO emailDTO) throws IOException {
+    public ApiResponse<Object> verifyEmail(@RequestBody EmailDTO emailDTO) throws IOException {
         String emailAddress = emailDTO.getEmail_address();
         String code = emailService.verifyEmail(emailAddress);
         return ApiResponse.onSuccess(code);

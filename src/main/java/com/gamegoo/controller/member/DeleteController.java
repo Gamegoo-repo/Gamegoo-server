@@ -21,7 +21,7 @@ public class DeleteController {
     private final DeleteService deleteService;
 
     @DeleteMapping("")
-    @Operation(summary = "회원 탈퇴 API 입니다.", description = "API for blind Member")
+    @Operation(summary = "회원 탈퇴 API 입니다.", description = "API for  Member")
     public ApiResponse<Object> blindMember() {
         Long userId = SecurityUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
         try {

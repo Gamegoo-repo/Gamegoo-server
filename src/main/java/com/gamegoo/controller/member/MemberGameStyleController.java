@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class MemberGameStyleController {
 
     @PutMapping("/gamestyle")
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
-    public ApiResponse<Object> addGameStyle(GameStyleDTO gameStyleDTO) throws IOException {
+    public ApiResponse<Object> addGameStyle(@RequestBody GameStyleDTO gameStyleDTO) throws IOException {
         memberGameStyleService.addMemberGameStyles(gameStyleDTO.getGamestyle());
         return ApiResponse.onSuccess(null);
     }
