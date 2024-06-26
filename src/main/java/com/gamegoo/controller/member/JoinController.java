@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class JoinController {
     private final JoinService joinService;
 
-    @PostMapping("/join/local")
+    @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<Object> joinMember(JoinDTO joinDTO) {
+    public ApiResponse<Object> joinMember(@RequestBody JoinDTO joinDTO) {
+        System.out.println(joinDTO.getPassword());
         joinService.JoinMember(joinDTO);
         return ApiResponse.onSuccess(null);
     }
