@@ -2,6 +2,7 @@ package com.gamegoo.config;
 
 import com.gamegoo.jwt.JWTFilter;
 import com.gamegoo.jwt.JWTUtil;
+import com.gamegoo.security.CustomUserDetailService;
 import com.gamegoo.security.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,16 +19,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Arrays;
 import java.util.List;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailService customUserDetailService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailService customUserDetailService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.customUserDetailService = customUserDetailService;
     }
 
     @Bean
@@ -38,7 +40,7 @@ public class SecurityConfig {
     @Bean
     public JWTFilter jwtFilter() {
         List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email");
-        return new JWTFilter(jwtUtil, excludedPaths);
+        return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
     }
 
     @Bean
@@ -49,12 +51,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests((auth) -> auth
                         .antMatchers("/api/member/join", "/api/member/login", "/api/member/email").permitAll()
                         .anyRequest().authenticated())
+
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), LoginFilter.class)
                 .sessionManagement((session) -> session

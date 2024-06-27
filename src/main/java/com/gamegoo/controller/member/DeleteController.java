@@ -2,7 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.security.SecurityUtil;
 import com.gamegoo.service.member.DeleteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,11 +27,8 @@ public class DeleteController {
         try {
             deleteService.deleteMember(userId);
             return ApiResponse.onSuccess(null);
-        } catch (UserDeactivatedExceptionHandler e) {
-            return ApiResponse.onFailure(ErrorStatus.MEMBER_NOT_FOUND.getCode(), e.getMessage(), null);
         } catch (Exception e) {
-            log.error("Unexpected error occurred during member deletion", e);
-            return ApiResponse.onFailure(ErrorStatus.TEMP_EXCEPTION.getCode(), ErrorStatus.TEMP_EXCEPTION.getMessage(), null);
+            throw new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND);
         }
     }
 

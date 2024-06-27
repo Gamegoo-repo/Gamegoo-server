@@ -7,7 +7,7 @@ public class SecurityUtil {
 
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof CustomMemberDetails memberDetails) {
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails memberDetails) {
             return memberDetails.getId();
         }
 
