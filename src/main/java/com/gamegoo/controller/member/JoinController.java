@@ -22,6 +22,7 @@ public class JoinController {
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
     public ApiResponse<Object> joinMember(@RequestBody JoinDTO joinDTO) {
         System.out.println(joinDTO.getPassword());
+        System.out.println(joinDTO.getEmail());
         joinService.JoinMember(joinDTO);
         return ApiResponse.onSuccess(null);
     }

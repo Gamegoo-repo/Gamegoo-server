@@ -1,7 +1,7 @@
 package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.apiPayload.exception.handler.UserDeactivatedExceptionHandler;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class DeleteService {
             member.setBlind(true);
             memberRepository.save(member);
         } else {
-            throw new UserDeactivatedExceptionHandler(ErrorStatus.MEMBER_NOT_FOUND);
+            throw new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND);
         }
 
     }
