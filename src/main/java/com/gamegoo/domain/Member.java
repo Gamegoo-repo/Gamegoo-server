@@ -61,6 +61,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "sub_position")
     private int subPosition;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 
