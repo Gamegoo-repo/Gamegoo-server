@@ -1,5 +1,6 @@
 package com.gamegoo.config;
 
+import com.gamegoo.apiPayload.exception.handler.JWTExceptionHandlerFilter;
 import com.gamegoo.jwt.JWTFilter;
 import com.gamegoo.jwt.JWTUtil;
 import com.gamegoo.security.CustomUserDetailService;
@@ -59,7 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .antMatchers("/api/member/join", "/api/member/login", "/api/member/email").permitAll()
                         .anyRequest().authenticated())
-
+                .addFilterBefore(new JWTExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), LoginFilter.class)
                 .sessionManagement((session) -> session

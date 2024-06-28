@@ -23,6 +23,7 @@ public class PasswordController {
     @Operation(summary = "비밀번호 확인 API 입니다.", description = "API for checking password")
     public ApiResponse<Object> checkPassword(@RequestBody PasswordDTO passwordDTO) {
         Long currentUserId = SecurityUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
+
         boolean isPasswordValid = passwordService.checkPasswordById(currentUserId, passwordDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
 
         if (isPasswordValid) {

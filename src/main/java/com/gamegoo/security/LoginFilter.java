@@ -55,13 +55,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Long id = customUserDetails.getId();
 
         // jwt 토큰 생성 (만료시간 10시간)
-        String token = jwtUtil.createJwt(id, 60 * 60 * 10000L);
+        String token = jwtUtil.createJwt(id, 60 * 60 * 100000L);
 
         // 헤더에 추가
         response.addHeader("Authorization", "Bearer " + token);
-
-        // 바디에 추가
-
 
         // 성공 응답 생성
         ApiResponse<Object> apiResponse = ApiResponse.onSuccess(token);
@@ -74,9 +71,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        // 어떤 에러인지 확인
         ErrorStatus errorStatus = getErrorStatus(failed);
-        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getMessage(), null);
 
+        // 에러 응답 생성하기
+        ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getMessage(), null);
         response.setStatus(errorStatus.getHttpStatus().value());
         apiResponse(response, apiResponse);
     }

@@ -4,6 +4,8 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.security.CustomUserDetailService;
 import com.gamegoo.security.CustomUserDetails;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,7 +35,7 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, JwtException {
         String requestURI = request.getRequestURI();
 
         // JWT Filter를 사용하지 않는 Path는 제외
@@ -55,16 +57,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
-
         try {
-            // 토큰 소멸 시간 검증
-            if (jwtUtil.isExpired(token)) {
-                throw new MemberHandler(ErrorStatus.TOKEN_EXPIRED);
-            }
-
             // jwt 토큰에서 id 획득
             Long id = jwtUtil.getId(token);
-
+            System.out.println(id);
 
             // UserDetails에 회원 정보 객체 담기
             CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailService.loadUserById(id);
@@ -76,10 +72,12 @@ public class JWTFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
             filterChain.doFilter(request, response);
-
-        } catch (Exception e) {
-            throw new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND);
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Token expired");
+        } catch (JwtException e) {
+            throw new JwtException("Invalid token");
         }
+
     }
 
 }
