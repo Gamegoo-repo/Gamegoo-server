@@ -2,20 +2,16 @@ package com.gamegoo.scripts;
 
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.repository.member.GameStyleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class GameStyleInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
     private final GameStyleRepository gameStyleRepository;
-
-    @Autowired
-    public GameStyleInitializer(GameStyleRepository gameStyleRepository) {
-        this.gameStyleRepository = gameStyleRepository;
-    }
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {

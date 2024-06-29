@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class Board extends BaseDateTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id", nullable = false)
     private Long id;
 

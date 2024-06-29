@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class ReportType extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_type_id")
     private Long id;
     @Column(name = "report_type_content", nullable = false)

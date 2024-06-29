@@ -1,5 +1,6 @@
-package com.gamegoo.security;
+package com.gamegoo.util;
 
+import com.gamegoo.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -7,7 +8,7 @@ public class SecurityUtil {
 
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof CustomMemberDetails memberDetails) {
+        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails memberDetails) {
             return memberDetails.getId();
         }
 

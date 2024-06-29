@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class NotificationType extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_type_id")
     private Long id;
 
