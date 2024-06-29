@@ -10,6 +10,7 @@ import com.gamegoo.repository.member.EmailVerifyRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -78,7 +79,9 @@ public class AuthService {
     // 이메일 인증코드 검증
     public void verifyEmail(String email, String code) {
         // 이메일로 보낸 인증 코드 중 가장 최근의 데이터를 불러옴
-        EmailVerifyRecord emailVerifyRecord = emailVerifyRecordRepository.findByEmailOrderByUpdatedAtDesc(email)
+        EmailVerifyRecord emailVerifyRecord = emailVerifyRecordRepository.findByEmailOrderByUpdatedAtDesc(email, PageRequest.of(0, 1))
+                // 가장 최신 기록만 가져오기
+                .stream().findFirst()
                 // 해당 이메일이 없을 경우
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_NOT_FOUND));
 

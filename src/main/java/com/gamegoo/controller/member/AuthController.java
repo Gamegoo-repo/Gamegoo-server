@@ -30,10 +30,7 @@ public class AuthController {
     @PostMapping("/email/send")
     @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for sending email")
     public ApiResponse<Object> sendEmail(@RequestBody EmailDTO emailDTO) {
-        System.out.println("DD");
         String email = emailDTO.getEmail();
-        System.out.println(email);
-
         authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
     }

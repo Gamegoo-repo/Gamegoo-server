@@ -51,14 +51,12 @@ public class JWTFilter extends OncePerRequestFilter {
             throw new JwtException("Token null");
         }
 
-        System.out.println("authorization now");
-
+        // 인증 시작
         // Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
         try {
             // jwt 토큰에서 id 획득
             Long id = jwtUtil.getId(token);
-            System.out.println(id);
 
             // UserDetails에 회원 정보 객체 담기
             CustomUserDetails customUserDetails = (CustomUserDetails) customUserDetailService.loadUserById(id);
@@ -73,7 +71,7 @@ public class JWTFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             throw new JwtException("Token expired");
         } catch (JwtException e) {
-            throw new JwtException("Invalid token");
+            throw new JwtException(e.getMessage());
         }
 
     }

@@ -19,12 +19,15 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
+
             if (Objects.equals(e.getMessage(), "Token expired")) {
                 setErrorResponse(response, ErrorStatus.TOKEN_EXPIRED);
-            } else if (Objects.equals(e.getMessage(), "Invalid token")) {
-                setErrorResponse(response, ErrorStatus.INVALID_TOKEN);
             } else if (Objects.equals(e.getMessage(), "Token null")) {
                 setErrorResponse(response, ErrorStatus.TOKEN_NULL);
+            } else if (Objects.equals(e.getMessage(), "No Member")) {
+                setErrorResponse(response, ErrorStatus.MEMBER_NOT_FOUND);
+            } else {
+                setErrorResponse(response, ErrorStatus.INVALID_TOKEN);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

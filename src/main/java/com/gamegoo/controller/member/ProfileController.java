@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
@@ -20,7 +22,10 @@ public class ProfileController {
     @PutMapping("/gamestyle")
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
     public ApiResponse<Object> addGameStyle(@RequestBody GameStyleDTO gameStyleDTO) {
-        profileService.addMemberGameStyles(gameStyleDTO.getGamestyle());
+
+        List<String> gamestylelist = gameStyleDTO.getGamestyle();
+        System.out.println(gamestylelist);
+        profileService.addMemberGameStyles(gamestylelist);
         return ApiResponse.onSuccess("게임 스타일 수정이 완료되었습니다.");
     }
 
