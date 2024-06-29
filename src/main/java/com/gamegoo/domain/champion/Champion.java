@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 public class Champion {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "champion_id", nullable = false)
     private Long id;
 

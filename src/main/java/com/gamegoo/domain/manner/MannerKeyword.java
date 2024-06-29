@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class MannerKeyword extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "manner_keyword_id")
     private Long id;
 

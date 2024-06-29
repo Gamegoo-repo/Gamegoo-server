@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class MemberGameStyle extends BaseDateTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_gamestyle_id", nullable = false)
     private Long id;
 

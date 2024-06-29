@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class EmailVerifyRecord extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "record_id")
     private Long id;
 
