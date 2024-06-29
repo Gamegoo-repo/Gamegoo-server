@@ -30,9 +30,12 @@ public class AuthController {
     @PostMapping("/email/send")
     @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for sending email")
     public ApiResponse<Object> sendEmail(@RequestBody EmailDTO emailDTO) {
+        System.out.println("DD");
         String email = emailDTO.getEmail();
-        String code = authService.sendEmail(email);
-        return ApiResponse.onSuccess(code);
+        System.out.println(email);
+
+        authService.sendEmail(email);
+        return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
     }
 
     @PostMapping("/email/verify")
@@ -41,6 +44,6 @@ public class AuthController {
         String email = emailCodeDTO.getEmail();
         String code = emailCodeDTO.getCode();
         authService.verifyEmail(email, code);
-        return ApiResponse.onSuccess("성공했습니다.");
+        return ApiResponse.onSuccess("인증코드 검증에 성공했습니다.");
     }
 }

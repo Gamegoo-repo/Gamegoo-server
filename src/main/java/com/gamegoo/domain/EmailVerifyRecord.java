@@ -23,5 +23,4 @@ public class EmailVerifyRecord extends BaseDateTimeEntity {
     @Column(name = "code", nullable = false, length = 10)
     private String code;
 
-
 }

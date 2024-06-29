@@ -23,6 +23,8 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
                 setErrorResponse(response, ErrorStatus.TOKEN_EXPIRED);
             } else if (Objects.equals(e.getMessage(), "Invalid token")) {
                 setErrorResponse(response, ErrorStatus.INVALID_TOKEN);
+            } else if (Objects.equals(e.getMessage(), "Token null")) {
+                setErrorResponse(response, ErrorStatus.TOKEN_NULL);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
