@@ -1,6 +1,6 @@
 package com.gamegoo.service.member;
 
-import com.gamegoo.apiPayload.exception.CustomUserException;
+import com.gamegoo.apiPayload.exception.handler.CustomUserException;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetails;
@@ -26,13 +26,13 @@ public class CustomUserDetailService implements UserDetailsService {
                     }
                     return new CustomUserDetails(member);
                 })
-                .orElseThrow(() -> new JwtException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new JwtException("No Member"));
     }
 
     public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
         Member member = memberRepository.findById(id)
                 .filter(m -> !m.getBlind())
-                .orElseThrow(() -> new JwtException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new JwtException("No Member"));
         return new CustomUserDetails(member);
     }
 

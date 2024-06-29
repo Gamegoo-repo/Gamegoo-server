@@ -37,7 +37,7 @@ public class SecurityConfig {
 
     @Bean
     public JWTFilter jwtFilter() {
-        List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email/*");
+        List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
     }
 
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests((auth) -> auth
-                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/*").permitAll()
+                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
