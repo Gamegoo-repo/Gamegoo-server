@@ -1,6 +1,8 @@
 package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.dto.member.PasswordDTO;
 import com.gamegoo.service.member.PasswordService;
 import com.gamegoo.util.SecurityUtil;
@@ -27,9 +29,9 @@ public class PasswordController {
         boolean isPasswordValid = passwordService.checkPasswordById(currentUserId, passwordDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
 
         if (isPasswordValid) {
-            return ApiResponse.onSuccess(null);
+            return ApiResponse.onSuccess("비밀번호가 일치합니다.");
         } else {
-            return ApiResponse.onFailure("PASSWORD_INVALID", "비밀번호가 불일치합니다.", null);
+            throw new MemberHandler(ErrorStatus.PASSWORD_INVALID);
         }
     }
 
@@ -40,7 +42,7 @@ public class PasswordController {
 
         passwordService.updatePassword(currentUserId, passwordDTO.getPassword());
 
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess("비밀번호 재설정을 완료했습니다.");
     }
 
 

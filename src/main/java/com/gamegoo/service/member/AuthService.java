@@ -1,8 +1,7 @@
 package com.gamegoo.service.member;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.dto.member.JoinDTO;
@@ -16,9 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +22,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
-    private final HttpServletResponse response;
 
     // 회원가입 로직
     public void JoinMember(JoinDTO joinDTO) {
@@ -50,17 +45,11 @@ public class AuthService {
     }
 
     //이메일 인증 및 전송
-    public String verifyEmail(String email) throws IOException {
+    public String verifyEmail(String email) {
         // 중복 확인하기
-        Optional<Member> byEmail = memberRepository.findByEmail(email);
-        if (byEmail.isPresent()) {
-            ErrorStatus errorStatus = ErrorStatus.MEMBER_CONFLICT;
-            ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(), errorStatus.getMessage(), null);
-
-            response.setStatus(errorStatus.getHttpStatus().value());
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            new ObjectMapper().writeValue(response.getWriter(), apiResponse);
+        boolean isPresent = memberRepository.findByEmail(email).isPresent();
+        if (isPresent) {
+            throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
         // 랜덤 코드 생성하기
@@ -80,8 +69,10 @@ public class AuthService {
             javaMailSender.send(message);
 
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new MemberHandler(ErrorStatus.EMAIL_SEND_ERROR);
         }
+
+        // 인증 번호 반환
         return certificationNumber;
     }
 
