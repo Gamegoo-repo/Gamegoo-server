@@ -1,18 +1,16 @@
-package com.gamegoo.security;
+package com.gamegoo.service.member;
 
 import com.gamegoo.domain.Member;
-import com.gamegoo.jwt.JWTUtil;
 import com.gamegoo.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gamegoo.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
 
-    @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
     private JWTUtil jwtUtil;
 
     public void saveRefreshToken(Long id, String refresh_token) {

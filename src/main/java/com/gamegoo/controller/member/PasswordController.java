@@ -2,8 +2,8 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.dto.member.PasswordDTO;
-import com.gamegoo.security.SecurityUtil;
 import com.gamegoo.service.member.PasswordService;
+import com.gamegoo.util.SecurityUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

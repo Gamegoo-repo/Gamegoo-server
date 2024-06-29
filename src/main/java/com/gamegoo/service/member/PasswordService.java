@@ -4,23 +4,18 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PasswordService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    public PasswordService(MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.memberRepository = memberRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
 
     public boolean checkPasswordById(Long userId, String password) {
         return memberRepository.findById(userId)
