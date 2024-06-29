@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Block extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "block_id")
     private Long id;
 

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class MatchingRecord extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "matching_id", nullable = false)
     private Long id;
 

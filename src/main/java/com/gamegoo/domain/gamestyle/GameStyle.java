@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class GameStyle extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "gamestyle_id", nullable = false)
     private Long id;
 
