@@ -1,4 +1,4 @@
-package com.gamegoo.jwt;
+package com.gamegoo.util;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;

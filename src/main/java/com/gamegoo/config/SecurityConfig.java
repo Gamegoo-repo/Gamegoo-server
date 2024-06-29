@@ -1,10 +1,11 @@
 package com.gamegoo.config;
 
 import com.gamegoo.apiPayload.exception.handler.JWTExceptionHandlerFilter;
-import com.gamegoo.jwt.JWTFilter;
-import com.gamegoo.jwt.JWTUtil;
-import com.gamegoo.security.CustomUserDetailService;
-import com.gamegoo.security.LoginFilter;
+import com.gamegoo.filter.JWTFilter;
+import com.gamegoo.filter.LoginFilter;
+import com.gamegoo.service.member.CustomUserDetailService;
+import com.gamegoo.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,16 +23,12 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomUserDetailService customUserDetailService) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-        this.customUserDetailService = customUserDetailService;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {

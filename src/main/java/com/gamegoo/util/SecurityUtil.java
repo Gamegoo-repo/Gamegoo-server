@@ -1,5 +1,6 @@
-package com.gamegoo.security;
+package com.gamegoo.util;
 
+import com.gamegoo.security.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

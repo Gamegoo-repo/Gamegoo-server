@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.enums.LoginType;
+import com.gamegoo.dto.member.JoinDTO;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.security.CodeGeneratorUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gamegoo.util.CodeGeneratorUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -18,16 +21,32 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Service
-public class EmailService {
+@RequiredArgsConstructor
+public class AuthService {
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
     private final HttpServletResponse response;
 
-    @Autowired
-    public EmailService(MemberRepository memberRepository, JavaMailSender javaMailSender, HttpServletResponse response) {
-        this.memberRepository = memberRepository;
-        this.javaMailSender = javaMailSender;
-        this.response = response;
+    // 회원가입 로직
+    public void JoinMember(JoinDTO joinDTO) {
+
+        // DTO로부터 데이터 받기
+        String email = joinDTO.getEmail();
+        String password = joinDTO.getPassword();
+        // 중복 확인은 이메일 인증 코드 발급 API에서 진행 (로직이 이메일 인증 API -> 회원가입 API)
+
+        // DB에 넣을 정보 설정
+        Member member = Member.builder()
+                .email(email)
+                .password(bCryptPasswordEncoder.encode(password))
+                .loginType(LoginType.GENERAL)
+                .profileImage("default")
+                .blind(false)
+                .build();
+
+        // DB에 저장
+        memberRepository.save(member);
     }
 
     //이메일 인증 및 전송
@@ -73,4 +92,5 @@ public class EmailService {
 
         return certificationMessage;
     }
+
 }

@@ -1,9 +1,10 @@
-package com.gamegoo.jwt;
+package com.gamegoo.filter;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.security.CustomUserDetailService;
 import com.gamegoo.security.CustomUserDetails;
+import com.gamegoo.service.member.CustomUserDetailService;
+import com.gamegoo.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;

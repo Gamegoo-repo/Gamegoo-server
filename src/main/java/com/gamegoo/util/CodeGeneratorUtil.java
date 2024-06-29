@@ -1,4 +1,4 @@
-package com.gamegoo.security;
+package com.gamegoo.util;
 
 import java.security.SecureRandom;
 

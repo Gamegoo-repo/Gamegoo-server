@@ -1,9 +1,10 @@
-package com.gamegoo.security;
+package com.gamegoo.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.jwt.JWTUtil;
+import com.gamegoo.security.CustomUserDetails;
+import com.gamegoo.util.JWTUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
