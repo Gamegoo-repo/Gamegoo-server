@@ -39,6 +39,7 @@ public class SecurityConfig {
     public JWTFilter jwtFilter() {
         List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
+
     }
 
     @Bean
