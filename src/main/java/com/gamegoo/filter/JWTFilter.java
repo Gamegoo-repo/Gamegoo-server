@@ -1,7 +1,5 @@
 package com.gamegoo.filter;
 
-import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.security.CustomUserDetails;
 import com.gamegoo.service.member.CustomUserDetailService;
 import com.gamegoo.util.JWTUtil;
@@ -50,8 +48,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            System.out.println("token null");
-            throw new MemberHandler(ErrorStatus.INVALID_TOKEN);
+            throw new JwtException("Token null");
         }
 
         System.out.println("authorization now");

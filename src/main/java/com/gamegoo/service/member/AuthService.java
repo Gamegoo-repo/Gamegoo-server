@@ -53,7 +53,7 @@ public class AuthService {
     }
 
     //이메일 인증코드 전송
-    public String sendEmail(String email) {
+    public void sendEmail(String email) {
         // 중복 확인하기
         boolean isPresent = memberRepository.findByEmail(email).isPresent();
         if (isPresent) {
@@ -73,9 +73,6 @@ public class AuthService {
                 .build();
 
         emailVerifyRecordRepository.save(emailVerifyRecord);
-
-        // 인증 번호 반환
-        return certificationNumber;
     }
 
     // 이메일 인증코드 검증
