@@ -1,6 +1,7 @@
 package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.dto.member.EmailCodeDTO;
 import com.gamegoo.dto.member.EmailDTO;
 import com.gamegoo.dto.member.JoinDTO;
 import com.gamegoo.service.member.AuthService;
@@ -22,15 +23,24 @@ public class AuthController {
     @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
     public ApiResponse<Object> joinMember(@RequestBody JoinDTO joinDTO) {
-        authService.JoinMember(joinDTO);
+        authService.joinMember(joinDTO);
         return ApiResponse.onSuccess("회원가입에 성공했습니다.");
     }
 
-    @PostMapping("/email")
-    @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for email verification")
-    public ApiResponse<Object> verifyEmail(@RequestBody EmailDTO emailDTO) {
-        String emailAddress = emailDTO.getEmail_address();
-        String code = authService.verifyEmail(emailAddress);
+    @PostMapping("/email/send")
+    @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for sending email")
+    public ApiResponse<Object> sendEmail(@RequestBody EmailDTO emailDTO) {
+        String email = emailDTO.getEmail();
+        String code = authService.sendEmail(email);
         return ApiResponse.onSuccess(code);
+    }
+
+    @PostMapping("/email/verify")
+    @Operation(summary = "이메일 인증코드 검증 API 입니다.", description = "API for email verification")
+    public ApiResponse<Object> verifyEmail(@RequestBody EmailCodeDTO emailCodeDTO) {
+        String email = emailCodeDTO.getEmail();
+        String code = emailCodeDTO.getCode();
+        authService.verifyEmail(email, code);
+        return ApiResponse.onSuccess("성공했습니다.");
     }
 }

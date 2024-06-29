@@ -40,7 +40,9 @@ public enum ErrorStatus implements BaseErrorCode {
     PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다."),
 
     // Email 인증 관련 에러
-    EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다.");
+    EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
+    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
+    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
