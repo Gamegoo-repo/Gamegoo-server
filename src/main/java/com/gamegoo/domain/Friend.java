@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Friend extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "friend_id")
     private Long id;
 

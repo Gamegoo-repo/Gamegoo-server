@@ -1,8 +1,11 @@
 package com.gamegoo.config;
 
-import com.gamegoo.jwt.JWTFilter;
-import com.gamegoo.jwt.JWTUtil;
-import com.gamegoo.security.LoginFilter;
+import com.gamegoo.apiPayload.exception.handler.JWTExceptionHandlerFilter;
+import com.gamegoo.filter.JWTFilter;
+import com.gamegoo.filter.LoginFilter;
+import com.gamegoo.service.member.CustomUserDetailService;
+import com.gamegoo.util.JWTUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,17 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.util.Arrays;
 import java.util.List;
 
-
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CustomUserDetailService customUserDetailService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
-        this.authenticationConfiguration = authenticationConfiguration;
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -37,8 +37,9 @@ public class SecurityConfig {
 
     @Bean
     public JWTFilter jwtFilter() {
-        List<String> excludedPaths = Arrays.asList("/swagger-ui/", "/v3/api-docs", "/api/member/join/local", "/api/member/login/local", "/api/member/email");
-        return new JWTFilter(jwtUtil, excludedPaths);
+        List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email");
+        return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
+
     }
 
     @Bean
@@ -49,13 +50,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+
                 .authorizeHttpRequests((auth) -> auth
-                        .antMatchers("/api/member/join/local", "/api/member/login/local", "/api/member/email").permitAll()
-                        .antMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterBefore(new JWTExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), LoginFilter.class)
                 .sessionManagement((session) -> session

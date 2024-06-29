@@ -29,6 +29,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // JWT 관련 에러
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "jwt 토큰이 만료되었습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT400", "유효하지 않은 jwt 토큰입니다."),
+    TOKEN_NULL(HttpStatus.NOT_FOUND, "JWT404", "JWT 토큰이 없습니다."),
 
     // GameStyle 관련 에러
     GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE404", "해당 게임 스타일을 찾을 수 없습니다."),
@@ -39,10 +40,16 @@ public enum ErrorStatus implements BaseErrorCode {
     // Profile_Image 관련 에러
     PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다."),
 
+    // Email 인증 관련 에러
+    EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
+    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
+    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다."),
+
     // 차단 관련 에러
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다.");
-    private final HttpStatus httpStatus;
+
+  private final HttpStatus httpStatus;
     private final String code;
     private final String message;
 

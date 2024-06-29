@@ -13,7 +13,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class Chat extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")
     private Long id;
 

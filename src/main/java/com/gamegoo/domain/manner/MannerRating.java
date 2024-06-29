@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class MannerRating extends BaseDateTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "manner_rating_id")
     private Long id;
 
