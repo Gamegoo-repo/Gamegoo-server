@@ -5,10 +5,12 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.EmailVerifyRecord;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
-import com.gamegoo.dto.member.JoinDTO;
+import com.gamegoo.dto.member.JoinRequestDTO;
+import com.gamegoo.dto.member.RefreshTokenResponseDTO;
 import com.gamegoo.repository.member.EmailVerifyRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
+import com.gamegoo.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,13 +28,14 @@ public class AuthService {
     private final EmailVerifyRecordRepository emailVerifyRecordRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
+    private final JWTUtil jwtUtil;
 
     // 회원가입 로직
-    public void joinMember(JoinDTO joinDTO) {
+    public void joinMember(JoinRequestDTO joinRequestDTO) {
 
         // DTO로부터 데이터 받기
-        String email = joinDTO.getEmail();
-        String password = joinDTO.getPassword();
+        String email = joinRequestDTO.getEmail();
+        String password = joinRequestDTO.getPassword();
 
         // 중복 확인하기
         boolean isPresent = memberRepository.findByEmail(email).isPresent();
@@ -74,6 +77,26 @@ public class AuthService {
                 .build();
 
         emailVerifyRecordRepository.save(emailVerifyRecord);
+    }
+
+    // jwt refresh 토큰 검증
+    public RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
+        // refresh Token 검증하기
+        Member member = memberRepository.findByRefreshToken(refresh_token)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.INVALID_TOKEN));
+
+        // refresh 토큰에서 id 가져오기
+        Long id = member.getId();
+
+        // 토큰 생성하기
+        String access_token = jwtUtil.createJwtWithId(id, 60 * 60 * 1000L);         // 1시간
+        String new_refresh_token = jwtUtil.createJwt(60 * 60 * 24 * 30 * 1000L);    // 30일
+
+        // refresh token 저장하기
+        member.setRefreshToken(new_refresh_token);
+        memberRepository.save(member);
+
+        return new RefreshTokenResponseDTO(access_token, refresh_token);
     }
 
     // 이메일 인증코드 검증
@@ -118,5 +141,6 @@ public class AuthService {
 
         return certificationMessage;
     }
+
 
 }
