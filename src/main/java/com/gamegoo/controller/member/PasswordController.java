@@ -3,9 +3,9 @@ package com.gamegoo.controller.member;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.dto.member.PasswordDTO;
+import com.gamegoo.dto.member.PasswordRequestDTO;
 import com.gamegoo.service.member.PasswordService;
-import com.gamegoo.util.SecurityUtil;
+import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +23,10 @@ public class PasswordController {
 
     @PostMapping("/check")
     @Operation(summary = "비밀번호 확인 API 입니다.", description = "API for checking password")
-    public ApiResponse<Object> checkPassword(@RequestBody PasswordDTO passwordDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
+    public ApiResponse<Object> checkPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
+        Long currentUserId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
 
-        boolean isPasswordValid = passwordService.checkPasswordById(currentUserId, passwordDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
+        boolean isPasswordValid = passwordService.checkPasswordById(currentUserId, passwordRequestDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
 
         if (isPasswordValid) {
             return ApiResponse.onSuccess("비밀번호가 일치합니다.");
@@ -37,10 +37,10 @@ public class PasswordController {
 
     @PostMapping("/reset")
     @Operation(summary = "비밀번호 재설정 API 입니다.", description = "API for reseting password")
-    public ApiResponse<Object> resetPassword(@RequestBody PasswordDTO passwordDTO) {
-        Long currentUserId = SecurityUtil.getCurrentUserId();
+    public ApiResponse<Object> resetPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
+        Long currentUserId = JWTUtil.getCurrentUserId();
 
-        passwordService.updatePassword(currentUserId, passwordDTO.getPassword());
+        passwordService.updatePassword(currentUserId, passwordRequestDTO.getPassword());
 
         return ApiResponse.onSuccess("비밀번호 재설정을 완료했습니다.");
     }

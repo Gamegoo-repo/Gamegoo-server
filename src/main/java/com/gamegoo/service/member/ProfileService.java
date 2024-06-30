@@ -8,7 +8,6 @@ import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +26,7 @@ public class ProfileService {
 
 
     @Transactional
-    public void addMemberGameStyles(List<String> gameStyles) {
-
-        Long userId = SecurityUtil.getCurrentUserId();
-
+    public void addMemberGameStyles(Long userId, List<String> gameStyles) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
@@ -67,8 +63,7 @@ public class ProfileService {
         }
     }
 
-    public void deleteMember() {
-        Long userId = SecurityUtil.getCurrentUserId();
+    public void deleteMember(Long userId) {
 
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -78,8 +73,7 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
-    public void modifyPosition(int mainP, int subP) {
-        Long userId = SecurityUtil.getCurrentUserId();
+    public void modifyPosition(Long userId, int mainP, int subP) {
 
         // 만약 mainP, subP 가 1~5의 값이 아닐 경우
         if (mainP <= 0 || subP <= 0 || mainP > 5 || subP > 5) {
@@ -94,8 +88,7 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
-    public void modifyProfileImage(String profileImage) {
-        Long userId = SecurityUtil.getCurrentUserId();
+    public void modifyProfileImage(Long userId, String profileImage) {
 
         if (profileImage.length() > 30) {
             throw new MemberHandler(ErrorStatus.PROFILE_IMAGE_BAD_REQUEST);
