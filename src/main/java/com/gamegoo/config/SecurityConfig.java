@@ -3,7 +3,8 @@ package com.gamegoo.config;
 import com.gamegoo.apiPayload.exception.handler.JWTExceptionHandlerFilter;
 import com.gamegoo.filter.JWTFilter;
 import com.gamegoo.filter.LoginFilter;
-import com.gamegoo.service.member.CustomUserDetailService;
+import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.security.CustomUserDetailService;
 import com.gamegoo.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomUserDetailService customUserDetailService;
-
+    private final MemberRepository memberRepository;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -37,7 +38,7 @@ public class SecurityConfig {
 
     @Bean
     public JWTFilter jwtFilter() {
-        List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email");
+        List<String> excludedPaths = Arrays.asList("/api/member/join", "/api/member/login", "/api/member/email", "/api/member/refresh");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
 
     }
@@ -56,10 +57,10 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests((auth) -> auth
-                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/**").permitAll()
+                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/**", "/api/member/refresh").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, memberRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter(), LoginFilter.class)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

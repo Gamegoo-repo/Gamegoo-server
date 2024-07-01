@@ -5,7 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PositionDTO {
-    int mainP;
-    int subP;
+public class RefreshTokenRequestDTO {
+    String refresh_token;
 }
