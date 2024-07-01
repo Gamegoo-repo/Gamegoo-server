@@ -27,6 +27,7 @@ public class MemberResponse {
     @AllArgsConstructor
     public static class blockedMemberDto {
         Long memberId;
+        String profileImg;
         String email;
         String name;
     }
