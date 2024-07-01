@@ -1,7 +1,7 @@
 package com.gamegoo.filter;
 
+import com.gamegoo.security.CustomUserDetailService;
 import com.gamegoo.security.CustomUserDetails;
-import com.gamegoo.service.member.CustomUserDetailService;
 import com.gamegoo.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
