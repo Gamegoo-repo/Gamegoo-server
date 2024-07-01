@@ -1,9 +1,8 @@
-package com.gamegoo.service.member;
+package com.gamegoo.security;
 
 import com.gamegoo.apiPayload.exception.handler.CustomUserException;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.security.CustomUserDetails;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
