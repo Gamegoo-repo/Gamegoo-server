@@ -1,9 +1,8 @@
 package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
-import com.gamegoo.domain.Member;
-import com.gamegoo.security.SecurityUtil;
 import com.gamegoo.service.member.MemberService;
+import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,8 +26,8 @@ public class MemberController {
     @Parameter(name = "memberId", description = "차단할 대상 회원의 id 입니다.")
     @PostMapping("/bock/{memberId}")
     public ApiResponse<String> blockMember(@PathVariable(name = "memberId") Long targetMemberId) {
-        Long memberId = SecurityUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
-        Member member = memberService.blockMember(memberId, targetMemberId);
+        Long memberId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
+        memberService.blockMember(memberId, targetMemberId);
 
         return ApiResponse.onSuccess("회원 차단 성공");
     }

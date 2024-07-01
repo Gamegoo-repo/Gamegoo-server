@@ -3,6 +3,9 @@ package com.gamegoo.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.domain.Member;
+import com.gamegoo.dto.member.LoginResponseDTO;
+import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetails;
 import com.gamegoo.util.JWTUtil;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +28,12 @@ import java.util.Objects;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final MemberRepository memberRepository;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, MemberRepository memberRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.memberRepository = memberRepository;
         this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/api/member/login", "POST"));
         this.setUsernameParameter("email");
         this.setPasswordParameter("password");
@@ -39,7 +44,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 클라이언트 요청에서 username, password 추출
         String email = obtainUsername(request);
         String password = obtainPassword(request);
-        
+
         // 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
 
@@ -55,14 +60,27 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 사용자 id 불러오기
         Long id = customUserDetails.getId();
 
-        // jwt 토큰 생성 (만료시간 10시간)
-        String token = jwtUtil.createJwt(id, 60 * 60 * 100000L);
+        // jwt 토큰 생성
+        String access_token = jwtUtil.createJwtWithId(id, 60 * 60 * 1000L);     // 1시간
+        String refresh_token = jwtUtil.createJwt(60 * 60 * 24 * 30 * 1000L);    // 30일
+
+        // refresh token DB에 저장하기
+        Member member = memberRepository.findById(id)
+                .orElseThrow();
+        member.setRefreshToken(refresh_token);
+        memberRepository.save(member);
+
+        // 해당 유저 이름 불러오기
+        String gameuserName = member.getGameuserName();
+
+        // Response body에 넣기
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO(access_token, refresh_token, gameuserName);
 
         // 헤더에 추가
-        response.addHeader("Authorization", "Bearer " + token);
+        response.addHeader("Authorization", "Bearer " + access_token);
 
         // 성공 응답 생성
-        ApiResponse<Object> apiResponse = ApiResponse.onSuccess(token);
+        ApiResponse<Object> apiResponse = ApiResponse.onSuccess(loginResponseDTO);
 
         // 응답 설정
         response.setStatus(HttpServletResponse.SC_OK);
