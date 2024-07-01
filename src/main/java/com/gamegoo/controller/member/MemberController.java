@@ -32,6 +32,8 @@ public class MemberController {
         return ApiResponse.onSuccess("회원 차단 성공");
     }
 
+    @Operation(summary = "차단한 회원 목록 조회 API", description = "내가 차단한 회원의 목록을 조회하는 API 입니다.")
+    @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
     @GetMapping("/block")
     public ApiResponse<Object> getBlockList(@RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();

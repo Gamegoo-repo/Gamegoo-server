@@ -27,6 +27,7 @@ public class MemberConverter {
     public static MemberResponse.blockedMemberDto toBlockedMemberDto(Member membr) {
         return MemberResponse.blockedMemberDto.builder()
                 .memberId(membr.getId())
+                .profileImg(membr.getProfileImage())
                 .email(membr.getEmail())
                 .name(membr.getGameuserName())
                 .build();
