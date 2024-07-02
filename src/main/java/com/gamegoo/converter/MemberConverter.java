@@ -9,25 +9,25 @@ import java.util.stream.Collectors;
 
 public class MemberConverter {
 
-    public static MemberResponse.blockListDto toBlockListDto(Page<Member> blockList) {
-        List<MemberResponse.blockedMemberDto> blockedMemberDtoList = blockList.stream()
-                .map(MemberConverter::toBlockedMemberDto)
+    public static MemberResponse.blockListDTO toBlockListDTO(Page<Member> blockList) {
+        List<MemberResponse.blockedMemberDTO> blockedMemberDtoList = blockList.stream()
+                .map(MemberConverter::toBlockedMemberDTO)
                 .collect(Collectors.toList());
 
-        return MemberResponse.blockListDto.builder()
-                .blockedMemberDtoList(blockedMemberDtoList)
-                .listSize(blockedMemberDtoList.size())
-                .totalPage(blockList.getTotalPages())
-                .totalElements(blockList.getTotalElements())
-                .isFirst(blockList.isFirst())
-                .isLast(blockList.isLast())
+        return MemberResponse.blockListDTO.builder()
+                .blocked_member_dto_list(blockedMemberDtoList)
+                .list_size(blockedMemberDtoList.size())
+                .total_page(blockList.getTotalPages())
+                .total_elements(blockList.getTotalElements())
+                .is_first(blockList.isFirst())
+                .is_last(blockList.isLast())
                 .build();
     }
 
-    public static MemberResponse.blockedMemberDto toBlockedMemberDto(Member membr) {
-        return MemberResponse.blockedMemberDto.builder()
-                .memberId(membr.getId())
-                .profileImg(membr.getProfileImage())
+    public static MemberResponse.blockedMemberDTO toBlockedMemberDTO(Member membr) {
+        return MemberResponse.blockedMemberDTO.builder()
+                .member_id(membr.getId())
+                .profile_img(membr.getProfileImage())
                 .email(membr.getEmail())
                 .name(membr.getGameuserName())
                 .build();
