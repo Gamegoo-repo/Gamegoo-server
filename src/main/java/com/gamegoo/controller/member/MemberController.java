@@ -40,6 +40,6 @@ public class MemberController {
 
         Page<Member> blockList = memberService.getBlockList(memberId, page - 1);
 
-        return ApiResponse.onSuccess(MemberConverter.toBlockListDto(blockList));
+        return ApiResponse.onSuccess(MemberConverter.toBlockListDTO(blockList));
     }
 }
