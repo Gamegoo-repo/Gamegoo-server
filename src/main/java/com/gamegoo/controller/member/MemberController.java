@@ -44,6 +44,8 @@ public class MemberController {
         return ApiResponse.onSuccess(MemberConverter.toBlockListDTO(blockList));
     }
 
+    @Operation(summary = "회원 차단 해제 API", description = "해당 회원에 대한 차단을 해제하는 API 입니다.")
+    @Parameter(name = "memberId", description = "차단을 해제할 대상 회원의 id 입니다.")
     @DeleteMapping("/block/{memberId}")
     public ApiResponse<String> unBlockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
