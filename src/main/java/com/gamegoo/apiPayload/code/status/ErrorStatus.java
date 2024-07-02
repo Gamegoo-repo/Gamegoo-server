@@ -21,7 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
     // 페이징 관련 에러
-    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "PAGE401", "페이지 값은 1 이상이어야 합니다."),
+    PAGE_INVALID(HttpStatus.BAD_REQUEST, "PAGE401", "페이지 값은 1 이상이어야 합니다."),
 
     // Member 관련 에러
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
