@@ -22,7 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
 
-    Integer pageSize = 10;
+    Integer pageSize = 9;
 
     /**
      * memberId에 해당하는 회원이 targetMemberId에 해당하는 회원을 차단
@@ -66,7 +66,7 @@ public class MemberService {
     public Page<Member> getBlockList(Long memberId, Integer pageIdx) {
         // 페이지 값 검증
         if (pageIdx < 0) {
-            throw new PageHandler(ErrorStatus.PAGE_NOT_VALID);
+            throw new PageHandler(ErrorStatus.PAGE_INVALID);
         }
 
         // member 엔티티 조회
