@@ -3,11 +3,14 @@ package com.gamegoo.service.member;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
+import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.Block;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
+
+    Integer pageSize = 10;
 
     /**
      * memberId에 해당하는 회원이 targetMemberId에 해당하는 회원을 차단
@@ -52,13 +57,34 @@ public class MemberService {
     }
 
     /**
+     * memberId에 해당하는 회원이 차단한 회원 목록 조회
+     *
+     * @param memberId
+     * @param pageIdx  0 이상의 값이어야 함
+     * @return
+     */
+    public Page<Member> getBlockList(Long memberId, Integer pageIdx) {
+        // 페이지 값 검증
+        if (pageIdx < 0) {
+            throw new PageHandler(ErrorStatus.PAGE_NOT_VALID);
+        }
+
+        // member 엔티티 조회
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
+
+        return memberRepository.findBlockedMembersByBlockerIdAndNotBlind(member.getId(), pageRequest);
+    }
+
+    /**
      * 해당 회원이 탈퇴했는지 검증
      *
      * @param member
      */
-    void checkBlind(Member member) {
+    public static boolean checkBlind(Member member) {
         if (member.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
+        return false;
     }
 }
