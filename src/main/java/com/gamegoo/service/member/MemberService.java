@@ -22,7 +22,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
 
-    Integer pageSize = 10;
+    Integer pageSize = 9;
 
     /**
      * memberId에 해당하는 회원이 targetMemberId에 해당하는 회원을 차단
