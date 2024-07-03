@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class ProfileController {
 
     @PutMapping("/position")
     @Operation(summary = "주/부 포지션 수정 API 입니다.", description = "API for Main/Sub Position Modification")
-    public ApiResponse<String> modifyPosition(@RequestBody MemberRequestDTO.PositionRequestDTO positionRequestDTO) {
+    public ApiResponse<String> modifyPosition(@RequestBody @Valid MemberRequestDTO.PositionRequestDTO positionRequestDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         int mainP = positionRequestDTO.getMainP();
         int subP = positionRequestDTO.getSubP();

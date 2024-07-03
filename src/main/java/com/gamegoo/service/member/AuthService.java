@@ -37,8 +37,8 @@ public class AuthService {
         String password = joinRequestDTO.getPassword();
 
         // 중복 확인하기
-        boolean isPresent = memberRepository.findByEmail(email).isPresent();
-        if (isPresent) {
+        // 중복 확인하기
+        if (memberRepository.existsByEmail(email)) {
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
