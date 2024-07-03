@@ -20,14 +20,14 @@ public class AuthController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<Object> joinMember(@RequestBody JoinRequestDTO joinRequestDTO) {
+    public ApiResponse<String> joinMember(@RequestBody JoinRequestDTO joinRequestDTO) {
         authService.joinMember(joinRequestDTO);
         return ApiResponse.onSuccess("회원가입에 성공했습니다.");
     }
 
     @PostMapping("/email/send")
     @Operation(summary = "이메일 인증코드 전송 API 입니다.", description = "API for sending email")
-    public ApiResponse<Object> sendEmail(@RequestBody EmailRequestDTO emailRequestDTO) {
+    public ApiResponse<String> sendEmail(@RequestBody EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
         authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/email/verify")
     @Operation(summary = "이메일 인증코드 검증 API 입니다.", description = "API for email verification")
-    public ApiResponse<Object> verifyEmail(@RequestBody EmailCodeRequestDTO emailCodeRequestDTO) {
+    public ApiResponse<String> verifyEmail(@RequestBody EmailCodeRequestDTO emailCodeRequestDTO) {
         String email = emailCodeRequestDTO.getEmail();
         String code = emailCodeRequestDTO.getCode();
         authService.verifyEmail(email, code);

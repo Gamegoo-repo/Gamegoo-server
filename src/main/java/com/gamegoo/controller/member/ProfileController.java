@@ -22,7 +22,7 @@ public class ProfileController {
 
     @PutMapping("/gamestyle")
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
-    public ApiResponse<Object> addGameStyle(@RequestBody GameStyleRequestDTO gameStyleRequestDTO) {
+    public ApiResponse<String> addGameStyle(@RequestBody GameStyleRequestDTO gameStyleRequestDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         List<String> gamestylelist = gameStyleRequestDTO.getGamestyle();
 
@@ -33,7 +33,7 @@ public class ProfileController {
 
     @PutMapping("/position")
     @Operation(summary = "주/부 포지션 수정 API 입니다.", description = "API for Main/Sub Position Modification")
-    public ApiResponse<Object> modifyPosition(@RequestBody PositionRequestDTO positionRequestDTO) {
+    public ApiResponse<String> modifyPosition(@RequestBody PositionRequestDTO positionRequestDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         int mainP = positionRequestDTO.getMainP();
         int subP = positionRequestDTO.getSubP();
@@ -45,7 +45,7 @@ public class ProfileController {
 
     @PutMapping("/profile_image")
     @Operation(summary = "프로필 이미지 수정 API 입니다.", description = "API for Profile Image Modification")
-    public ApiResponse<Object> modifyPosition(@RequestBody ProfileImageRequestDTO profileImageDTO) {
+    public ApiResponse<String> modifyPosition(@RequestBody ProfileImageRequestDTO profileImageDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         String profileImage = profileImageDTO.getProfile_image();
 
@@ -56,7 +56,7 @@ public class ProfileController {
 
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴 API 입니다.", description = "API for  Member")
-    public ApiResponse<Object> blindMember() {
+    public ApiResponse<String> blindMember() {
         Long userId = JWTUtil.getCurrentUserId();
 
         profileService.deleteMember(userId);
