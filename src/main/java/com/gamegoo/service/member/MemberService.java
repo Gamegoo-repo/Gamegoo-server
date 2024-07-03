@@ -14,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -90,12 +88,9 @@ public class MemberService {
         Member targetMember = memberRepository.findById(targetMemberId).orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
 
         // targetMember가 차단 실제로 차단 목록에 존재하는지 검증
-        Optional<Block> optionalBlock = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember);
-        if (optionalBlock.isEmpty()) {
-            throw new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED);
-        }
+        Block block = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember)
+                .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
 
-        Block block = optionalBlock.get();
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);
     }
