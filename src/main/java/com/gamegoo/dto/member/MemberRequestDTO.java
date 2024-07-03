@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -49,6 +51,8 @@ public class MemberRequestDTO {
 
     @Getter
     @Setter
+    @Min(0)
+    @Max(5)
     public static class PositionRequestDTO {
         @NonNull
         int mainP;
