@@ -23,7 +23,7 @@ public class PasswordController {
 
     @PostMapping("/check")
     @Operation(summary = "비밀번호 확인 API 입니다.", description = "API for checking password")
-    public ApiResponse<Object> checkPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
+    public ApiResponse<String> checkPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
         Long currentUserId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
 
         boolean isPasswordValid = passwordService.checkPasswordById(currentUserId, passwordRequestDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
@@ -37,7 +37,7 @@ public class PasswordController {
 
     @PostMapping("/reset")
     @Operation(summary = "비밀번호 재설정 API 입니다.", description = "API for reseting password")
-    public ApiResponse<Object> resetPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
+    public ApiResponse<String> resetPassword(@RequestBody PasswordRequestDTO passwordRequestDTO) {
         Long currentUserId = JWTUtil.getCurrentUserId();
 
         passwordService.updatePassword(currentUserId, passwordRequestDTO.getPassword());
