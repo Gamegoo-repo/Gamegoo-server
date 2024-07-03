@@ -5,6 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
+import com.gamegoo.dto.member.MemberRequestDTO;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -12,10 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,41 +25,46 @@ public class ProfileService {
 
 
     @Transactional
-    public void addMemberGameStyles(Long userId, List<String> gameStyles) {
-        Member member = memberRepository.findById(userId)
+    public List<MemberGameStyle> addMemberGameStyles(MemberRequestDTO.GameStyleRequestDTO request, Long memberId) {
+        // 회원 엔티티 조회
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        // 요청으로 온 gamestyleId로 GameStyle 엔티티 리스트를 생성 및 gamestyleId에 해당하는 gamestyle이 db에 존재하는지 검증
+        List<GameStyle> requestGameStyleList = request.getGameStyleIdList().stream()
+                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                        .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
+                .toList();
 
-        // 요청된 game style 목록을 Set으로 변환
-        Set<String> requestedGameStyles = new HashSet<>(gameStyles);
 
-        // 현재 사용자의 모든 MemberGameStyle을 가져옴
-        List<MemberGameStyle> existingMemberGameStyles = memberGameStyleRepository.findByMember(member);
+        // db에는 존재하나, request에는 존재하지 않는 gameStyle을 삭제
+        member.getMemberGameStyleList().stream()
+                .filter(memberGameStyle -> !requestGameStyleList.contains(memberGameStyle.getGameStyle()))
+                .forEach(memberGameStyle -> {
+                    memberGameStyle.removeMember(member); // 양방향 연관관계 제거
+                    memberGameStyleRepository.delete(memberGameStyle);
+                });
 
-        // 요청되지 않은 game style을 삭제
-        existingMemberGameStyles.stream()
-                .filter(mgs -> !requestedGameStyles.contains(mgs.getGameStyle().getStyleName()))
-                .forEach(memberGameStyleRepository::delete);
-
-        // 요청 중에 repository에 없는 항목을 추가
-        for (String styleName : gameStyles) {
-
-            // 요청에 해당하는 gamestyle 테이블에서 찾기
-            GameStyle gameStyle = gameStyleRepository.findByStyleName(styleName)
-                    .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND));
-
-            // 있는지 검사하기
-            Optional<MemberGameStyle> existingMemberGameStyle = memberGameStyleRepository.findByMemberAndGameStyle(member, gameStyle);
-
-            // 없을 경우
-            if (existingMemberGameStyle.isEmpty()) {
-                MemberGameStyle memberGameStyle = MemberGameStyle.builder()
-                        .member(member)
-                        .gameStyle(gameStyle)
-                        .build();
-                memberGameStyleRepository.save(memberGameStyle);
-            }
+        // request에는 존재하나, db에는 존재하지 않는 gameStyle을 추가
+        // 현재 member가 가지고 있는 GameStyleList 추출
+        List<GameStyle> currentGameStyleList = new ArrayList<>();
+        for (MemberGameStyle gameStyle : member.getMemberGameStyleList()) {
+            GameStyle style = gameStyle.getGameStyle();
+            currentGameStyleList.add(style);
         }
+
+        // memberGameStyle 엔티티 생성 및 연관관계 매핑, db 저장
+        requestGameStyleList.stream()
+                .filter(reqGameStyle -> !currentGameStyleList.contains(reqGameStyle))
+                .forEach(reqGameStyle -> {
+                    MemberGameStyle memberGameStyle = MemberGameStyle.builder()
+                            .gameStyle(reqGameStyle)
+                            .build();
+                    memberGameStyle.setMember(member); // 양방향 연관관계 매핑
+                    memberGameStyleRepository.save(memberGameStyle);
+                });
+
+        return member.getMemberGameStyleList();
     }
 
     public void deleteMember(Long userId) {

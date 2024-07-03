@@ -1,13 +1,10 @@
 package com.gamegoo.dto.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
-public class MemberResponse {
+public class MemberResponseDTO {
     @Builder
     @Getter
     @NoArgsConstructor
@@ -31,4 +28,25 @@ public class MemberResponse {
         String email;
         String name;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class LoginResponseDTO {
+        String access_token;
+        String refresh_token;
+        String name;
+
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GameStyleDTO {
+        Long gameStyleId;
+        String gameStyleName;
+    }
+
+
 }
