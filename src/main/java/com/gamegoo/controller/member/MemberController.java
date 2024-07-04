@@ -25,7 +25,7 @@ public class MemberController {
 
     @Operation(summary = "회원 차단 API", description = "대상 회원을 차단하는 API 입니다.")
     @Parameter(name = "memberId", description = "차단할 대상 회원의 id 입니다.")
-    @PostMapping("/bock/{memberId}")
+    @PostMapping("/bLock/{memberId}")
     public ApiResponse<String> blockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
         memberService.blockMember(memberId, targetMemberId);
