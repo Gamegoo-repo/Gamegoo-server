@@ -5,8 +5,8 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Report")
@@ -23,14 +23,6 @@ public class Report extends BaseDateTimeEntity {
     @Column(name = "report_content", nullable = false, length = 1000)
     private String reportContent;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "report_type_id", nullable = false)
-//    private ReportType reportType;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "Report_ReportType", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "report_type_id"))
-    private Set<ReportType> reportTypes = new HashSet<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id", nullable = false)
     private Member reporter;
@@ -38,6 +30,9 @@ public class Report extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_id", nullable = false)
     private Member target;
+
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+    private List<ReportTypeMapping> reportTypeMappingList = new ArrayList<>();
 
 
 //    public void setReporterMember(Member member) {
