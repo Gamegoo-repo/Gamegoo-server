@@ -51,7 +51,11 @@ public enum ErrorStatus implements BaseErrorCode {
     // 차단 관련 에러
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다."),
-    TARGET_MEMBER_NOT_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK403", "차단 목록에 존재하지 않는 회원입니다.");
+    TARGET_MEMBER_NOT_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK403", "차단 목록에 존재하지 않는 회원입니다."),
+
+    // 신고 관련 에러
+    REPORT_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT401", "신고사유를 찾을 수 없습니다."),
+    ALREADY_REPORTED(HttpStatus.BAD_REQUEST, "REPORT402", "이미 신고한 회원입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
