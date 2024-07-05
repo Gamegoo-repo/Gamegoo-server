@@ -2,12 +2,14 @@ package com.gamegoo.controller.report;
 
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.dto.report.ReportRequest;
 import com.gamegoo.service.report.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /*
 @RestController
@@ -75,10 +77,7 @@ public class ReportController {
     @PostMapping("/create")
     @Operation(summary = "회원 신고 API", description = "대상 회원을 신고하는 API 입니다.")
     public ApiResponse<String> reportMember(
-            @RequestParam(name = "reporterId") Long reporterId,
-            @RequestParam(name = "targetId") Long targetId,
-            @RequestParam(name = "reportTypeIds") List<Long> reportTypeIds,
-            @RequestParam(name = "reportContent", required = false) String reportContent) {
+            @RequestBody ReportRequest.ReportRequestDTO request) {
 
         reportService.createReport(reporterId, targetId, reportTypeIds, reportContent);
 
