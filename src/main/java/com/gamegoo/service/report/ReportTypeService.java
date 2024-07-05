@@ -1,7 +1,7 @@
-package com.gamegoo.service.member;
+package com.gamegoo.service.report;
 
 import com.gamegoo.domain.report.ReportType;
-import com.gamegoo.repository.member.ReportTypeRepository;
+import com.gamegoo.repository.report.ReportTypeRepository;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
