@@ -1,4 +1,4 @@
-package com.gamegoo.dto.member;
+package com.gamegoo.dto.report;
 
 import lombok.Getter;
 import lombok.Setter;

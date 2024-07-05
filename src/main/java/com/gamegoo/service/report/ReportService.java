@@ -1,22 +1,17 @@
-package com.gamegoo.service.member;
+package com.gamegoo.service.report;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.ReportHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.report.Report;
 import com.gamegoo.domain.report.ReportType;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.repository.member.ReportRepository;
-import com.gamegoo.repository.member.ReportTypeRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gamegoo.repository.report.ReportRepository;
+import com.gamegoo.repository.report.ReportTypeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

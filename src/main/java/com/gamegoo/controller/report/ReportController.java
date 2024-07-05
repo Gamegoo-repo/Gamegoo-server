@@ -1,26 +1,13 @@
-package com.gamegoo.controller.member;
+package com.gamegoo.controller.report;
 
 
 import com.gamegoo.apiPayload.ApiResponse;
-import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.apiPayload.exception.handler.ReportHandler;
-import com.gamegoo.domain.Member;
-import com.gamegoo.domain.report.Report;
-import com.gamegoo.dto.member.ReportRequestDTO;
-import com.gamegoo.service.member.ReportService;
-import com.gamegoo.util.JWTUtil;
+import com.gamegoo.service.report.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 /*
 @RestController
