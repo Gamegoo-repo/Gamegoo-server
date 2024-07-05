@@ -4,6 +4,8 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "ReportType")
@@ -18,5 +20,7 @@ public class ReportType extends BaseDateTimeEntity {
     private Long id;
     @Column(name = "report_type_content", nullable = false)
     private String reportTypeContent;
+    @ManyToMany(mappedBy = "reportTypes")
+    private Set<Report> reports = new HashSet<>();
 
 }
