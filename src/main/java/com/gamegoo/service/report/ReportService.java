@@ -22,105 +22,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/*
-@Service
-@RequiredArgsConstructor
-@Transactional
-public class ReportService {
-    private final MemberRepository memberRepository;
-    private final ReportRepository reportRepository;
-
-    private final ReportTypeRepository reportTypeRepository;
-
-    public Member createReport(Long reporterId, Long targetId, Long reportTypeId, String reportContent) {
-
-        // 신고자(member)와 신고 대상(targetMember)을 조회
-        Member member = memberRepository.findById(reporterId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        Member targetMember = memberRepository.findById(targetId).orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
-        ReportType reportType = reportTypeRepository.findById(reportTypeId).orElseThrow(() -> new ReportHandler(ErrorStatus.REPORT_TYPE_NOT_FOUND));
-
-        // 대상 회원의 탈퇴 여부 검증
-        checkBlind(targetMember);
-
-        // 이미 신고한 회원인지 검증
-        boolean isReported = reportRepository.existsByReporterAndTarget(member, targetMember);
-        if (isReported) {
-            throw new ReportHandler(ErrorStatus.ALREADY_REPORTED);
-        }
-
-        // report 엔티티 생성 및 연관관계 매핑
-        Report report = Report.builder()
-                .target(targetMember)
-                .reportType(reportType)
-                .reportContent(reportContent)
-                .build();
-        report.setReporterMember(member);
-
-        reportRepository.save(report);
-
-        return member;
-    }
-    private void checkBlind (Member member){
-        if (member.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
-    }
-}
-*/
-
-/*
-@Service
-@Transactional
-public class ReportService {
-
-    private final MemberRepository memberRepository;
-    private final ReportRepository reportRepository;
-    private final ReportTypeRepository reportTypeRepository;
-
-    @Autowired
-    public ReportService(MemberRepository memberRepository, ReportRepository reportRepository, ReportTypeRepository reportTypeRepository) {
-        this.memberRepository = memberRepository;
-        this.reportRepository = reportRepository;
-        this.reportTypeRepository = reportTypeRepository;
-    }
-
-    public void createReport(Long reporterId, Long targetId, Long reportTypeId, String reportContent) {
-        // 신고자(member)와 신고 대상(targetMember)을 조회
-        Member member = memberRepository.findById(reporterId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        Member targetMember = memberRepository.findById(targetId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
-        ReportType reportType = reportTypeRepository.findById(reportTypeId)
-                .orElseThrow(() -> new ReportHandler(ErrorStatus.REPORT_TYPE_NOT_FOUND));
-
-        // 대상 회원의 탈퇴 여부 검증
-        checkBlind(targetMember);
-
-        // 이미 신고한 회원인지 검증
-        boolean isReported = reportRepository.existsByReporterAndTarget(member, targetMember);
-        if (isReported) {
-            throw new ReportHandler(ErrorStatus.ALREADY_REPORTED);
-        }
-
-        // report 엔티티 생성 및 연관관계 매핑
-        Report report = Report.builder()
-                .target(targetMember)
-                .reportType(reportType)
-                .reportContent(reportContent)
-                .build();
-        report.setReporter(member);
-
-        reportRepository.save(report);
-    }
-
-    private void checkBlind(Member member) {
-        if (member.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
-    }
-}
-*/
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -148,6 +49,11 @@ public class ReportService{
                     ReportType reportType = reportTypeRepository.findById(reportTypeId).orElseThrow(() -> new TempHandler(ErrorStatus._BAD_REQUEST));
                     reportTypeList.add(reportType);
                 });
+
+        // member 와 targetMember가 같은 회원인 경우.
+        if (member.getId().equals(targetMember.getId())){
+            throw new MemberHandler(ErrorStatus.MEMBER_AND_TARGET_MEMBER_SAME);
+        }
 
         // report 엔티티 생성 및 연관관계 매핑.
         Report report = Report.builder()
