@@ -4,8 +4,6 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "ReportType")
@@ -18,6 +16,7 @@ public class ReportType extends BaseDateTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_type_id")
     private Long id;
+
     @Column(name = "report_type_content", nullable = false)
     private String reportTypeContent;
 

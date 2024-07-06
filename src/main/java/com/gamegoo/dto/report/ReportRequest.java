@@ -2,16 +2,19 @@ package com.gamegoo.dto.report;
 
 import lombok.Getter;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 public class ReportRequest {
 
     @Getter
-    public class ReportRequestDTO {
-        private Long reporterId;
+    public static class reportInsertDTO {
+        @NotNull
+        Long targetMemberId;
 
-        private Long targetId;
+        @NotNull
+        List<Long> reportTypeIdList;
 
-        private Long reportTypeId;
-
-        private String reportContent;
+        String contents;
     }
 }

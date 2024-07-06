@@ -25,4 +25,13 @@ public class ReportTypeMapping extends BaseDateTimeEntity {
     @JoinColumn(name = "report_id", nullable = false)
     private Report report;
 
+    // 연관관계 메소드
+    public void setReport(Report report) {
+        if (this.report != null) {
+            this.report.getReportTypeMappingList().remove(this);
+        }
+        this.report = report;
+        this.report.getReportTypeMappingList().add(this);
+    }
+
 }

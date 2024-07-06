@@ -3,15 +3,21 @@ package com.gamegoo.service.report;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.ReportHandler;
+import com.gamegoo.apiPayload.exception.handler.TempHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.report.Report;
 import com.gamegoo.domain.report.ReportType;
+import com.gamegoo.domain.report.ReportTypeMapping;
+import com.gamegoo.dto.report.ReportRequest;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.repository.report.ReportRepository;
+import com.gamegoo.repository.report.ReportTypeMappingRepository;
 import com.gamegoo.repository.report.ReportTypeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,56 +122,53 @@ public class ReportService {
 */
 
 @Service
+@RequiredArgsConstructor
 @Transactional
-public class ReportService {
-
+public class ReportService{
+    private final MemberRepository memberRepository;
     private final ReportRepository reportRepository;
     private final ReportTypeRepository reportTypeRepository;
-    private final MemberRepository memberRepository;
+    private final ReportTypeMappingRepository reportTypeMappingRepository;
 
-    public ReportService(ReportRepository reportRepository, ReportTypeRepository reportTypeRepository, MemberRepository memberRepository) {
-        this.reportRepository = reportRepository;
-        this.reportTypeRepository = reportTypeRepository;
-        this.memberRepository = memberRepository;
-    }
+    public Report insertReport(ReportRequest.reportInsertDTO request, Long memberId){
+        Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-    public void createReport(Long reporterId, Long targetId, List<Long> reportTypeIds, String reportContent) {
-        // 신고자(reporter)와 신고 대상(targetMember), 신고 타입(reportType)을 조회
-        Member reporter = memberRepository.findById(reporterId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        Member targetMember = memberRepository.findById(targetId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
-//        ReportType reportType = reportTypeRepository.findById(reportTypeId)
-//                .orElseThrow(() -> new ReportHandler(ErrorStatus.REPORT_TYPE_NOT_FOUND));
+        // target 회원 존재 여부 검증.
+        Member targetMember = memberRepository.findById(request.getTargetMemberId()).orElseThrow(()->new MemberHandler(ErrorStatus.REPORT_TARGET_MEMBER_NOT_FOUND));
 
-        // 대상 회원의 탈퇴 여부 검증
-        checkBlind(targetMember);
-
-        // 이미 신고한 회원인지 검증
-        boolean isReported = reportRepository.existsByReporterAndTarget(reporter, targetMember);
-        if (isReported) {
-            throw new ReportHandler(ErrorStatus.ALREADY_REPORTED);
-        }
-
-        Set<ReportType> reportTypes = reportTypeIds.stream()
-                .map(id -> reportTypeRepository.findById(id)
-                        .orElseThrow(() -> new ReportHandler(ErrorStatus.REPORT_TYPE_NOT_FOUND)))
-                .collect(Collectors.toSet());
-
-        Report report = Report.builder()
-                .reporter(reporter)
-                .target(targetMember)
-                .reportTypes(reportTypes)
-                .reportContent(reportContent)
-                .build();
-
-        reportRepository.save(report);
-    }
-
-    public static boolean checkBlind(Member member) {
-        if (member.getBlind()) {
+        // target 회원 탈퇴 여부 검증.
+        if (targetMember.getBlind()){
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
-        return false;
+
+        // reportType이 실제 존재 여부 검증.
+        List<ReportType> reportTypeList = new ArrayList<>();
+        request.getReportTypeIdList()
+                .forEach(reportTypeId -> {
+                    ReportType reportType = reportTypeRepository.findById(reportTypeId).orElseThrow(() -> new TempHandler(ErrorStatus._BAD_REQUEST));
+                    reportTypeList.add(reportType);
+                });
+
+        // report 엔티티 생성 및 연관관계 매핑.
+        Report report = Report.builder()
+                .target(targetMember)
+                .reportContent(request.getContents())
+                .reportTypeMappingList(new ArrayList<>())
+                .build();
+
+        report.setReporter(member);
+        Report saveReport = reportRepository.save(report);
+
+        // reportTypeMapping 엔티티 생성 및 연관관계 매핑.
+        reportTypeList.forEach(reportType -> {
+            ReportTypeMapping reportTypeMapping = ReportTypeMapping.builder()
+                    .reportType(reportType)
+                    .build();
+
+            reportTypeMapping.setReport(saveReport);
+            reportTypeMappingRepository.save(reportTypeMapping);
+        });
+
+        return saveReport;
     }
 }
