@@ -34,14 +34,13 @@ public class Report extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
     private List<ReportTypeMapping> reportTypeMappingList = new ArrayList<>();
 
-
-//    public void setReporterMember(Member member) {
-//        if (this.reporter != null) {
-//            this.reporter.getReportList().remove(this); // 기존 reporter의 reportList에서 제거
-//        }
-//        this.reporter = member;
-//        member.getReportList().add(this);  // 새로운 reporter의 reportList에 추가
-//
-//    }
+    // 연관관계 메소드
+    public void setReporter(Member member) {
+        if (this.reporter != null) {
+            this.reporter.getReportList().remove(this);
+        }
+        this.reporter = member;
+        this.reporter.getReportList().add(this);
+    }
 
 }
