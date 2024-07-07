@@ -5,7 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
-import com.gamegoo.dto.member.MemberRequestDTO;
+import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -25,7 +25,7 @@ public class ProfileService {
 
 
     @Transactional
-    public List<MemberGameStyle> addMemberGameStyles(MemberRequestDTO.GameStyleRequestDTO request, Long memberId) {
+    public List<MemberGameStyle> addMemberGameStyles(MemberRequest.GameStyleRequestDTO request, Long memberId) {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));

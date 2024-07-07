@@ -1,7 +1,7 @@
 package com.gamegoo.converter;
 
 import com.gamegoo.domain.Member;
-import com.gamegoo.dto.member.MemberResponseDTO;
+import com.gamegoo.dto.member.MemberResponse;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.stream.Collectors;
 
 public class MemberConverter {
 
-    public static MemberResponseDTO.blockListDto toBlockListDto(Page<Member> blockList) {
-        List<MemberResponseDTO.blockedMemberDto> blockedMemberDtoList = blockList.stream()
+    public static MemberResponse.blockListDto toBlockListDto(Page<Member> blockList) {
+        List<MemberResponse.blockedMemberDto> blockedMemberDtoList = blockList.stream()
                 .map(MemberConverter::toBlockedMemberDto)
                 .collect(Collectors.toList());
 
-        return MemberResponseDTO.blockListDto.builder()
+        return MemberResponse.blockListDto.builder()
                 .blockedMemberDtoList(blockedMemberDtoList)
                 .listSize(blockedMemberDtoList.size())
                 .totalPage(blockList.getTotalPages())
@@ -24,8 +24,8 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResponseDTO.blockedMemberDto toBlockedMemberDto(Member membr) {
-        return MemberResponseDTO.blockedMemberDto.builder()
+    public static MemberResponse.blockedMemberDto toBlockedMemberDto(Member membr) {
+        return MemberResponse.blockedMemberDto.builder()
                 .memberId(membr.getId())
                 .profileImg(membr.getProfileImage())
                 .email(membr.getEmail())

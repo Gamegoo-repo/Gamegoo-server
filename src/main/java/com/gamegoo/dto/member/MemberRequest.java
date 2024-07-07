@@ -10,7 +10,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-public class MemberRequestDTO {
+public class MemberRequest {
     @Setter
     @Getter
     public static class EmailCodeRequestDTO {

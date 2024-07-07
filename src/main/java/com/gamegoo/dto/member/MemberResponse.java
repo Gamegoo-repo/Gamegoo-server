@@ -4,7 +4,7 @@ import lombok.*;
 
 import java.util.List;
 
-public class MemberResponseDTO {
+public class MemberResponse {
     @Builder
     @Getter
     @NoArgsConstructor
@@ -43,7 +43,7 @@ public class MemberResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GameStyleDTO {
+    public static class GameStyleResponseDTO {
         Long gameStyleId;
         String gameStyleName;
     }
