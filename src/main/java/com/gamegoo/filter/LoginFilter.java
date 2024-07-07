@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.domain.Member;
-import com.gamegoo.dto.member.MemberResponseDTO;
+import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetails;
 import com.gamegoo.util.JWTUtil;
@@ -74,7 +74,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String gameuserName = member.getGameuserName();
 
         // Response body에 넣기
-        MemberResponseDTO.LoginResponseDTO loginResponseDTO = new MemberResponseDTO.LoginResponseDTO(access_token, refresh_token, gameuserName);
+        MemberResponse.LoginResponseDTO loginResponseDTO = new MemberResponse.LoginResponseDTO(access_token, refresh_token, gameuserName);
 
         // 헤더에 추가
         response.addHeader("Authorization", "Bearer " + access_token);
