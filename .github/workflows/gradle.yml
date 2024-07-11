@@ -49,6 +49,11 @@ jobs:
       - name: docker Hub push
         run: docker push rimi3226/gamegoo
 
+      # GET GitHub IP (5)
+      - name: get GitHub IP
+        id: ip
+        uses: haytrunhem/public-ip@v1.2
+
       # Configure AWS Credentials (6) - AWS 접근 권한 취득(IAM)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -57,19 +62,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Build 번호 부여 (7)
-      - name: Build Number
-        id: build-number
-        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+      # Add github ip to AWS (7)
+      - name: Add GitHub IP to AWS
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
-      # Elastic Beanstalk Deploy with docker (8)
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v20
+      # AWS EC2 Server Connect & Docker 명령어 실행 (8)
+      - name: AWS EC2 Connection
+        uses: appleboy/ssh-action@master
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: Gamegoo
-          environment_name: Gamegoo-env
-          region: ap-northeast-2
-          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
-          deployment_package: ./elasticbeanstalk/docker-compose.yml
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PEM_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          timeout: 50s
+          script: |
+            sudo docker stop gamegoo_api
+            sudo docker rm gamegoo_api
+            sudo docker run -it -d -p 8080:8080 --name gamegoo_api rimi3226/gamegoo
+
+      # REMOVE Github IP FROM security group (9)
+      - name: Remove IP FROM security group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
