@@ -3,6 +3,7 @@ name: Java CICD with Gradle & Docker
 on:
   pull_request:
     types: [ closed ]
+  push:
   workflow_dispatch: # 수동 실행 가능
 jobs:
   build-and-push-image:
