@@ -7,6 +7,7 @@ import com.gamegoo.dto.report.ReportRequest;
 import com.gamegoo.dto.report.ReportResponse;
 import com.gamegoo.service.report.ReportService;
 import com.gamegoo.util.JWTUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("")
+    @Operation(summary = "회원 신고 API", description = "대상 회원을 신고하는 API 입니다.")
     public ApiResponse<ReportResponse.reportInsertResponseDTO> reportInsert(
             @RequestBody @Valid ReportRequest.reportInsertDTO request
     ){
