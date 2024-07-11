@@ -28,7 +28,7 @@ public class ReportController {
     private final ReportService reportService;
 
     @PostMapping("")
-    public ApiResponse<ReportResponse.reportInsertResultDTO> reportInsert(
+    public ApiResponse<ReportResponse.reportInsertResponseDTO> reportInsert(
             @RequestBody @Valid ReportRequest.reportInsertDTO request
     ){
         Long memberId = JWTUtil.getCurrentUserId();
@@ -39,7 +39,7 @@ public class ReportController {
                 .map(reportTypeMapping -> reportTypeMapping.getReportType().getId())
                 .collect(Collectors.toList());
 
-        ReportResponse.reportInsertResultDTO result = ReportResponse.reportInsertResultDTO.builder()
+        ReportResponse.reportInsertResponseDTO result = ReportResponse.reportInsertResponseDTO.builder()
                 .targetId(report.getTarget().getId())
                 .reportId(report.getId())
                 .contents(report.getReportContent())
