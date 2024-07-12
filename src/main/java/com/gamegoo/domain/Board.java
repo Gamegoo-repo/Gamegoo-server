@@ -40,6 +40,5 @@ public class Board extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
 }
 
