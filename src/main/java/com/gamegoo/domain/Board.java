@@ -31,10 +31,10 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "want_position", nullable = false)
     private Integer wantPosition;
 
-    @Column(name = "voice", nullable = false)
-    private Boolean voice;
+    @Column(name = "voice")
+    private Boolean voice = false;
 
-    @Column(name = "content", nullable = false, length = 5000)
+    @Column(name = "content", length = 5000)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
