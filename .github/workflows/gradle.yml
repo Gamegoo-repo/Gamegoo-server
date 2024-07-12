@@ -41,6 +41,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+
       # Docker 이미지 Build (5)
       - name: docker image build
         run: docker build -t rimi3226/gamegoo .
@@ -57,7 +59,7 @@ jobs:
         run: docker push rimi3226/gamegoo
 
   deploy:
-    needs: build
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       # GET GitHub IP (8)
