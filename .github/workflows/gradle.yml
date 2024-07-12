@@ -37,12 +37,6 @@ jobs:
       - name: Spring Boot Build
         run: ./gradlew clean build -x test --warning-mode=all --stacktrace
 
-  docker:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
       # Docker 이미지 Build (5)
       - name: docker image build
         run: docker build -t rimi3226/gamegoo .
