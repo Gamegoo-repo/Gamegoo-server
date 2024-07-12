@@ -2,8 +2,8 @@ package com.gamegoo.service.report;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.apiPayload.exception.handler.ReportHandler;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
+import com.gamegoo.apiPayload.exception.handler.ReportHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.report.Report;
 import com.gamegoo.domain.report.ReportType;
@@ -19,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

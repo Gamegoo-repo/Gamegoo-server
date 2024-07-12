@@ -12,7 +12,7 @@ public class ReportResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class reportInsertResultDTO{
+    public static class reportInsertResponseDTO{
         Long reportId;
         Long targetId;
         List<Long> reportTypeIdList;
