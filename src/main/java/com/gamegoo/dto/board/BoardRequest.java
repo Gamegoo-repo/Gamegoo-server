@@ -23,6 +23,7 @@ public class BoardRequest {
         @NotNull
         Integer wantPosition;
 
+        @Schema(description = "마이크 사용 여부", defaultValue = "false")
         Boolean voice=false;
 
         String contents;
