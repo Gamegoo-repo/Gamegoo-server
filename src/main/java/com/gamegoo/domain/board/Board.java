@@ -1,9 +1,12 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.board;
 
+import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "Board")
@@ -40,5 +43,9 @@ public class Board extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    private List<BoardGameStyle> boardGameStyles = new ArrayList<>();
+
 }
 
