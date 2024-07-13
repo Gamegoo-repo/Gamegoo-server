@@ -1,6 +1,8 @@
 package com.gamegoo.scripts;
 
+import com.gamegoo.domain.board.GameStyle2;
 import com.gamegoo.domain.gamestyle.GameStyle;
+import com.gamegoo.repository.board.GameStyle2Repository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class GameStyleInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
     private final GameStyleRepository gameStyleRepository;
-
+    private final GameStyle2Repository gameStyle2Repository;
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (isCreateMode(event)) {
@@ -51,5 +53,11 @@ public class GameStyleInitializer implements ApplicationListener<ApplicationRead
             GameStyle gameStyle = GameStyle.builder().styleName(style).build();
             gameStyleRepository.save(gameStyle);
         }
+
+        for (String style:styles){
+            GameStyle2 gameStyle2 = GameStyle2.builder().styleName(style).build();
+            gameStyle2Repository.save(gameStyle2);
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 package com.gamegoo.controller.board;
 
 import com.gamegoo.apiPayload.ApiResponse;
-import com.gamegoo.domain.Board;
+import com.gamegoo.domain.board.Board;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.service.board.BoardService;
@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +35,10 @@ public class BoardController {
 
         Board saveBoard = boardService.save(request,memberId);
 
+        List<Long> gameStyles = saveBoard.getBoardGameStyles().stream()
+                .map(boardGameStyle -> boardGameStyle.getGameStyle2().getId())
+                .collect(Collectors.toList());
+
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()
                 .boardId(saveBoard.getId())
                 .memberId(memberId)
@@ -40,6 +47,7 @@ public class BoardController {
                 .subPosition(saveBoard.getSubPosition())
                 .wantPosition(saveBoard.getWantPosition())
                 .voice(saveBoard.getVoice())
+                .gameStyles(gameStyles)
                 .contents(saveBoard.getContent())
                 .build();
 
