@@ -1,15 +1,13 @@
 package com.gamegoo.dto.board;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 public class BoardResponse {
     @Getter
     @Builder
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardInsertResponseDTO{
@@ -20,6 +18,7 @@ public class BoardResponse {
         Integer subPosition;
         Integer wantPosition;
         Boolean voice;
+        List<Long> gameStyles;
         String contents;
 
     }

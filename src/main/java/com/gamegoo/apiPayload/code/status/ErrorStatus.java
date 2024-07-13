@@ -55,7 +55,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 신고 관련 에러
     REPORT_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT401", "신고 대상 회원을 찾을 수 없습니다."),
-    MEMBER_AND_TARGET_MEMBER_SAME(HttpStatus.BAD_REQUEST, "REPORT402", "회원과 신고 대상 회원이 같습니다.");
+    MEMBER_AND_TARGET_MEMBER_SAME(HttpStatus.BAD_REQUEST, "REPORT402", "회원과 신고 대상 회원이 같습니다."),
+
+    // 게시판 글 작성 관련 에러
+    BOARD_GAME_STYLE_BAD_REQUEST(HttpStatus.BAD_REQUEST,"BOARD_GAMESTYLE400", "게임 스타일 선택 개수(최대 3개)를 초과했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
