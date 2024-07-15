@@ -20,4 +20,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findBlockedMembersByBlockerIdAndNotBlind(@Param("blockerId") Long blockerId, Pageable pageable);
 
 
+    boolean existsByEmail(String email);
 }
