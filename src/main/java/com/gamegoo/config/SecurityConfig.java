@@ -57,7 +57,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests((auth) -> auth
-                        .antMatchers("/api/member/join", "/api/member/login", "/api/member/email/**", "/api/member/refresh", "/api/member/riot").permitAll()
+                        .antMatchers("/", "/api/member/join", "/api/member/login", "/api/member/email/**", "/api/member/refresh", "/api/member/riot").permitAll()
+
                         .antMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)

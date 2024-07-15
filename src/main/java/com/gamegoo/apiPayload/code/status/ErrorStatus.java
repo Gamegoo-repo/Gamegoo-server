@@ -21,7 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "테스트"),
 
     // 페이징 관련 에러
-    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "PAGE401", "페이지 값은 1 이상이어야 합니다."),
+    PAGE_INVALID(HttpStatus.BAD_REQUEST, "PAGE401", "페이지 값은 1 이상이어야 합니다."),
 
     // Member 관련 에러
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
@@ -53,7 +53,12 @@ public enum ErrorStatus implements BaseErrorCode {
     CHAMPION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAMPION404", "해당 챔피언이 존재하지 않습니다"),
     // 차단 관련 에러
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
-    ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다.");
+    ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다."),
+    TARGET_MEMBER_NOT_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK403", "차단 목록에 존재하지 않는 회원입니다."),
+
+    // 신고 관련 에러
+    REPORT_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT401", "신고 대상 회원을 찾을 수 없습니다."),
+    MEMBER_AND_TARGET_MEMBER_SAME(HttpStatus.BAD_REQUEST, "REPORT402", "회원과 신고 대상 회원이 같습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

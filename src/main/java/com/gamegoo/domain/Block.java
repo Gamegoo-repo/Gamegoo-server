@@ -34,4 +34,10 @@ public class Block extends BaseDateTimeEntity {
         member.getBlockList().add(this);
 
     }
+
+    // Block 엔티티 삭제를 위한 메소드
+    public void removeBlockerMember(Member blockerMember) {
+        blockerMember.getBlockList().remove(this);
+        this.blockerMember = null;
+    }
 }
