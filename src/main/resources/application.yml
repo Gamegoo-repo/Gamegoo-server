@@ -31,7 +31,9 @@ spring:
           starttls:
             enable: true
 
-
+riot:
+  api:
+    key: ${RIOT_API}
 
 springdoc:
   swagger-ui:
