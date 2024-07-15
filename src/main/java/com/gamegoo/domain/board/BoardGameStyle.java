@@ -1,6 +1,7 @@
 package com.gamegoo.domain.board;
 
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+import com.gamegoo.domain.gamestyle.GameStyle;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,8 +20,8 @@ public class BoardGameStyle extends BaseDateTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_style2_id", nullable = false)
-    private GameStyle2 gameStyle2;
+    @JoinColumn(name = "gamestyle_id", nullable = false)
+    private GameStyle gameStyle;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", nullable = false)
