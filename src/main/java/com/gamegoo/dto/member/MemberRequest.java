@@ -34,10 +34,12 @@ public class MemberRequest {
     }
 
     @Getter
+    @Setter
+    @AllArgsConstructor
     public static class JoinRequestDTO {
-        @NotNull
+        @NonNull
         private String email;
-        @NotNull
+        @NonNull
         private String password;
 
     }
@@ -79,5 +81,14 @@ public class MemberRequest {
     public static class RefreshTokenResponseDTO {
         String access_token;
         String refresh_token;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class verifyRiotRequestDTO {
+        String email;
+        String game_name;
+        String tag;
     }
 }

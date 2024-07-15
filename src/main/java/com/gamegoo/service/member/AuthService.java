@@ -30,11 +30,7 @@ public class AuthService {
     private final JWTUtil jwtUtil;
 
     // 회원가입 로직
-    public void joinMember(MemberRequest.JoinRequestDTO joinRequestDTO) {
-
-        // DTO로부터 데이터 받기
-        String email = joinRequestDTO.getEmail();
-        String password = joinRequestDTO.getPassword();
+    public void joinMember(String email, String password) {
 
         // 중복 확인하기
         // 중복 확인하기
