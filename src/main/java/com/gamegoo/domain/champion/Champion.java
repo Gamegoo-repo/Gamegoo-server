@@ -3,7 +3,10 @@ package com.gamegoo.domain.champion;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Champion")
@@ -11,12 +14,10 @@ import javax.persistence.*;
 @Setter
 public class Champion {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "champion_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "champion_name", nullable = false, length = 30)
-    private String champion_name;
-
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
 
 }
