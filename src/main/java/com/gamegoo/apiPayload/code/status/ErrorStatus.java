@@ -50,7 +50,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
-
+    CHAMPION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAMPION404", "해당 챔피언이 존재하지 않습니다"),
     // 차단 관련 에러
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다.");

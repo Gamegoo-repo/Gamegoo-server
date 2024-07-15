@@ -27,7 +27,7 @@ public class RiotController {
         String tag = verifyRiotRequestDTO.getTag();
         String email = verifyRiotRequestDTO.getEmail();
 
-        riotService.verifyRiot(gameName, tag, email);
+        riotService.updateMemberRiotInfo(gameName, tag, email);
 
         return ApiResponse.onSuccess("Riot 계정이 연동되었습니다.");
 
