@@ -3,22 +3,25 @@ name: Java CICD with Gradle & Docker
 on:
   pull_request:
     types: [ closed ]
+  push:
   workflow_dispatch: # 수동 실행 가능
-jobs:
-  build-and-push-image:
-    runs-on: ubuntu-latest
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
+      # JDK 17 설치 (1)
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # repository checkout (2)
       - name: Checkout
         uses: actions/checkout@v3
 
-      # 환경 변수 설정 (0)
+      # 환경 변수 설정 (3)
       - name: Set Yaml
         uses: microsoft/variable-substitution@v1
         with:
@@ -30,26 +33,31 @@ jobs:
           spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.password: ${{ secrets.GMAIL_PWD }}
 
-      # Spring Boot 어플리케이션 Build (1)
+      # Spring Boot 어플리케이션 Build (4)
       - name: Spring Boot Build
         run: ./gradlew clean build -x test --warning-mode=all --stacktrace
 
-      # Docker 이미지 Build (2)
+      # Docker 이미지 Build (5)
       - name: docker image build
         run: docker build -t rimi3226/gamegoo .
 
-      # DockerHub Login (3)
+      # DockerHub Login (6)
       - name: docker login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PW }}
 
-      # Docker Hub push (4)
+      # Docker Hub push (7)
       - name: docker Hub push
         run: docker push rimi3226/gamegoo
 
-      # Configure AWS Credentials (6) - AWS 접근 권한 취득(IAM)
+      # GET GitHub IP (8)
+      - name: get GitHub IP
+        id: ip
+        run: echo "ipv4=$(curl -s https://api.ipify.org)" >> $GITHUB_ENV
+
+      # Configure AWS Credentials (9) - AWS 접근 권한 취득(IAM)
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -57,19 +65,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Build 번호 부여 (7)
-      - name: Build Number
-        id: build-number
-        run: echo "::set-output name=BUILD_NUMBER::$(date '+%-d.%-m.%Y.%-H.%-M.%-S')"
+      # Add github ip to AWS (10)
+      - name: Add GitHub IP to AWS
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ env.ipv4 }}/32
 
-      # Elastic Beanstalk Deploy with docker (8)
-      - name: Deploy to EB
-        uses: einaregilsson/beanstalk-deploy@v20
+      # AWS EC2 Server Connect & Docker 명령어 실행 (11)
+      - name: AWS EC2 Connection
+        uses: appleboy/ssh-action@master
         with:
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: Gamegoo
-          environment_name: Gamegoo-env
-          region: ap-northeast-2
-          version_label: ${{ steps.build-number.outputs.BUILD_NUMBER }}
-          deployment_package: ./elasticbeanstalk/docker-compose.yml
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PEM_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          timeout: 50s
+          script: |
+            sudo docker stop gamegoo_api
+            sudo docker rm gamegoo_api
+            sudo docker run -it -d -p 8080:8080 --name gamegoo_api rimi3226/gamegoo
+
+      # REMOVE Github IP FROM security group (12)
+      - name: Remove IP FROM security group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ env.ipv4 }}/32

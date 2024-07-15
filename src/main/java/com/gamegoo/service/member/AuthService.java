@@ -5,8 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.EmailVerifyRecord;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
-import com.gamegoo.dto.member.JoinRequestDTO;
-import com.gamegoo.dto.member.RefreshTokenResponseDTO;
+import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.repository.member.EmailVerifyRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
@@ -31,15 +30,11 @@ public class AuthService {
     private final JWTUtil jwtUtil;
 
     // 회원가입 로직
-    public void joinMember(JoinRequestDTO joinRequestDTO) {
-
-        // DTO로부터 데이터 받기
-        String email = joinRequestDTO.getEmail();
-        String password = joinRequestDTO.getPassword();
+    public void joinMember(String email, String password) {
 
         // 중복 확인하기
-        boolean isPresent = memberRepository.findByEmail(email).isPresent();
-        if (isPresent) {
+        // 중복 확인하기
+        if (memberRepository.existsByEmail(email)) {
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
@@ -80,7 +75,7 @@ public class AuthService {
     }
 
     // jwt refresh 토큰 검증
-    public RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
+    public MemberRequest.RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
         // refresh Token 검증하기
         Member member = memberRepository.findByRefreshToken(refresh_token)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.INVALID_TOKEN));
@@ -96,7 +91,7 @@ public class AuthService {
         member.setRefreshToken(new_refresh_token);
         memberRepository.save(member);
 
-        return new RefreshTokenResponseDTO(access_token, refresh_token);
+        return new MemberRequest.RefreshTokenResponseDTO(access_token, refresh_token);
     }
 
     // 이메일 인증코드 검증
