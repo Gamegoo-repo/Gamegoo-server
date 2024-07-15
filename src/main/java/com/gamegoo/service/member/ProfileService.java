@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class ProfileService {
         List<GameStyle> requestGameStyleList = request.getGameStyleIdList().stream()
                 .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
                         .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
-                .collect(Collectors.toList());
+                .toList();
 
 
         // db에는 존재하나, request에는 존재하지 않는 gameStyle을 삭제
@@ -46,12 +45,12 @@ public class ProfileService {
                 });
 
         // request에는 존재하나, db에는 존재하지 않는 gameStyle을 추가
-        // 현재 member가 가지고 있는 GameStyleList 추출
+        // 1. 현재 member가 가지고 있는 GameStyleList 추출
         List<GameStyle> currentGameStyleList = member.getMemberGameStyleList().stream()
                 .map(MemberGameStyle::getGameStyle)
-                .collect(Collectors.toList());
+                .toList();
 
-        // memberGameStyle 엔티티 생성 및 연관관계 매핑, db 저장
+        // 2. memberGameStyle 엔티티 생성 및 연관관계 매핑, db 저장
         requestGameStyleList.stream()
                 .filter(reqGameStyle -> !currentGameStyleList.contains(reqGameStyle))
                 .forEach(reqGameStyle -> {

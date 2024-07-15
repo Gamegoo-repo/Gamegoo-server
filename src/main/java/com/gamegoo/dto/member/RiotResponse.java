@@ -1,7 +1,10 @@
 package com.gamegoo.dto.member;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 public class RiotResponse {
 
@@ -41,5 +44,27 @@ public class RiotResponse {
         private boolean inactive;
         private boolean freshBlood;
         private boolean hotStreak;
+    }
+
+    @Data
+    @Getter
+    @Setter
+    public static class MatchDTO {
+        private InfoDTO info;
+    }
+
+    @Data
+    @Getter
+    @Setter
+    public static class InfoDTO {
+        private List<ParticipantDTO> participants;
+    }
+
+    @Data
+    @Getter
+    @Setter
+    public static class ParticipantDTO {
+        private String riotIdGameName;
+        private int championId;
     }
 }
