@@ -16,6 +16,7 @@ public class ReportType extends BaseDateTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_type_id")
     private Long id;
+
     @Column(name = "report_type_content", nullable = false)
     private String reportTypeContent;
 
