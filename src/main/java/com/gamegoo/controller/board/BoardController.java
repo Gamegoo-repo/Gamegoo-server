@@ -36,7 +36,7 @@ public class BoardController {
         Board saveBoard = boardService.save(request,memberId);
 
         List<Long> gameStyles = saveBoard.getBoardGameStyles().stream()
-                .map(boardGameStyle -> boardGameStyle.getGameStyle2().getId())
+                .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
                 .collect(Collectors.toList());
 
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()

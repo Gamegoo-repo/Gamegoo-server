@@ -7,12 +7,11 @@ import com.gamegoo.apiPayload.exception.handler.TempHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.BoardGameStyle;
-import com.gamegoo.domain.board.GameStyle2;
-import com.gamegoo.domain.report.ReportTypeMapping;
+import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
-import com.gamegoo.repository.board.GameStyle2Repository;
+import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,7 @@ import java.util.List;
 public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
-    private final GameStyle2Repository gameStyle2Repository;
+    private final GameStyleRepository gameStyleRepository;
     private final BoardGameStyleRepository boardGameStyleRepository;
 
     // 블로그 글 작성.
@@ -46,11 +45,11 @@ public class BoardService {
         }
 
         // 게임 스타일 실제 존재 여부 검증.
-        List<GameStyle2> gameStyle2List = new ArrayList<>();
+        List<GameStyle> gameStyleList = new ArrayList<>();
         request.getGameStyles()
                 .forEach(gameStyleId->{
-                    GameStyle2 gameStyle2 = gameStyle2Repository.findById(gameStyleId).orElseThrow(()->new TempHandler(ErrorStatus._BAD_REQUEST));
-                    gameStyle2List.add(gameStyle2);
+                    GameStyle gameStyle = gameStyleRepository.findById(gameStyleId).orElseThrow(()->new TempHandler(ErrorStatus._BAD_REQUEST));
+                    gameStyleList.add(gameStyle);
                 });
 
         Board board = Board.builder()
@@ -67,9 +66,9 @@ public class BoardService {
         Board saveBoard= boardRepository.save(board);
 
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
-        gameStyle2List.forEach(gameStyle2 -> {
+        gameStyleList.forEach(gameStyle -> {
             BoardGameStyle boardGameStyle = BoardGameStyle.builder()
-                    .gameStyle2(gameStyle2)
+                    .gameStyle(gameStyle)
                     .build();
 
             boardGameStyle.setBoard(saveBoard);
