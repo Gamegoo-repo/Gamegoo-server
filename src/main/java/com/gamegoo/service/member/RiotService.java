@@ -70,12 +70,14 @@ public class RiotService {
         //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
         recentChampionIds
                 .forEach(championId -> {
-                    MemberChampion memberChampion = MemberChampion.builder()
-                            .member(member)
-                            .build();
                     Champion champion = championRepository.findById(Long.valueOf(championId))
                             .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
-                    memberChampion.setChampion(champion);
+
+                    MemberChampion memberChampion = MemberChampion.builder()
+                            .member(member)
+                            .champion(champion)
+                            .build();
+
                     memberChampionRepository.save(memberChampion);
                 });
 
@@ -87,13 +89,6 @@ public class RiotService {
         RiotResponse.RiotAccountDTO accountResponse = null;
         try {
             accountResponse = restTemplate.getForObject(url, RiotResponse.RiotAccountDTO.class);
-
-            // API를 불러올 수 없을 경우
-            if (accountResponse == null) {
-                throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
-            }
-
-
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().value() == 404) {
                 throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
@@ -101,6 +96,7 @@ public class RiotService {
             throw e;
         }
 
+        assert accountResponse != null;
         return accountResponse.getPuuid();
 
     }
