@@ -48,5 +48,11 @@ public class MemberResponse {
         String gameStyleName;
     }
 
-
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RefreshTokenResponseDTO {
+        String access_token;
+        String refresh_token;
+    }
 }

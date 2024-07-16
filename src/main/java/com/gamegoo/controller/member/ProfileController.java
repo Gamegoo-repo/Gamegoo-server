@@ -52,7 +52,7 @@ public class ProfileController {
     @Operation(summary = "프로필 이미지 수정 API 입니다.", description = "API for Profile Image Modification")
     public ApiResponse<String> modifyPosition(@RequestBody MemberRequest.ProfileImageRequestDTO profileImageDTO) {
         Long userId = JWTUtil.getCurrentUserId();
-        String profileImage = profileImageDTO.getProfile_image();
+        String profileImage = profileImageDTO.getProfileImage();
 
         profileService.modifyProfileImage(userId, profileImage);
 

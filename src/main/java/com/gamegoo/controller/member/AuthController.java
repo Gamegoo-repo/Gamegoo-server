@@ -2,6 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.dto.member.MemberRequest;
+import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +49,9 @@ public class AuthController {
     @Operation(summary = "refresh token을 통한 access, refresh token 재발급 API 입니다.", description = "API for Refresh Token")
     public ApiResponse<Object> refreshTokens(@RequestBody MemberRequest.RefreshTokenRequestDTO refreshTokenRequestDTO) {
 
-        String refreshToken = refreshTokenRequestDTO.getRefresh_token();
+        String refreshToken = refreshTokenRequestDTO.getRefreshToken();
 
-        MemberRequest.RefreshTokenResponseDTO refreshTokenResponseDTO = authService.verifyRefreshToken(refreshToken);
+        MemberResponse.RefreshTokenResponseDTO refreshTokenResponseDTO = authService.verifyRefreshToken(refreshToken);
 
         return ApiResponse.onSuccess(refreshTokenResponseDTO);
     }
