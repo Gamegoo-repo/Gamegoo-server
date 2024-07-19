@@ -28,7 +28,7 @@ public class BoardService {
     private final GameStyleRepository gameStyleRepository;
     private final BoardGameStyleRepository boardGameStyleRepository;
 
-    // 블로그 글 작성.
+    // 게시판 글 작성.
     @Transactional
     public Board save(BoardRequest.boardInsertDTO request,Long memberId){
 
