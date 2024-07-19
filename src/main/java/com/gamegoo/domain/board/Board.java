@@ -47,5 +47,13 @@ public class Board extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<BoardGameStyle> boardGameStyles = new ArrayList<>();
 
+    // 연관관계 메소드
+    public void setMember(Member member){
+        if (this.member != null){
+            this.member.getBoardList().remove(this);
+        }
+        this.member = member;
+        this.member.getBoardList().add(this);
+    }
 }
 

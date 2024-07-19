@@ -3,7 +3,6 @@ package com.gamegoo.service.board;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.apiPayload.exception.handler.TempHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.BoardGameStyle;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +34,26 @@ public class BoardService {
 
         Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        // 게임 모드 값 검증. (1 ~ 4 값만 가능)
+        if (request.getGameMode()<1 || request.getGameMode()>4){
+            throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
+        }
+
+        // 주 포지션 값 검증. (1 ~ 5값만 가능)
+        if (request.getMainPosition()<1 || request.getMainPosition()>5){
+            throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+        }
+
+        // 부 포지션 값 검증. (1 ~ 5값만 가능)
+        if (request.getSubPosition()<1 || request.getSubPosition()>5){
+            throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+        }
+
+        // 상대 포지션 값 검증. (1 ~ 5값만 가능)
+        if (request.getWantPosition()<1 || request.getWantPosition()>5){
+            throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+        }
+
         // 마이크 설정 (default=false)
         if (request.getVoice()==null){
             request.setVoice(false);
@@ -45,12 +65,10 @@ public class BoardService {
         }
 
         // 게임 스타일 실제 존재 여부 검증.
-        List<GameStyle> gameStyleList = new ArrayList<>();
-        request.getGameStyles()
-                .forEach(gameStyleId->{
-                    GameStyle gameStyle = gameStyleRepository.findById(gameStyleId).orElseThrow(()->new TempHandler(ErrorStatus._BAD_REQUEST));
-                    gameStyleList.add(gameStyle);
-                });
+        List<GameStyle> gameStyleList = request.getGameStyles().stream()
+                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                        .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
+                .collect(Collectors.toList());
 
         Board board = Board.builder()
                 .mode(request.getGameMode())
@@ -69,9 +87,9 @@ public class BoardService {
         gameStyleList.forEach(gameStyle -> {
             BoardGameStyle boardGameStyle = BoardGameStyle.builder()
                     .gameStyle(gameStyle)
+                    .board(board)
                     .build();
 
-            boardGameStyle.setBoard(saveBoard);
             boardGameStyleRepository.save(boardGameStyle);
         });
 
