@@ -9,7 +9,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "BoardGameStyle")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
