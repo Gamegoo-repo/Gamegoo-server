@@ -1,5 +1,6 @@
 package com.gamegoo.domain;
 
+import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import com.gamegoo.domain.enums.LoginType;
