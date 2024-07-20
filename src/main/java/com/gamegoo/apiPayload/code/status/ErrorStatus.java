@@ -46,11 +46,13 @@ public enum ErrorStatus implements BaseErrorCode {
     // Email 인증 관련 에러
     EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
-    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다."),
+    EMAIL_INVALID_CODE(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다."),
+    EMAIL_INVALID_TIME(HttpStatus.BAD_REQUEST, "EMAIL400", "이메일 인증 시간이 3분 초과했습니다."),
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
     CHAMPION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAMPION404", "해당 챔피언이 존재하지 않습니다"),
+
     // 차단 관련 에러
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다."),
