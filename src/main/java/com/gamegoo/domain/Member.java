@@ -46,8 +46,11 @@ public class Member extends BaseDateTimeEntity {
     @Column(columnDefinition = "VARCHAR(50)", nullable = false)
     private LoginType loginType;
 
-    @Column(name = "gameuser_name", length = 100)
-    private String gameuserName;
+    @Column(name = "gamename", length = 100)
+    private String gameName;
+
+    @Column(name = "tag", length = 100)
+    private String tag;
 
     @Column(name = "tier")
     private String tier;

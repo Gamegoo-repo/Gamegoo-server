@@ -44,12 +44,12 @@ public class RiotService {
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 해당 Request에 있는 Email이 이미 DB의 다른 계정과 연동되었을 경우
-        if (member.getGameuserName() != null) {
+        if (member.getGameName() != null) {
             throw new MemberHandler(ErrorStatus.RIOT_MEMBER_CONFLICT);
         }
 
         // 해당 Request에 있는 GameName이 이미 DB의 다른 email과 연동되었을 경우
-        if (memberRepository.findByGameuserName(gameName).isPresent()) {
+        if (memberRepository.findByGameName(gameName).isPresent()) {
             throw new MemberHandler(ErrorStatus.RIOT_ACCOUNT_CONFLICT);
         }
 
@@ -60,9 +60,9 @@ public class RiotService {
         // 2. puuid를 통해 encryptedsummonerid 얻기
         String encryptedSummonerId = getSummonerId(puuid);
         // 3. tier, rank 정보 DB에 저장하기
-        updateMemberWithLeagueInfo(member, gameName, encryptedSummonerId);
+        updateMemberWithLeagueInfo(member, gameName, encryptedSummonerId, tag);
         memberRepository.save(member);
-        
+
         /* 최근 사용한 챔피언 3개 찾기 */
         // 1. riot API에서 최근 매칭 ID 10 개 List에 저장
         List<String> recentMatchIds = getRecentMatchIds(puuid);
@@ -140,7 +140,7 @@ public class RiotService {
     }
 
     // RiotAPI - request: encryptedSummonerId / response : tier, rank
-    private void updateMemberWithLeagueInfo(Member member, String gameName, String encryptedSummonerId) {
+    private void updateMemberWithLeagueInfo(Member member, String gameName, String encryptedSummonerId, String tag) {
         // 3. account id로 티어, 랭크, 불러오기
         String leagueUrl = String.format(RIOT_LEAGUE_API_URL_TEMPLATE, encryptedSummonerId, riotAPIKey);
         RiotResponse.RiotLeagueEntryDTO[] leagueEntries = restTemplate.getForObject(leagueUrl, RiotResponse.RiotLeagueEntryDTO[].class);
@@ -166,7 +166,8 @@ public class RiotService {
         }
 
         // 솔랭을 하지 않는 유저는 gameName만 저장
-        member.setGameuserName(gameName);
+        member.setGameName(gameName);
+        member.setTag(tag);
     }
 
     // RiotAPI - request: puuid / response : matchId

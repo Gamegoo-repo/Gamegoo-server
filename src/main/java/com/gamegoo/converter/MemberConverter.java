@@ -29,7 +29,7 @@ public class MemberConverter {
                 .member_id(membr.getId())
                 .profile_img(membr.getProfileImage())
                 .email(membr.getEmail())
-                .name(membr.getGameuserName())
+                .name(membr.getGameName())
                 .build();
     }
 }
