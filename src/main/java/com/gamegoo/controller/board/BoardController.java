@@ -10,10 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +46,35 @@ public class BoardController {
                 .voice(saveBoard.getVoice())
                 .gameStyles(gameStyles)
                 .contents(saveBoard.getContent())
+                .build();
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PutMapping("/{postId}")
+    public ApiResponse<BoardResponse.boardUpdateResponseDTO> boardUpdate(
+            @PathVariable long postId,
+            @RequestBody BoardRequest.boardUpdateDTO request
+        ){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        Board updateBoard = boardService.update(request, memberId, postId);
+
+        List<Long> gameStyles = updateBoard.getBoardGameStyles().stream()
+                .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
+                .collect(Collectors.toList());
+
+        BoardResponse.boardUpdateResponseDTO result= BoardResponse.boardUpdateResponseDTO.builder()
+                .boardId(updateBoard.getId())
+                .memberId(memberId)
+                .gameMode(updateBoard.getMode())
+                .mainPosition(updateBoard.getMainPosition())
+                .subPosition(updateBoard.getSubPosition())
+                .wantPosition(updateBoard.getWantPosition())
+                .voice(updateBoard.getVoice())
+                .gameStyles(gameStyles)
+                .contents(updateBoard.getContent())
                 .build();
 
         return ApiResponse.onSuccess(result);
