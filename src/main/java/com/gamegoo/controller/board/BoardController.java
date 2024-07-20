@@ -7,6 +7,7 @@ import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.service.board.BoardService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -82,6 +83,8 @@ public class BoardController {
     }
 
     @DeleteMapping("/{postId}")
+    @Operation(summary = "게시판 글 삭제 API", description = "게시판에서 글을 삭제하는 API 입니다.")
+    @Parameter(name = "postId", description = "삭제할 게시판 글 id 입니다.")
     public ApiResponse<String> delete(@PathVariable Long postId
     ){
         Long memberId = JWTUtil.getCurrentUserId();
