@@ -80,4 +80,14 @@ public class BoardController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @DeleteMapping("/{postId}")
+    public ApiResponse<String> delete(@PathVariable Long postId
+    ){
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        boardService.delete(postId, memberId);
+
+        return ApiResponse.onSuccess("게시글을 삭제하였습니다.");
+    }
 }
