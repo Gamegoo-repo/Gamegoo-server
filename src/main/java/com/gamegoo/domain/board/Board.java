@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Table(name = "Board")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -44,7 +43,7 @@ public class Board extends BaseDateTimeEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardGameStyle> boardGameStyles = new ArrayList<>();
 
     // 연관관계 메소드
@@ -53,7 +52,28 @@ public class Board extends BaseDateTimeEntity {
             this.member.getBoardList().remove(this);
         }
         this.member = member;
-        this.member.getBoardList().add(this);
+        if (member != null) {
+            this.member.getBoardList().add(this);
+        }
+    }
+
+    public void updateBoard(Integer mode, Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean voice, String content) {
+        this.mode = mode;
+        this.mainPosition = mainPosition;
+        this.subPosition = subPosition;
+        this.wantPosition = wantPosition;
+        this.voice = voice;
+        this.content = content;
+    }
+
+    public void addBoardGameStyle(BoardGameStyle boardGameStyle) {
+        this.boardGameStyles.add(boardGameStyle);
+        boardGameStyle.setBoard(this);
+    }
+
+    public void removeBoardGameStyle(BoardGameStyle boardGameStyle) {
+        this.boardGameStyles.remove(boardGameStyle);
+        boardGameStyle.setBoard(null);
     }
 }
 
