@@ -51,5 +51,6 @@ public class GameStyleInitializer implements ApplicationListener<ApplicationRead
             GameStyle gameStyle = GameStyle.builder().styleName(style).build();
             gameStyleRepository.save(gameStyle);
         }
+
     }
 }
