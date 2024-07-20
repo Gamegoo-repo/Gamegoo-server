@@ -12,7 +12,6 @@ import java.util.List;
 
 public class MemberRequest {
     @Getter
-    @NotBlank
     public static class EmailCodeRequestDTO {
         @NotNull
         private String email;
@@ -21,7 +20,6 @@ public class MemberRequest {
     }
 
     @Getter
-    @NotBlank
     public static class EmailRequestDTO {
         @NotNull
         private String email;
@@ -34,26 +32,28 @@ public class MemberRequest {
 
     @Getter
     @AllArgsConstructor
-    @NotBlank
     public static class JoinRequestDTO {
+        @NotBlank
         private String email;
+        @NotBlank
         private String password;
 
     }
 
     @Getter
     @AllArgsConstructor
-    @NotBlank
     public static class PasswordRequestDTO {
+        @NotBlank
         private String password;
     }
 
     @Getter
-    @NotBlank
     @Min(0)
     @Max(5)
     public static class PositionRequestDTO {
+        @NotBlank
         int mainP;
+        @NotBlank
         int subP;
     }
 
@@ -61,22 +61,25 @@ public class MemberRequest {
     @AllArgsConstructor
     public static class ProfileImageRequestDTO {
         @NonNull
+        @NotBlank
         String profileImage;
     }
 
     @Getter
     @AllArgsConstructor
-    @NotBlank
     public static class RefreshTokenRequestDTO {
+        @NotBlank
         String refreshToken;
     }
 
     @Getter
     @AllArgsConstructor
-    @NotBlank
     public static class verifyRiotRequestDTO {
+        @NotBlank
         String email;
+        @NotBlank
         String gameName;
+        @NotBlank
         String tag;
     }
 }
