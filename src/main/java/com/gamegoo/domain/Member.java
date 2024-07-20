@@ -51,7 +51,10 @@ public class Member extends BaseDateTimeEntity {
     private String gameuserName;
 
     @Column(name = "tier")
-    private Integer tier;
+    private String tier;
+
+    @Column(name = "rank")
+    private String rank;
 
     @Column(name = "winrate")
     private double winRate;
