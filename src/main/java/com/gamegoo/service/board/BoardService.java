@@ -90,10 +90,10 @@ public class BoardService {
                     .board(board)
                     .build();
 
+            boardGameStyle.setBoard(saveBoard);
             boardGameStyleRepository.save(boardGameStyle);
         });
 
         return saveBoard;
     }
-
 }
