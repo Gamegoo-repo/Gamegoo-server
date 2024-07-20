@@ -52,6 +52,7 @@ public class BoardController {
     }
 
     @PutMapping("/{postId}")
+    @Operation(summary = "게시판 글 수정 API", description = "게시판에서 글을 수정하는 API 입니다.")
     public ApiResponse<BoardResponse.boardUpdateResponseDTO> boardUpdate(
             @PathVariable long postId,
             @RequestBody BoardRequest.boardUpdateDTO request
