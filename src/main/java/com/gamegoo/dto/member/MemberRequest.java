@@ -4,24 +4,25 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class MemberRequest {
     @Getter
     public static class EmailCodeRequestDTO {
-        @NotNull
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
         private String email;
-        @NotNull
+        @NotBlank
         private String code;
     }
 
     @Getter
     public static class EmailRequestDTO {
-        @NotNull
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
         private String email;
     }
 
@@ -33,7 +34,8 @@ public class MemberRequest {
     @Getter
     @AllArgsConstructor
     public static class JoinRequestDTO {
-        @NotBlank
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
         private String email;
         @NotBlank
         private String password;
