@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -103,9 +105,21 @@ public class AuthService {
                 // 해당 이메일이 없을 경우
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_NOT_FOUND));
 
+
+        LocalDateTime createdAt = emailVerifyRecord.getCreatedAt();
+        LocalDateTime currentAt = LocalDateTime.now();
+
+        // 두 LocalDateTime 객체의 차이를 계산합니다.
+        Duration duration = Duration.between(createdAt, currentAt);
+
+        // 차이가 3분 이상인지 확인합니다.
+        if (duration.toMinutes() >= 3) {
+            throw new MemberHandler(ErrorStatus.EMAIL_INVALID_TIME);
+        }
+
         // 인증 코드가 틀릴 경우
         if (!emailVerifyRecord.getCode().equals(code)) {
-            throw new MemberHandler(ErrorStatus.EMAIL_INVALID);
+            throw new MemberHandler(ErrorStatus.EMAIL_INVALID_CODE);
         }
     }
 
