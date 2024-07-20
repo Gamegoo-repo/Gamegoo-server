@@ -17,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -32,7 +34,7 @@ public class RiotService {
     private static final String RIOT_ACCOUNT_API_URL_TEMPLATE = "https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/%s/%s?api_key=%s";
     private static final String RIOT_SUMMONER_API_URL_TEMPLATE = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/%s?api_key=%s";
     private static final String RIOT_LEAGUE_API_URL_TEMPLATE = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/%s?api_key=%s";
-    private static final String RIOT_MATCH_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids?start=0&count=3&api_key=%s";
+    private static final String RIOT_MATCH_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids?start=0&count=20&api_key=%s";
     private static final String RIOT_MATCH_INFO_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/%s?api_key=%s";
 
 
@@ -60,14 +62,26 @@ public class RiotService {
         // 3. tier, rank 정보 DB에 저장하기
         updateMemberWithLeagueInfo(member, gameName, encryptedSummonerId);
         memberRepository.save(member);
-
+        
         /* 최근 사용한 챔피언 3개 찾기 */
-        // 1. riot API에서 최근 매칭 ID 세 개 List에 저장
+        // 1. riot API에서 최근 매칭 ID 10 개 List에 저장
         List<String> recentMatchIds = getRecentMatchIds(puuid);
 
         // 2. List에 있는 매칭 ID 바탕으로 각 매칭에서 유저가 사용한 캐릭터 불러오기
         List<Integer> recentChampionIds = recentMatchIds.stream()
                 .map(matchId -> getChampionIdFromMatch(matchId, gameName))
+                .toList();
+
+        // 3. 해당 캐릭터 중 많이 사용한 캐릭터 세 개 저장하기
+        //      (1) 챔피언 사용 빈도 계산
+        Map<Integer, Long> championFrequency = recentChampionIds.stream()
+                .collect(Collectors.groupingBy(championId -> championId, Collectors.counting()));
+
+        //      (2) 빈도를 기준으로 정렬하여 상위 3개의 챔피언 추출
+        List<Integer> top3Champions = championFrequency.entrySet().stream()
+                .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
+                .limit(3)
+                .map(Map.Entry::getKey)
                 .toList();
 
         // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
@@ -79,7 +93,7 @@ public class RiotService {
                 });
 
         //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
-        recentChampionIds
+        top3Champions
                 .forEach(championId -> {
                     Champion champion = championRepository.findById(Long.valueOf(championId))
                             .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
@@ -136,21 +150,23 @@ public class RiotService {
         }
 
         for (RiotResponse.RiotLeagueEntryDTO entry : leagueEntries) {
+            // 솔랭일 경우에만 저장
             if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
-                // 승률 구하기
                 int wins = entry.getWins();
                 int losses = entry.getLosses();
                 double winrate = (double) wins / (wins + losses);
                 winrate = Math.round(winrate * 1000) / 10.0;
 
                 // DB에 저장
-                member.setGameuserName(gameName);
                 member.setTier(entry.getTier());
                 member.setRank(entry.getRank());
                 member.setWinRate(winrate);
                 break;
             }
         }
+
+        // 솔랭을 하지 않는 유저는 gameName만 저장
+        member.setGameuserName(gameName);
     }
 
     // RiotAPI - request: puuid / response : matchId
