@@ -37,17 +37,28 @@ public class RiotService {
 
 
     // Riot GameName으로 DB에 데이터 저장하기
-    public void updateMemberRiotInfo(String game_name, String tag, String email) {
+    public void updateMemberRiotInfo(String gameName, String tag, String email) {
         // emaiL 로 DB에서 member 가져오기
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        // 해당 Request에 있는 Email이 이미 DB의 다른 계정과 연동되었을 경우
+        if (member.getGameuserName() != null) {
+            throw new MemberHandler(ErrorStatus.RIOT_MEMBER_CONFLICT);
+        }
+
+        // 해당 Request에 있는 GameName이 이미 DB의 다른 email과 연동되었을 경우
+        if (memberRepository.findByGameuserName(gameName).isPresent()) {
+            throw new MemberHandler(ErrorStatus.RIOT_ACCOUNT_CONFLICT);
+        }
+
+
         /* 티어, 랭킹 정보 불러오기 */
         // 1. game_name, tag로 사용자 puuid 얻기
-        String puuid = getRiotPuuid(game_name, tag);
+        String puuid = getRiotPuuid(gameName, tag);
         // 2. puuid를 통해 encryptedsummonerid 얻기
         String encryptedSummonerId = getSummonerId(puuid);
         // 3. tier, rank 정보 DB에 저장하기
-        updateMemberWithLeagueInfo(member, game_name, encryptedSummonerId);
+        updateMemberWithLeagueInfo(member, gameName, encryptedSummonerId);
         memberRepository.save(member);
 
         /* 최근 사용한 챔피언 3개 찾기 */
@@ -56,7 +67,7 @@ public class RiotService {
 
         // 2. List에 있는 매칭 ID 바탕으로 각 매칭에서 유저가 사용한 캐릭터 불러오기
         List<Integer> recentChampionIds = recentMatchIds.stream()
-                .map(matchId -> getChampionIdFromMatch(matchId, game_name))
+                .map(matchId -> getChampionIdFromMatch(matchId, gameName))
                 .toList();
 
         // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
@@ -115,7 +126,7 @@ public class RiotService {
     }
 
     // RiotAPI - request: encryptedSummonerId / response : tier, rank
-    private void updateMemberWithLeagueInfo(Member member, String game_name, String encryptedSummonerId) {
+    private void updateMemberWithLeagueInfo(Member member, String gameName, String encryptedSummonerId) {
         // 3. account id로 티어, 랭크, 불러오기
         String leagueUrl = String.format(RIOT_LEAGUE_API_URL_TEMPLATE, encryptedSummonerId, riotAPIKey);
         RiotResponse.RiotLeagueEntryDTO[] leagueEntries = restTemplate.getForObject(leagueUrl, RiotResponse.RiotLeagueEntryDTO[].class);
@@ -126,11 +137,14 @@ public class RiotService {
 
         for (RiotResponse.RiotLeagueEntryDTO entry : leagueEntries) {
             if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
+                // 승률 구하기
                 int wins = entry.getWins();
                 int losses = entry.getLosses();
                 double winrate = (double) wins / (wins + losses);
                 winrate = Math.round(winrate * 1000) / 10.0;
-                member.setGameuserName(game_name);
+
+                // DB에 저장
+                member.setGameuserName(gameName);
                 member.setTier(entry.getTier());
                 member.setRank(entry.getRank());
                 member.setWinRate(winrate);
