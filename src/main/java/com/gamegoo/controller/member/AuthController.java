@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
@@ -21,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<String> joinMember(@RequestBody MemberRequest.JoinRequestDTO joinRequestDTO) {
+    public ApiResponse<String> joinMember(@Valid @RequestBody MemberRequest.JoinRequestDTO joinRequestDTO) {
         String email = joinRequestDTO.getEmail();
         String password = joinRequestDTO.getPassword();
         authService.joinMember(email, password);
