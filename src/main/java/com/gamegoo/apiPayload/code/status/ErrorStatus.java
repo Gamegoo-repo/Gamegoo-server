@@ -71,7 +71,10 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 게시판 글 수정 관련 에러
     BOARD_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 수정 가능합니다."),
-    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD404", "게시판에서 해당 글을 찾을 수 없습니다.");
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD404", "게시판에서 해당 글을 찾을 수 없습니다."),
+
+    // 게시판 글 삭제 관련 에러
+    BOARD_DELETE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 삭제 가능합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

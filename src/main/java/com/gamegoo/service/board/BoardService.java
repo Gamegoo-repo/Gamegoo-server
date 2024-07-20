@@ -192,4 +192,18 @@ public class BoardService {
 
         return boardRepository.save(board);
     }
+
+    // 게시판 글 삭제.
+    @Transactional
+    public void delete(Long boardId, Long memberId){
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        // 게시글 작성자가 맞는지 검증.
+        if (!board.getMember().getId().equals(memberId)) {
+            throw new BoardHandler(ErrorStatus.BOARD_DELETE_UNAUTHORIZED);
+        }
+
+        boardRepository.delete(board);
+    }
 }
