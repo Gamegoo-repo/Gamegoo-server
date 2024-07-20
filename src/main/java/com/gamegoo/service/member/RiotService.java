@@ -126,9 +126,14 @@ public class RiotService {
 
         for (RiotResponse.RiotLeagueEntryDTO entry : leagueEntries) {
             if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
+                int wins = entry.getWins();
+                int losses = entry.getLosses();
+                double winrate = (double) wins / (wins + losses);
+                winrate = Math.round(winrate * 1000) / 10.0;
                 member.setGameuserName(game_name);
                 member.setTier(entry.getTier());
                 member.setRank(entry.getRank());
+                member.setWinRate(winrate);
                 break;
             }
         }
