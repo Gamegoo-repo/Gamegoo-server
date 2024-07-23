@@ -1,4 +1,8 @@
 spring:
+  # JWT Secret key 설정
+  jwt:
+    secret: ${JWT_SECRET}
+  #riot API 설정
   riot:
     api:
       key: ${spring.riot.api.key}
@@ -16,9 +20,7 @@ spring:
       show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
-  # JWT Secret key 설정
-  jwt:
-    secret: ${spring.jwt.secret}
+
 
   # Gmail 설정
   mail:
