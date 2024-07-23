@@ -16,10 +16,9 @@ spring:
       show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
-
   # JWT Secret key 설정
   jwt:
-    secret: ${JWT_SECRET}
+    secret: ${spring.jwt.secret}
 
   # Gmail 설정
   mail:
