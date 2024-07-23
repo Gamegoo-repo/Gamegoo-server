@@ -23,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<String> joinMember(@Valid @RequestBody MemberRequest.JoinRequestDTO joinRequestDTO) {
+    public ApiResponse<String> joinMember(@RequestBody @Valid MemberRequest.JoinRequestDTO joinRequestDTO) {
         String email = joinRequestDTO.getEmail();
         String password = joinRequestDTO.getPassword();
         authService.joinMember(email, password);

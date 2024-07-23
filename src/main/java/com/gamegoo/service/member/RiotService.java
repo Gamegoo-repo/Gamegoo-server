@@ -28,13 +28,13 @@ public class RiotService {
     private final ChampionRepository championRepository;
     private final MemberChampionRepository memberChampionRepository;
     private final RestTemplate restTemplate;
-    @Value("${riot.api.key}")
+    @Value("${RIOT_API}")
     private String riotAPIKey;
 
     private static final String RIOT_ACCOUNT_API_URL_TEMPLATE = "https://asia.api.riotgames.com/riot/account/v1/accounts/by-riot-id/%s/%s?api_key=%s";
     private static final String RIOT_SUMMONER_API_URL_TEMPLATE = "https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/%s?api_key=%s";
     private static final String RIOT_LEAGUE_API_URL_TEMPLATE = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/%s?api_key=%s";
-    private static final String RIOT_MATCH_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids?start=0&count=20&api_key=%s";
+    private static final String RIOT_MATCH_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids?start=0&count=%s&api_key=%s";
     private static final String RIOT_MATCH_INFO_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/%s?api_key=%s";
 
 
@@ -64,13 +64,25 @@ public class RiotService {
         memberRepository.save(member);
 
         /* 최근 사용한 챔피언 3개 찾기 */
-        // 1. riot API에서 최근 매칭 ID 10 개 List에 저장
-        List<String> recentMatchIds = getRecentMatchIds(puuid);
+        List<Integer> recentChampionIds = null;
+        int count = 20;
 
-        // 2. List에 있는 매칭 ID 바탕으로 각 매칭에서 유저가 사용한 캐릭터 불러오기
-        List<Integer> recentChampionIds = recentMatchIds.stream()
-                .map(matchId -> getChampionIdFromMatch(matchId, gameName))
-                .toList();
+        while ((recentChampionIds == null || recentChampionIds.size() < 3) && count <= 100) {
+            List<String> recentMatchIds = getRecentMatchIds(puuid, count);
+
+            recentChampionIds = recentMatchIds.stream()
+                    .map(matchId -> getChampionIdFromMatch(matchId, gameName))
+                    .filter(championId -> championId < 1000)
+                    .toList();
+
+            if (recentChampionIds.size() < 3) {
+                count += 10; // count를 10 증가시켜서 다시 시도
+            }
+        }
+
+        if (recentChampionIds.size() < 3) {
+            throw new MemberHandler(ErrorStatus.RIOT_INSUFFICIENT_MATCHES);
+        }
 
         // 3. 해당 캐릭터 중 많이 사용한 캐릭터 세 개 저장하기
         //      (1) 챔피언 사용 빈도 계산
@@ -171,9 +183,9 @@ public class RiotService {
     }
 
     // RiotAPI - request: puuid / response : matchId
-    private List<String> getRecentMatchIds(String puuid) {
-        // 최근 매칭 ID 3개 가져오기
-        String matchUrl = String.format(RIOT_MATCH_API_URL_TEMPLATE, puuid, riotAPIKey);
+    private List<String> getRecentMatchIds(String puuid, int count) {
+        // 최근 매칭 ID 20개 가져오기
+        String matchUrl = String.format(RIOT_MATCH_API_URL_TEMPLATE, puuid, count, riotAPIKey);
         String[] matchIds = restTemplate.getForObject(matchUrl, String[].class);
 
         if (matchIds == null || matchIds.length == 0) {
@@ -184,7 +196,7 @@ public class RiotService {
     }
 
     // RiotAPI - request: matchId / response : championId
-    private Integer getChampionIdFromMatch(String matchId, String game_name) {
+    private Integer getChampionIdFromMatch(String matchId, String gameName) {
         // 매치 정보 가져오기
         String matchInfoUrl = String.format(RIOT_MATCH_INFO_API_URL_TEMPLATE, matchId, riotAPIKey);
         RiotResponse.MatchDTO matchResponse = restTemplate.getForObject(matchInfoUrl, RiotResponse.MatchDTO.class);
@@ -192,10 +204,9 @@ public class RiotService {
         if (matchResponse == null || matchResponse.getInfo() == null || matchResponse.getInfo().getParticipants() == null) {
             throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
         }
-
         // 참가자 정보에서 game_name과 일치하는 사용자의 champion ID 찾기
         return matchResponse.getInfo().getParticipants().stream()
-                .filter(participant -> game_name.equals(participant.getRiotIdGameName()))
+                .filter(participant -> gameName.equals(participant.getRiotIdGameName()))
                 .map(RiotResponse.ParticipantDTO::getChampionId)
                 .findFirst()
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.RIOT_NOT_FOUND));

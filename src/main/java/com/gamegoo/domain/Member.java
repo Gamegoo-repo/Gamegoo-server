@@ -59,13 +59,13 @@ public class Member extends BaseDateTimeEntity {
     private String rank;
 
     @Column(name = "winrate")
-    private double winRate;
+    private Double winRate;
 
     @Column(name = "main_position")
-    private int mainPosition;
+    private Integer mainPosition;
 
     @Column(name = "sub_position")
-    private int subPosition;
+    private Integer subPosition;
 
     @Column(name = "refresh_token")
     private String refreshToken;

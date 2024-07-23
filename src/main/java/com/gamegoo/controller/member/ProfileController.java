@@ -1,6 +1,8 @@
 package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.converter.MemberConverter;
+import com.gamegoo.domain.Member;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.dto.member.MemberResponse;
@@ -26,8 +28,8 @@ public class ProfileController {
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
     public ApiResponse<List<MemberResponse.GameStyleResponseDTO>> addGameStyle(@RequestBody MemberRequest.GameStyleRequestDTO gameStyleRequestDTO) {
         Long memberId = JWTUtil.getCurrentUserId();
-
         List<MemberGameStyle> memberGameStyles = profileService.addMemberGameStyles(gameStyleRequestDTO, memberId);
+
         List<MemberResponse.GameStyleResponseDTO> dtoList = memberGameStyles.stream().map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
                 .gameStyleId(memberGameStyle.getGameStyle().getId())
                 .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
@@ -67,6 +69,16 @@ public class ProfileController {
         profileService.deleteMember(userId);
         return ApiResponse.onSuccess("탈퇴처리가 완료되었습니다.");
 
+    }
+
+    @Operation(summary = "마이페이지 조회 API", description = "나 -> 나 조회하는 마이페이지 API 입니다.")
+    @GetMapping("/profile")
+    public ApiResponse<MemberResponse.myProfileMemberDTO> getBlockList() {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        Member myProfile = profileService.getMyProfile(memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
     }
 
 }
