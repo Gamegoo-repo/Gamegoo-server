@@ -1,4 +1,7 @@
 spring:
+  riot:
+    api:
+      key: ${spring.riot.api.key}
   # DB 설정
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
@@ -10,7 +13,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-      # show_sql: true
+      show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
 
@@ -31,9 +34,6 @@ spring:
           starttls:
             enable: true
 
-riot:
-  api:
-    key: ${RIOT_API}
 
 springdoc:
   swagger-ui:

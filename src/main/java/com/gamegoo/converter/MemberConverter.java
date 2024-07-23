@@ -32,4 +32,23 @@ public class MemberConverter {
                 .name(membr.getGameName())
                 .build();
     }
+
+    public static MemberResponse.myProfileMemberDTO toMyProfileDTO(Member member) {
+        List<MemberResponse.GameStyleResponseDTO> dtoList = member.getMemberGameStyleList().stream().map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
+                .gameStyleId(memberGameStyle.getGameStyle().getId())
+                .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
+                .build()).collect(Collectors.toList());
+
+        return MemberResponse.myProfileMemberDTO.builder()
+                .email(member.getEmail())
+                .gamename(member.getGameName())
+                .tag(member.getTag())
+                .tier(member.getTier())
+                .rank(member.getRank())
+                .profile_img(member.getProfileImage())
+                .updated_at(String.valueOf(member.getUpdatedAt()))
+                .game_style_dto_list(dtoList)
+                .build();
+    }
+
 }
