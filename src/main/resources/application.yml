@@ -5,7 +5,7 @@ spring:
   #riot API 설정
   riot:
     api:
-      key: ${spring.riot.api.key}
+      key: ${RIOT_API}
   # DB 설정
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
