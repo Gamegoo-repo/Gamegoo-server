@@ -71,7 +71,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         memberRepository.save(member);
 
         // 해당 유저 이름 불러오기
-        String gameuserName = member.getGameuserName();
+        String gameuserName = member.getGameName();
 
         // Response body에 넣기
         MemberResponse.LoginResponseDTO loginResponseDTO = new MemberResponse.LoginResponseDTO(access_token, refresh_token, gameuserName);
