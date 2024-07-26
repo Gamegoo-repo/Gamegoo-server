@@ -1,10 +1,12 @@
 package com.gamegoo.controller.board;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.service.board.BoardService;
+import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/posts")
 @Tag(name = "Board", description = "게시판 관련 API")
 public class BoardController {
+
+    private final ProfileService profileService;
     private final BoardService boardService;
 
     @PostMapping("")
@@ -30,6 +34,8 @@ public class BoardController {
             @RequestBody BoardRequest.boardInsertDTO request
             ){
         Long memberId = JWTUtil.getCurrentUserId();
+
+        Member memberProfile = profileService.getMyProfile(memberId);
 
         Board saveBoard = boardService.save(request,memberId);
 
@@ -40,6 +46,10 @@ public class BoardController {
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()
                 .boardId(saveBoard.getId())
                 .memberId(memberId)
+                .profileImage(memberProfile.getProfileImage())
+                .gameName(memberProfile.getGameName())
+                .tag(memberProfile.getTag())
+                .tier(memberProfile.getTier())
                 .gameMode(saveBoard.getMode())
                 .mainPosition(saveBoard.getMainPosition())
                 .subPosition(saveBoard.getSubPosition())
