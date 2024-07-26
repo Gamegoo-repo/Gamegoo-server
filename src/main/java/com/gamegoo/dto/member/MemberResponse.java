@@ -1,9 +1,6 @@
 package com.gamegoo.dto.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -30,5 +27,47 @@ public class MemberResponse {
         String profile_img;
         String email;
         String name;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class LoginResponseDTO {
+        String access_token;
+        String refresh_token;
+        String name;
+
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GameStyleResponseDTO {
+        Long gameStyleId;
+        String gameStyleName;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RefreshTokenResponseDTO {
+        String access_token;
+        String refresh_token;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myProfileMemberDTO {
+        String profile_img;
+        String email;
+        String gamename;
+        String tag;
+        String tier;
+        String rank;
+        String updated_at;
+        List<GameStyleResponseDTO> game_style_dto_list;
     }
 }

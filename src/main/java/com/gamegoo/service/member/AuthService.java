@@ -5,8 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.EmailVerifyRecord;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.enums.LoginType;
-import com.gamegoo.dto.member.JoinRequestDTO;
-import com.gamegoo.dto.member.RefreshTokenResponseDTO;
+import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.member.EmailVerifyRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
@@ -20,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -31,15 +32,11 @@ public class AuthService {
     private final JWTUtil jwtUtil;
 
     // 회원가입 로직
-    public void joinMember(JoinRequestDTO joinRequestDTO) {
-
-        // DTO로부터 데이터 받기
-        String email = joinRequestDTO.getEmail();
-        String password = joinRequestDTO.getPassword();
+    public void joinMember(String email, String password) {
 
         // 중복 확인하기
-        boolean isPresent = memberRepository.findByEmail(email).isPresent();
-        if (isPresent) {
+        // 중복 확인하기
+        if (memberRepository.existsByEmail(email)) {
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
@@ -80,7 +77,7 @@ public class AuthService {
     }
 
     // jwt refresh 토큰 검증
-    public RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
+    public MemberResponse.RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
         // refresh Token 검증하기
         Member member = memberRepository.findByRefreshToken(refresh_token)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.INVALID_TOKEN));
@@ -96,7 +93,7 @@ public class AuthService {
         member.setRefreshToken(new_refresh_token);
         memberRepository.save(member);
 
-        return new RefreshTokenResponseDTO(access_token, refresh_token);
+        return new MemberResponse.RefreshTokenResponseDTO(access_token, new_refresh_token);
     }
 
     // 이메일 인증코드 검증
@@ -108,9 +105,21 @@ public class AuthService {
                 // 해당 이메일이 없을 경우
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_NOT_FOUND));
 
+
+        LocalDateTime createdAt = emailVerifyRecord.getCreatedAt();
+        LocalDateTime currentAt = LocalDateTime.now();
+
+        // 두 LocalDateTime 객체의 차이를 계산합니다.
+        Duration duration = Duration.between(createdAt, currentAt);
+
+        // 차이가 3분 이상인지 확인합니다.
+        if (duration.toMinutes() >= 3) {
+            throw new MemberHandler(ErrorStatus.EMAIL_INVALID_TIME);
+        }
+
         // 인증 코드가 틀릴 경우
         if (!emailVerifyRecord.getCode().equals(code)) {
-            throw new MemberHandler(ErrorStatus.EMAIL_INVALID);
+            throw new MemberHandler(ErrorStatus.EMAIL_INVALID_CODE);
         }
     }
 

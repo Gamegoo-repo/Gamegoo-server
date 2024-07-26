@@ -12,4 +12,7 @@ public interface MemberGameStyleRepository extends JpaRepository<MemberGameStyle
     Optional<MemberGameStyle> findByMemberAndGameStyle(Member member, GameStyle gameStyle);
 
     List<MemberGameStyle> findByMember(Member member);
+
+    List<MemberGameStyle> findByMemberAndGameStyleNotIn(Member member, List<GameStyle> gameStyles);
+
 }
