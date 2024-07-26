@@ -23,7 +23,7 @@ public class RiotController {
     @PostMapping("/riot")
     @Operation(summary = "회원가입 시 riot API를 통해 소환사명을 인증하는 API", description = "API for verifying by riot API")
     public ApiResponse<String> VerifyRiot(@RequestBody @Valid MemberRequest.verifyRiotRequestDTO verifyRiotRequestDTO) {
-        String gameName = verifyRiotRequestDTO.getGame_name();
+        String gameName = verifyRiotRequestDTO.getGameName();
         String tag = verifyRiotRequestDTO.getTag();
         String email = verifyRiotRequestDTO.getEmail();
 

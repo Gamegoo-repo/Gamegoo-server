@@ -48,5 +48,26 @@ public class MemberResponse {
         String gameStyleName;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RefreshTokenResponseDTO {
+        String access_token;
+        String refresh_token;
+    }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myProfileMemberDTO {
+        String profile_img;
+        String email;
+        String gamename;
+        String tag;
+        String tier;
+        String rank;
+        String updated_at;
+        List<GameStyleResponseDTO> game_style_dto_list;
+    }
 }
