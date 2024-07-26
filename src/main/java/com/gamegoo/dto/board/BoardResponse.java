@@ -35,6 +35,10 @@ public class BoardResponse {
     public static class boardUpdateResponseDTO{
         Long boardId;
         Long memberId;
+        String profileImage;
+        String gameName;
+        String tag;
+        String tier;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;

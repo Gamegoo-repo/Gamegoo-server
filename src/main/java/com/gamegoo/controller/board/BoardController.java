@@ -72,6 +72,8 @@ public class BoardController {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
+        Member memberProfile = profileService.getMyProfile(memberId);
+
         Board updateBoard = boardService.update(request, memberId, postId);
 
         List<Long> gameStyles = updateBoard.getBoardGameStyles().stream()
@@ -81,6 +83,10 @@ public class BoardController {
         BoardResponse.boardUpdateResponseDTO result= BoardResponse.boardUpdateResponseDTO.builder()
                 .boardId(updateBoard.getId())
                 .memberId(memberId)
+                .profileImage(memberProfile.getProfileImage())
+                .gameName(memberProfile.getGameName())
+                .tag(memberProfile.getTag())
+                .tier(memberProfile.getTier())
                 .gameMode(updateBoard.getMode())
                 .mainPosition(updateBoard.getMainPosition())
                 .subPosition(updateBoard.getSubPosition())
