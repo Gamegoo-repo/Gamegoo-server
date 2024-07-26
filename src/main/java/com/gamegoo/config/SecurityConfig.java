@@ -45,8 +45,8 @@ public class SecurityConfig {
     @Bean
     public JWTFilter jwtFilter() {
         List<String> excludedPaths = Arrays.asList("/swagger-ui/", "/v3/api-docs",
-            "/api/member/join", "/api/member/login", "/api/member/email", "/api/member/refresh",
-            "/api/member/riot", "/api/security/permit");
+            "/v1/member/join", "/v1/member/login", "/v1/member/email", "/v1/member/refresh",
+            "/v1/member/riot");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
 
     }
@@ -65,9 +65,8 @@ public class SecurityConfig {
             .httpBasic(AbstractHttpConfigurer::disable)
             .cors(withDefaults())
             .authorizeHttpRequests((auth) -> auth
-                .antMatchers("/", "/api/member/join", "/api/member/login", "/api/member/email/**",
-                    "/api/member/refresh", "/api/member/riot").permitAll()
-                .antMatchers("/api/security/permit").permitAll()
+                .antMatchers("/", "/v1/member/join", "/v1/member/login", "/v1/member/email/**",
+                    "/v1/member/refresh", "/v1/member/riot").permitAll()
                 .antMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JWTExceptionHandlerFilter(),
@@ -89,6 +88,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://api.gamegoo.co.kr");
+        config.addAllowedOrigin("https://socket.gamegoo.co.kr");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
