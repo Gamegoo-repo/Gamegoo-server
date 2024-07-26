@@ -181,9 +181,9 @@ public class BoardService {
             if (boardGameStyle == null) {
                 boardGameStyle = BoardGameStyle.builder()
                         .gameStyle(gameStyle)
-                        .board(board)
                         .build();
-                board.addBoardGameStyle(boardGameStyle);
+                // 연관관계 메소드 사용
+                boardGameStyle.setBoard(board);
             } else {
                 // 기존 엔티티 업데이트
                 boardGameStyle.setGameStyle(gameStyle);
