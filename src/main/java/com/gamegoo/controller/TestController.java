@@ -2,14 +2,10 @@ package com.gamegoo.controller;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.dto.member.MemberRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,30 +26,5 @@ public class TestController {
     public String apiResponseTest() {
         throw new TempHandler(ErrorStatus.TEMP_EXCEPTION);
     }
-
-    @GetMapping("/security/permit")
-    @Operation(summary = "시큐리티 허용 url")
-    public String permitGet() {
-        return "GET /api/security/permit success";
-    }
-
-    @GetMapping("/security/restrict")
-    @Operation(summary = "시큐리티 허용X url")
-    public String restrictGet() {
-        return "GET /api/security/restrict success";
-    }
-
-    @PostMapping("/security/permit")
-    @Operation(summary = "시큐리티 허용 url")
-    public String permitPost(@RequestBody @Valid MemberRequest.JoinRequestDTO joinRequestDTO) {
-        return joinRequestDTO.getEmail();
-    }
-
-    @PostMapping("/security/restrict")
-    @Operation(summary = "시큐리티 허용X url")
-    public String restrictPost(@RequestBody @Valid MemberRequest.JoinRequestDTO joinRequestDTO) {
-        return joinRequestDTO.getEmail();
-    }
-
-
+    
 }
