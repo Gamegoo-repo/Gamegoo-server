@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
 
+    Optional<Member> findByGameName(String gameName);
+
     Optional<Member> findById(Long id);
 
     Optional<Member> findByRefreshToken(String refresh_token);
@@ -20,4 +22,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findBlockedMembersByBlockerIdAndNotBlind(@Param("blockerId") Long blockerId, Pageable pageable);
 
 
+    boolean existsByEmail(String email);
 }

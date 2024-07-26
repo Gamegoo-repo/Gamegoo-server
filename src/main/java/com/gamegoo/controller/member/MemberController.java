@@ -12,14 +12,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @Tag(name = "Member", description = "회원 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/member")
+@RequestMapping("/v1/member")
 public class MemberController {
+
     private final MemberService memberService;
 
 
@@ -36,7 +43,8 @@ public class MemberController {
     @Operation(summary = "차단한 회원 목록 조회 API", description = "내가 차단한 회원의 목록을 조회하는 API 입니다.")
     @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
     @GetMapping("/block")
-    public ApiResponse<MemberResponse.blockListDTO> getBlockList(@RequestParam(name = "page") Integer page) {
+    public ApiResponse<MemberResponse.blockListDTO> getBlockList(
+        @RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Page<Member> blockList = memberService.getBlockList(memberId, page - 1);

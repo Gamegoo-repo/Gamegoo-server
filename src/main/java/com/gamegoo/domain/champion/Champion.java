@@ -1,22 +1,32 @@
 package com.gamegoo.domain.champion;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "Champion")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class Champion {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "champion_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "champion_name", nullable = false, length = 30)
-    private String champion_name;
+    @Column(name = "name", nullable = false, length = 30)
+    private String name;
 
+    // Champion 생성자
+    @Builder
+    public Champion(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
 }

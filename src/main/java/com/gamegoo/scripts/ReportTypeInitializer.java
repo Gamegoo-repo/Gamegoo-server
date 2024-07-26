@@ -1,6 +1,5 @@
 package com.gamegoo.scripts;
 
-import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.report.ReportType;
 import com.gamegoo.repository.report.ReportTypeRepository;
 import lombok.RequiredArgsConstructor;
