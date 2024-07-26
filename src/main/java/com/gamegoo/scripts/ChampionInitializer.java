@@ -24,7 +24,7 @@ public class ChampionInitializer implements ApplicationListener<ApplicationReady
             try {
                 initializeChampions();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println(e.getClass());
             }
         }
     }
@@ -46,9 +46,10 @@ public class ChampionInitializer implements ApplicationListener<ApplicationReady
             Long key = championNode.path("key").asLong();
             String name = championNode.path("name").asText();
 
-            Champion champion = new Champion();
-            champion.setId(key);
-            champion.setName(name);
+            Champion champion = Champion.builder()
+                    .id(key)
+                    .name(name)
+                    .build();
 
             championRepository.save(champion);
         }
