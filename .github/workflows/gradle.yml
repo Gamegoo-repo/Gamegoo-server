@@ -40,7 +40,7 @@ jobs:
 
       # Docker 이미지 Build (5)
       - name: docker image build
-        run: docker build -t rimi3226/gamegoo .
+        run: docker build -t rimi3226/gamegoo:${{ github.sha }} .
 
       # DockerHub Login (6)
       - name: docker login
@@ -51,7 +51,7 @@ jobs:
 
       # Docker Hub push (7)
       - name: docker Hub push
-        run: docker push rimi3226/gamegoo
+        run: docker push rimi3226/gamegoo:${{ github.sha }}
 
       # GET GitHub IP (8)
       - name: get GitHub IP
@@ -81,9 +81,10 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           timeout: 50s
           script: |
+            sudo docker pull rimi3226/gamegoo:${{ github.sha }}
             sudo docker stop gamegoo_api
             sudo docker rm gamegoo_api
-            sudo docker run -it -d -p 8080:8080 --name gamegoo_api rimi3226/gamegoo
+            sudo docker run -it -d -p 8080:8080 --name gamegoo_api rimi3226/gamegoo:${{ github.sha }}
 
       # REMOVE Github IP FROM security group (12)
       - name: Remove IP FROM security group
