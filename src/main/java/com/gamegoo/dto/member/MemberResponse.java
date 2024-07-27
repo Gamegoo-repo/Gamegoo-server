@@ -33,8 +33,8 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class LoginResponseDTO {
-        String access_token;
-        String refresh_token;
+        String accessToken;
+        String refreshToken;
         String name;
 
     }
@@ -52,8 +52,8 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class RefreshTokenResponseDTO {
-        String access_token;
-        String refresh_token;
+        String accessToken;
+        String refreshToken;
     }
 
     @Builder
@@ -61,13 +61,13 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class myProfileMemberDTO {
-        String profile_img;
+        String profileImg;
         String email;
-        String gamename;
+        String gameName;
         String tag;
         String tier;
         String rank;
-        String updated_at;
-        List<GameStyleResponseDTO> game_style_dto_list;
+        String updatedAt;
+        List<GameStyleResponseDTO> gameStyleResponseDTOList;
     }
 }
