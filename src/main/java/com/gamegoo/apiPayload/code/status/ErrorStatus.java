@@ -41,7 +41,8 @@ public enum ErrorStatus implements BaseErrorCode {
     POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
 
     // Profile_Image 관련 에러
-    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다."),
+    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400",
+        "profile_image가 30자를 초과했습니다."),
 
     // Email 인증 관련 에러
     EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
@@ -51,11 +52,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
-    RIOT_MATCH_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOTMATCH404", "해당 Riot 계정의 매칭을 불러오는 도중 에러가 발생했습니다."),
+    RIOT_MATCH_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOTMATCH404",
+        "해당 Riot 계정의 매칭을 불러오는 도중 에러가 발생했습니다."),
     CHAMPION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAMPION404", "해당 챔피언이 존재하지 않습니다."),
     RIOT_MEMBER_CONFLICT(HttpStatus.CONFLICT, "RIOT409", "해당 이메일 계정은 이미 다른 RIOT 계정과 연동되었습니다."),
     RIOT_ACCOUNT_CONFLICT(HttpStatus.CONFLICT, "RIOT409", "해당 RIOT 계정은 이미 다른 이메일과 연동되어있습니다."),
-    RIOT_INSUFFICIENT_MATCHES(HttpStatus.NOT_FOUND, "RIOT404", "해당 RIOT 계정은 최근 100판 이내에 솔로랭크, 자유랭크, 일반게임, 칼바람을 플레이한 적이 없기 때문에 선호하는 챔피언 3명을 정할 수 없습니다."),
+    RIOT_INSUFFICIENT_MATCHES(HttpStatus.NOT_FOUND, "RIOT404",
+        "해당 RIOT 계정은 최근 100판 이내에 솔로랭크, 자유랭크, 일반게임, 칼바람을 플레이한 적이 없기 때문에 선호하는 챔피언 3명을 정할 수 없습니다."),
     RIOT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "RIOT500", "RIOT API 연동 중 에러가 발생했습니다."),
 
     // 차단 관련 에러
@@ -68,13 +71,22 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_AND_TARGET_MEMBER_SAME(HttpStatus.BAD_REQUEST, "REPORT402", "회원과 신고 대상 회원이 같습니다."),
 
     // 게시판 글 작성 관련 에러
-    BOARD_GAME_STYLE_BAD_REQUEST(HttpStatus.BAD_REQUEST,"BOARD400", "게임 스타일 선택 개수(최대 3개)를 초과했습니다."),
+    BOARD_GAME_STYLE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "BOARD400",
+        "게임 스타일 선택 개수(최대 3개)를 초과했습니다."),
     GAME_MODE_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "게임모드 값은 1~4만 가능합니다."),
     MAIN_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "주포지션 값은 1~5만 가능합니다."),
 
     SUB_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "부포지션 값은 1~5만 가능합니다."),
 
-    WANT_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "상대포지션 값은 1~5만 가능합니다.");
+    WANT_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "상대포지션 값은 1~5만 가능합니다."),
+
+    // 채팅 관련 에러
+    CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4001", "채팅 대상 회원을 찾을 수 없습니다."),
+    CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT4002", "채팅방을 찾을 수 없습니다."),
+    CHATROOM_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "CHAT4003", "접근할 수 없는 채팅방 입니다."),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4004", "해당 메시지를 찾을 수 없습니다"),
+
+    ;
 
     private final HttpStatus httpStatus;
     private final String code;
@@ -83,19 +95,19 @@ public enum ErrorStatus implements BaseErrorCode {
     @Override
     public ErrorReasonDTO getReason() {
         return ErrorReasonDTO.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .build();
     }
 
     @Override
     public ErrorReasonDTO getReasonHttpStatus() {
         return ErrorReasonDTO.builder()
-                .message(message)
-                .code(code)
-                .isSuccess(false)
-                .httpStatus(httpStatus)
-                .build();
+            .message(message)
+            .code(code)
+            .isSuccess(false)
+            .httpStatus(httpStatus)
+            .build();
     }
 }
