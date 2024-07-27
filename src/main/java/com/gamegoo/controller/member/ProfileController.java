@@ -76,7 +76,7 @@ public class ProfileController {
     public ApiResponse<MemberResponse.myProfileMemberDTO> getBlockList() {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Member myProfile = profileService.getMyProfile(memberId);
+        Member myProfile = profileService.findMember(memberId);
 
         return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
     }
