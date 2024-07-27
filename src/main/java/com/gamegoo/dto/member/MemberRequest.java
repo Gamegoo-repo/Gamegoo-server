@@ -13,7 +13,6 @@ import java.util.List;
 public class MemberRequest {
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class EmailCodeRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
         private String email;
@@ -22,7 +21,6 @@ public class MemberRequest {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class EmailRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
@@ -36,7 +34,6 @@ public class MemberRequest {
     }
 
     @Getter
-    @AllArgsConstructor
     @NoArgsConstructor
     public static class JoinRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
@@ -48,9 +45,9 @@ public class MemberRequest {
     }
 
     @Getter
-    @AllArgsConstructor
+
     public static class PasswordRequestDTO {
-        @NotBlank
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
         private String password;
     }
 
@@ -70,7 +67,6 @@ public class MemberRequest {
     }
 
     @Getter
-    @AllArgsConstructor
     public static class RefreshTokenRequestDTO {
         @NotBlank
         String refreshToken;
@@ -78,7 +74,6 @@ public class MemberRequest {
 
     @Getter
     @AllArgsConstructor
-    @NoArgsConstructor
     public static class verifyRiotRequestDTO {
         @NotBlank
         String email;
