@@ -111,10 +111,10 @@ public class RiotService {
                             .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
 
                     MemberChampion memberChampion = MemberChampion.builder()
-                            .member(member)
                             .champion(champion)
                             .build();
 
+                    memberChampion.setMember(member);
                     memberChampionRepository.save(memberChampion);
                 });
 
