@@ -13,6 +13,10 @@ public class BoardResponse {
     public static class boardInsertResponseDTO{
         Long boardId;
         Long memberId;
+        String profileImage;
+        String gameName;
+        String tag;
+        String tier;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -21,5 +25,26 @@ public class BoardResponse {
         List<Long> gameStyles;
         String contents;
 
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class boardUpdateResponseDTO{
+        Long boardId;
+        Long memberId;
+        String profileImage;
+        String gameName;
+        String tag;
+        String tier;
+        Integer gameMode;
+        Integer mainPosition;
+        Integer subPosition;
+        Integer wantPosition;
+        Boolean voice;
+        List<Long> gameStyles;
+        String contents;
     }
 }

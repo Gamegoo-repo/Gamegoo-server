@@ -71,22 +71,24 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBER_AND_TARGET_MEMBER_SAME(HttpStatus.BAD_REQUEST, "REPORT402", "회원과 신고 대상 회원이 같습니다."),
 
     // 게시판 글 작성 관련 에러
-    BOARD_GAME_STYLE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "BOARD400",
-        "게임 스타일 선택 개수(최대 3개)를 초과했습니다."),
+    BOARD_GAME_STYLE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "BOARD400", "게임 스타일 선택 개수(최대 3개)를 초과했습니다."),
     GAME_MODE_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "게임모드 값은 1~4만 가능합니다."),
     MAIN_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "주포지션 값은 1~5만 가능합니다."),
-
     SUB_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "부포지션 값은 1~5만 가능합니다."),
-
     WANT_POSITION_INVALID(HttpStatus.BAD_REQUEST, "BOARD401", "상대포지션 값은 1~5만 가능합니다."),
+
+    // 게시판 글 수정 관련 에러
+    BOARD_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 수정 가능합니다."),
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "BOARD404", "게시판에서 해당 글을 찾을 수 없습니다."),
+
+    // 게시판 글 삭제 관련 에러
+    BOARD_DELETE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 삭제 가능합니다."),
 
     // 채팅 관련 에러
     CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4001", "채팅 대상 회원을 찾을 수 없습니다."),
     CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT4002", "채팅방을 찾을 수 없습니다."),
     CHATROOM_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "CHAT4003", "접근할 수 없는 채팅방 입니다."),
-    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4004", "해당 메시지를 찾을 수 없습니다"),
-
-    ;
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4004", "해당 메시지를 찾을 수 없습니다");
 
     private final HttpStatus httpStatus;
     private final String code;
