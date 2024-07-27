@@ -53,7 +53,6 @@ public class RiotService {
             throw new MemberHandler(ErrorStatus.RIOT_ACCOUNT_CONFLICT);
         }
 
-
         /* 티어, 랭킹 정보 불러오기 */
         // 1. game_name, tag로 사용자 puuid 얻기
         String puuid = getRiotPuuid(gameName, tag);
@@ -67,57 +66,61 @@ public class RiotService {
         List<Integer> recentChampionIds = null;
         int count = 20;
 
-        while ((recentChampionIds == null || recentChampionIds.size() < 3) && count <= 100) {
-            List<String> recentMatchIds = getRecentMatchIds(puuid, count);
+        try {
+            while ((recentChampionIds == null || recentChampionIds.size() < 3) && count <= 100) {
+                List<String> recentMatchIds = getRecentMatchIds(puuid, count);
 
-            recentChampionIds = recentMatchIds.stream()
-                    .map(matchId -> getChampionIdFromMatch(matchId, gameName))
-                    .filter(championId -> championId < 1000)
-                    .toList();
+                recentChampionIds = recentMatchIds.stream()
+                        .map(matchId -> getChampionIdFromMatch(matchId, gameName))
+                        .filter(championId -> championId < 1000)
+                        .toList();
+
+                if (recentChampionIds.size() < 3) {
+                    count += 10; // count를 10 증가시켜서 다시 시도
+                }
+            }
 
             if (recentChampionIds.size() < 3) {
-                count += 10; // count를 10 증가시켜서 다시 시도
+                throw new MemberHandler(ErrorStatus.RIOT_INSUFFICIENT_MATCHES);
             }
+
+            // 3. 해당 캐릭터 중 많이 사용한 캐릭터 세 개 저장하기
+            //      (1) 챔피언 사용 빈도 계산
+            Map<Integer, Long> championFrequency = recentChampionIds.stream()
+                    .collect(Collectors.groupingBy(championId -> championId, Collectors.counting()));
+
+            //      (2) 빈도를 기준으로 정렬하여 상위 3개의 챔피언 추출
+            List<Integer> top3Champions = championFrequency.entrySet().stream()
+                    .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
+                    .limit(3)
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
+            //    (1) 해당 email을 가진 사용자의 정보가 MemberChampion 테이블에 있을 경우 제거
+            member.getMemberChampionList()
+                    .forEach(memberChampion -> {
+                        memberChampion.removeMember(member); // 양방향 연관관계 제거
+                        memberChampionRepository.delete(memberChampion);
+                    });
+
+            //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
+            top3Champions
+                    .forEach(championId -> {
+                        Champion champion = championRepository.findById(Long.valueOf(championId))
+                                .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
+
+                        MemberChampion memberChampion = MemberChampion.builder()
+                                .champion(champion)
+                                .build();
+
+                        memberChampion.setMember(member);
+                        memberChampionRepository.save(memberChampion);
+                    });
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
         }
-
-        if (recentChampionIds.size() < 3) {
-            throw new MemberHandler(ErrorStatus.RIOT_INSUFFICIENT_MATCHES);
-        }
-
-        // 3. 해당 캐릭터 중 많이 사용한 캐릭터 세 개 저장하기
-        //      (1) 챔피언 사용 빈도 계산
-        Map<Integer, Long> championFrequency = recentChampionIds.stream()
-                .collect(Collectors.groupingBy(championId -> championId, Collectors.counting()));
-
-        //      (2) 빈도를 기준으로 정렬하여 상위 3개의 챔피언 추출
-        List<Integer> top3Champions = championFrequency.entrySet().stream()
-                .sorted(Map.Entry.<Integer, Long>comparingByValue().reversed())
-                .limit(3)
-                .map(Map.Entry::getKey)
-                .toList();
-
-        // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
-        //    (1) 해당 email을 가진 사용자의 정보가 MemberChampion 테이블에 있을 경우 제거
-        member.getMemberChampionList()
-                .forEach(memberChampion -> {
-                    memberChampion.removeMember(member); // 양방향 연관관계 제거
-                    memberChampionRepository.delete(memberChampion);
-                });
-
-        //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
-        top3Champions
-                .forEach(championId -> {
-                    Champion champion = championRepository.findById(Long.valueOf(championId))
-                            .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
-
-                    MemberChampion memberChampion = MemberChampion.builder()
-                            .champion(champion)
-                            .build();
-
-                    memberChampion.setMember(member);
-                    memberChampionRepository.save(memberChampion);
-                });
-
     }
 
     // RiotAPI - request:game_name, tag / response : puuid
@@ -130,10 +133,13 @@ public class RiotService {
             if (e.getStatusCode().value() == 404) {
                 throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
             }
-            throw e;
+            throw new MemberHandler(ErrorStatus.RIOT_ERROR);
         }
 
-        assert accountResponse != null;
+        if (accountResponse == null) {
+            throw new MemberHandler(ErrorStatus.RIOT_ERROR);
+        }
+
         return accountResponse.getPuuid();
 
     }
@@ -142,10 +148,15 @@ public class RiotService {
     private String getSummonerId(String puuid) {
 
         String summonerUrl = String.format(RIOT_SUMMONER_API_URL_TEMPLATE, puuid, riotAPIKey);
-        RiotResponse.RiotSummonerDTO summonerResponse = restTemplate.getForObject(summonerUrl, RiotResponse.RiotSummonerDTO.class);
+        RiotResponse.RiotSummonerDTO summonerResponse = null;
+        try {
+            summonerResponse = restTemplate.getForObject(summonerUrl, RiotResponse.RiotSummonerDTO.class);
 
-        if (summonerResponse == null) {
-            throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
+            if (summonerResponse == null) {
+                throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new MemberHandler(ErrorStatus.RIOT_ERROR);
         }
 
         return summonerResponse.getId();
@@ -189,7 +200,7 @@ public class RiotService {
         String[] matchIds = restTemplate.getForObject(matchUrl, String[].class);
 
         if (matchIds == null || matchIds.length == 0) {
-            throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
+            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
         }
 
         return Arrays.asList(matchIds);
@@ -204,12 +215,13 @@ public class RiotService {
         if (matchResponse == null || matchResponse.getInfo() == null || matchResponse.getInfo().getParticipants() == null) {
             throw new MemberHandler(ErrorStatus.RIOT_NOT_FOUND);
         }
-        // 참가자 정보에서 game_name과 일치하는 사용자의 champion ID 찾기
+
+        // 참가자 정보에서 gameName과 일치하는 사용자의 champion ID 찾기
         return matchResponse.getInfo().getParticipants().stream()
                 .filter(participant -> gameName.equals(participant.getRiotIdGameName()))
                 .map(RiotResponse.ParticipantDTO::getChampionId)
                 .findFirst()
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.RIOT_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND));
     }
 
 
