@@ -1,6 +1,5 @@
 package com.gamegoo.dto.member;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +14,8 @@ public class MemberRequest {
     @NoArgsConstructor
     public static class EmailCodeRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
-        private String email;
-        private String code;
+        String email;
+        String code;
     }
 
     @Getter
@@ -24,13 +23,13 @@ public class MemberRequest {
     public static class EmailRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
-        private String email;
+        String email;
     }
 
     @Getter
     public static class GameStyleRequestDTO {
         @NotBlank(message = "gameStyleList은 비워둘 수 없습니다.")
-        private List<Long> gameStyleIdList;
+        List<Long> gameStyleIdList;
     }
 
     @Getter
@@ -38,17 +37,16 @@ public class MemberRequest {
     public static class JoinRequestDTO {
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
-        private String email;
+        String email;
         @NotBlank
-        private String password;
+        String password;
 
     }
 
     @Getter
-
     public static class PasswordRequestDTO {
         @NotBlank(message = "password는 비워둘 수 없습니다.")
-        private String password;
+        String password;
     }
 
     @Getter
@@ -73,7 +71,6 @@ public class MemberRequest {
     }
 
     @Getter
-    @AllArgsConstructor
     public static class verifyRiotRequestDTO {
         @NotBlank
         String email;
