@@ -1,5 +1,7 @@
 package com.gamegoo.dto.member;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
@@ -13,50 +15,47 @@ public class MemberRequest {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class EmailCodeRequestDTO {
 
         @Email(message = "Email 형식이 올바르지 않습니다.")
-        private String email;
-        private String code;
+        String email;
+        String code;
     }
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
     public static class EmailRequestDTO {
 
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
-        private String email;
+        String email;
     }
 
     @Getter
     public static class GameStyleRequestDTO {
 
         @NotBlank(message = "gameStyleList은 비워둘 수 없습니다.")
-        private List<Long> gameStyleIdList;
+        List<Long> gameStyleIdList;
     }
 
     @Getter
-    @AllArgsConstructor
     @NoArgsConstructor
     public static class JoinRequestDTO {
 
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
-        private String email;
+        String email;
         @NotBlank
-        private String password;
+        String password;
 
     }
 
     @Getter
-    @AllArgsConstructor
     public static class PasswordRequestDTO {
 
-        @NotBlank
-        private String password;
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
+        String password;
+
     }
 
     @Getter
@@ -84,8 +83,6 @@ public class MemberRequest {
     }
 
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class verifyRiotRequestDTO {
 
         @NotBlank
