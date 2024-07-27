@@ -93,7 +93,7 @@ public class AuthService {
         member.setRefreshToken(new_refresh_token);
         memberRepository.save(member);
 
-        return new MemberResponse.RefreshTokenResponseDTO(access_token, refresh_token);
+        return new MemberResponse.RefreshTokenResponseDTO(access_token, new_refresh_token);
     }
 
     // 이메일 인증코드 검증
