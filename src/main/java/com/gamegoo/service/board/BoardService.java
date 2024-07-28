@@ -3,6 +3,7 @@ package com.gamegoo.service.board;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
+import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.BoardGameStyle;
@@ -215,6 +216,11 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
+
+        // pageIdx 값 검증.
+        if (pageIdx <= 0){
+            throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
         Pageable pageable = PageRequest.of(pageIdx-1, PAGE_SIZE);
