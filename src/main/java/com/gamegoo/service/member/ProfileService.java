@@ -90,6 +90,7 @@ public class ProfileService {
     }
 
     public void modifyProfileImage(Long userId, String profileImage) {
+        System.out.println(userId + profileImage);
 
         if (profileImage.length() > 30) {
             throw new MemberHandler(ErrorStatus.PROFILE_IMAGE_BAD_REQUEST);
@@ -102,5 +103,11 @@ public class ProfileService {
         memberRepository.save(member);
 
 
+    }
+
+    @Transactional
+    public Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 }

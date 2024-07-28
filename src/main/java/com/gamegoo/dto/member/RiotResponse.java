@@ -65,6 +65,7 @@ public class RiotResponse {
     @Setter
     public static class ParticipantDTO {
         private String riotIdGameName;
+        private String gameMode;
         private int championId;
     }
 }
