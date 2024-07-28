@@ -14,13 +14,13 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockListDTO {
+        List<blockedMemberDTO> blockedMemberDTOList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
 
-        List<blockedMemberDTO> blocked_member_dto_list;
-        Integer list_size;
-        Integer total_page;
-        Long total_elements;
-        Boolean is_first;
-        Boolean is_last;
     }
 
     @Builder
@@ -28,9 +28,8 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockedMemberDTO {
-
-        Long member_id;
-        String profile_img;
+        Long memberId;
+        String profileImg;
         String email;
         String name;
     }
