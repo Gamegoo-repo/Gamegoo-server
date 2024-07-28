@@ -217,6 +217,7 @@ public class BoardService {
 
 
     // 게시판 글 목록 조회
+    @Transactional(readOnly = true)
     public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
 
         // pageIdx 값 검증.
@@ -253,6 +254,7 @@ public class BoardService {
     }
 
     // 게시판 글 조회
+    @Transactional(readOnly = true)
     public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId){
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
@@ -282,6 +284,7 @@ public class BoardService {
     }
 
     // 내가 작성한 게시판 글 목록 조회
+    @Transactional(readOnly = true)
     public List<BoardResponse.myBoardListResponseDTO> getMyBoardList(Long memberId, int pageIdx) {
 
         // pageIdx 값 검증.
