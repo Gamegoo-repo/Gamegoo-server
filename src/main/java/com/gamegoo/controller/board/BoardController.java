@@ -117,4 +117,11 @@ public class BoardController {
         return ApiResponse.onSuccess(result);
     }
 
+    @GetMapping("/{boardId}")
+    public ApiResponse<BoardResponse.boardByIdResponseDTO> getBoardById(@PathVariable Long boardId) {
+
+        BoardResponse.boardByIdResponseDTO result = boardService.getBoardById(boardId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }

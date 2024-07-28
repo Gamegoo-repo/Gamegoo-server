@@ -250,4 +250,33 @@ public class BoardService {
 
         }).collect(Collectors.toList());
     }
+
+    // 게시판 글 조회
+    public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId){
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        Member member = board.getMember();
+
+        return BoardResponse.boardByIdResponseDTO.builder()
+                .boardId(board.getId())
+                .memberId(member.getId())
+                .createdAt(board.getCreatedAt())
+                .profileImage(member.getProfileImage())
+                .gameName(member.getGameName())
+                .tag(member.getTag())
+                .mannerLevel(member.getMannerLevel())
+                .tier(member.getTier())
+                .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
+                .voice(board.getVoice())
+                .gameMode(board.getMode())
+                .mainPosition(board.getMainPosition())
+                .subPosition(board.getSubPosition())
+                .wantPosition(board.getWantPosition())
+                .winRate(member.getWinRate())
+                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .contents(board.getContent())
+                .build();
+
+    }
 }
