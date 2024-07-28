@@ -2,6 +2,7 @@ package com.gamegoo.dto.board;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class BoardResponse {
@@ -46,5 +47,26 @@ public class BoardResponse {
         Boolean voice;
         List<Long> gameStyles;
         String contents;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class boardListResponseDTO{
+        Long boardId;
+        Long memberId;
+        String profileImage;
+        String gameName;
+        Integer mannerLevel;
+        String tier;
+        Integer gameMode;
+        Integer mainPosition;
+        Integer subPosition;
+        Integer wantPosition;
+        List<Long> championList;
+        Double winRate;
+        LocalDateTime createdAt;
     }
 }

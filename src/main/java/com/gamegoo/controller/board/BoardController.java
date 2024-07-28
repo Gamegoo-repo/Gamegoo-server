@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/posts")
 @Tag(name = "Board", description = "게시판 관련 API")
 public class BoardController {
-
-
     private final ProfileService profileService;
-
     private final BoardService boardService;
 
     @PostMapping("")
@@ -36,7 +33,7 @@ public class BoardController {
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Member memberProfile = profileService.getMyProfile(memberId);
+        Member memberProfile = profileService.findMember(memberId);
 
         Board saveBoard = boardService.save(request,memberId);
 
@@ -73,7 +70,7 @@ public class BoardController {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Member memberProfile = profileService.getMyProfile(memberId);
+        Member memberProfile = profileService.findMember(memberId);
 
         Board updateBoard = boardService.update(request, memberId, postId);
 
@@ -111,4 +108,12 @@ public class BoardController {
 
         return ApiResponse.onSuccess("게시글을 삭제하였습니다.");
     }
+
+    @GetMapping("")
+    public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx){
+        int pageSize = 20;
+        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(pageIdx, pageSize);
+        return ApiResponse.onSuccess(result);
+    }
+
 }
