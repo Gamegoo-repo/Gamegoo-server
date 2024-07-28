@@ -41,13 +41,13 @@ public class MemberConverter {
 
         return MemberResponse.myProfileMemberDTO.builder()
                 .email(member.getEmail())
-                .gamename(member.getGameName())
+                .gameName(member.getGameName())
                 .tag(member.getTag())
                 .tier(member.getTier())
                 .rank(member.getRank())
-                .profile_img(member.getProfileImage())
-                .updated_at(String.valueOf(member.getUpdatedAt()))
-                .game_style_dto_list(dtoList)
+                .profileImg(member.getProfileImage())
+                .updatedAt(String.valueOf(member.getUpdatedAt()))
+                .gameStyleResponseDTOList(dtoList)
                 .build();
     }
 
