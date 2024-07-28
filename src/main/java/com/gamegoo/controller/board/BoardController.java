@@ -126,6 +126,16 @@ public class BoardController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping("/my")
+    public ApiResponse<List<BoardResponse.myBoardListResponseDTO>> getMyBoardList(@RequestParam(defaultValue = "1") int pageIdx) {
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        List<BoardResponse.myBoardListResponseDTO> result = boardService.getMyBoardList(memberId, pageIdx);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
 
 

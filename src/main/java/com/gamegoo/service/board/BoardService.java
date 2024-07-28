@@ -36,6 +36,8 @@ public class BoardService {
     private final GameStyleRepository gameStyleRepository;
     private final BoardGameStyleRepository boardGameStyleRepository;
 
+    private final static int PAGE_SIZE = 20;  // 페이지당 표시할 게시물 수
+
     // 게시판 글 작성.
     @Transactional
     public Board save(BoardRequest.boardInsertDTO request,Long memberId){
@@ -213,7 +215,6 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
-    private final static int PAGE_SIZE = 20;  // 페이지당 표시할 게시물 수
 
     // 게시판 글 목록 조회
     public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
@@ -278,5 +279,34 @@ public class BoardService {
                 .contents(board.getContent())
                 .build();
 
+    }
+
+    // 내가 작성한 게시판 글 목록 조회
+    public List<BoardResponse.myBoardListResponseDTO> getMyBoardList(Long memberId, int pageIdx) {
+
+        // pageIdx 값 검증.
+        if (pageIdx <= 0) {
+            throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
+
+        // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
+        Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<Board> boards = boardRepository.findByMemberId(memberId, pageable).getContent();
+
+        return boards.stream().map(board -> {
+            Member member = board.getMember();
+
+            return BoardResponse.myBoardListResponseDTO.builder()
+                    .boardId(board.getId())
+                    .memberId(member.getId())
+                    .profileImage(member.getProfileImage())
+                    .gameName(member.getGameName())
+                    .tag(member.getTag())
+                    .tier(member.getTier())
+                    .contents(board.getContent())
+                    .createdAt(board.getCreatedAt())
+                    .build();
+        }).collect(Collectors.toList());
     }
 }
