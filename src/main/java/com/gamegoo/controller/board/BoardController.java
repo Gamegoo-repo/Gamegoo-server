@@ -118,6 +118,8 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
+    @Operation(summary = "게시판 글 조회 API", description = "게시판에서 글을 조회하는 API 입니다.")
+    @Parameter(name = "boardId", description = "조회할 게시판 글 id 입니다.")
     public ApiResponse<BoardResponse.boardByIdResponseDTO> getBoardById(@PathVariable Long boardId) {
 
         BoardResponse.boardByIdResponseDTO result = boardService.getBoardById(boardId);
