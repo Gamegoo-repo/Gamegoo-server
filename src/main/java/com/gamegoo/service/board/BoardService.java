@@ -211,14 +211,18 @@ public class BoardService {
         boardRepository.delete(board);
     }
 
+    private final static int PAGE_SIZE = 20;
+
     // 게시판 글 목록 조회
-    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx, int pageSize){
+    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
-        Pageable pageable = PageRequest.of(pageIdx-1, pageSize);
+        Pageable pageable = PageRequest.of(pageIdx-1, PAGE_SIZE);
+
         List<Board> boards = boardRepository.findAll(pageable).getContent();
 
         return boards.stream().map(board -> {
+
             Member member = board.getMember();
 
             return BoardResponse.boardListResponseDTO.builder()
@@ -236,7 +240,7 @@ public class BoardService {
                     .winRate(member.getWinRate())
                     .createdAt(board.getCreatedAt())
                     .build();
-        }).collect(Collectors.toList());
 
-        }
+        }).collect(Collectors.toList());
+    }
 }
