@@ -46,7 +46,7 @@ public class SecurityConfig {
     public JWTFilter jwtFilter() {
         List<String> excludedPaths = Arrays.asList("/swagger-ui/", "/v3/api-docs",
             "/v1/member/join", "/v1/member/login", "/v1/member/email", "/v1/member/refresh",
-            "/v1/member/riot");
+            "/v1/member/riot","/v1/posts");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
 
     }
@@ -66,7 +66,7 @@ public class SecurityConfig {
             .cors(withDefaults())
             .authorizeHttpRequests((auth) -> auth
                 .antMatchers("/", "/v1/member/join", "/v1/member/login", "/v1/member/email/**",
-                    "/v1/member/refresh", "/v1/member/riot").permitAll()
+                    "/v1/member/refresh", "/v1/member/riot","/v1/posts").permitAll()
                 .antMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(new JWTExceptionHandlerFilter(),
