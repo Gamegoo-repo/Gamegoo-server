@@ -2,14 +2,12 @@ package com.gamegoo.dto.member;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.List;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 public class MemberRequest {
 
@@ -18,7 +16,9 @@ public class MemberRequest {
     public static class EmailCodeRequestDTO {
 
         @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
         String email;
+        @NotBlank(message = "인증코드(code)는 비워둘 수 없습니다.")
         String code;
     }
 
@@ -45,7 +45,7 @@ public class MemberRequest {
         @Email(message = "Email 형식이 올바르지 않습니다.")
         @NotBlank(message = "Email은 비워둘 수 없습니다.")
         String email;
-        @NotBlank
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
         String password;
 
     }
@@ -60,36 +60,33 @@ public class MemberRequest {
 
     @Getter
     public static class PositionRequestDTO {
-
-        @Min(0)
-        @Max(5)
+        @Min(value = 0, message = "메인 포지션의 값은 1이상이어야 합니다.")
+        @Max(value = 5, message = "메인 포지션의 값은 5이하이어야 합니다.")
         int mainP;
-        @Min(0)
-        @Max(5)
+        @Min(value = 0, message = "서브 포지션의 값은 1이상이어야 합니다.")
+        @Max(value = 5, message = "서브 포지션의 값은 1이상이어야합니다.")
         int subP;
     }
 
     @Getter
     public static class ProfileImageRequestDTO {
-
+        @NotBlank(message = "profileImage 값은 비워둘 수 없습니다.")
         String profileImage;
     }
 
     @Getter
     public static class RefreshTokenRequestDTO {
-
-        @NotBlank
+        @NotBlank(message = "refreshToken 값은 비워둘 수 없습니다.")
         String refreshToken;
     }
 
     @Getter
     public static class verifyRiotRequestDTO {
-
-        @NotBlank
+        @NotBlank(message = "email 값은 비워둘 수 없습니다.")
         String email;
-        @NotBlank
+        @NotBlank(message = "gameName 값은 비워둘 수 없습니다.")
         String gameName;
-        @NotBlank
+        @NotBlank(message = "tag 값은 비워둘 수 없습니다.")
         String tag;
     }
 }
