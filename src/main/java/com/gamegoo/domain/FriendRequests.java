@@ -20,15 +20,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Friend extends BaseDateTimeEntity {
+public class FriendRequests extends BaseDateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friend_id")
+    @Column(name = "friend_request_id")
     private Long id;
 
     @Column(nullable = false)
-    private Boolean isLiked;
+    private Boolean isApproved;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_member_id", nullable = false)

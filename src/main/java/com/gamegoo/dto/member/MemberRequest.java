@@ -1,94 +1,95 @@
 package com.gamegoo.dto.member;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-
+import lombok.NoArgsConstructor;
+import java.util.List;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class MemberRequest {
-    @Setter
+
     @Getter
+    @NoArgsConstructor
     public static class EmailCodeRequestDTO {
-        @NotNull
-        private String email;
-        @NotNull
-        private String code;
+
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        String email;
+        String code;
     }
 
-    @Setter
     @Getter
+    @NoArgsConstructor
     public static class EmailRequestDTO {
-        @NotNull
-        private String email;
+
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
+        String email;
     }
 
     @Getter
-    @Setter
     public static class GameStyleRequestDTO {
-        private List<Long> gameStyleIdList;
+
+        @NotBlank(message = "gameStyleList은 비워둘 수 없습니다.")
+        List<Long> gameStyleIdList;
     }
 
     @Getter
-    @Setter
-    @AllArgsConstructor
+    @NoArgsConstructor
     public static class JoinRequestDTO {
-        @NonNull
-        private String email;
-        @NonNull
-        private String password;
+
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
+        String email;
+        @NotBlank
+        String password;
 
     }
 
     @Getter
-    @Setter
     public static class PasswordRequestDTO {
-        @NonNull
-        private String password;
+
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
+        String password;
+
     }
 
     @Getter
-    @Setter
-    @Min(0)
-    @Max(5)
     public static class PositionRequestDTO {
-        @NonNull
+
+        @Min(0)
+        @Max(5)
         int mainP;
-        @NotNull
+        @Min(0)
+        @Max(5)
         int subP;
     }
 
     @Getter
-    @Setter
     public static class ProfileImageRequestDTO {
-        @NotNull
-        String profile_image;
+
+        String profileImage;
     }
 
     @Getter
-    @Setter
     public static class RefreshTokenRequestDTO {
-        String refresh_token;
+
+        @NotBlank
+        String refreshToken;
     }
 
     @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class RefreshTokenResponseDTO {
-        String access_token;
-        String refresh_token;
-    }
-
-    @Getter
-    @Setter
-    @AllArgsConstructor
     public static class verifyRiotRequestDTO {
+
+        @NotBlank
         String email;
-        String game_name;
+        @NotBlank
+        String gameName;
+        @NotBlank
         String tag;
     }
 }

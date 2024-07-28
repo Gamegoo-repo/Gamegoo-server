@@ -1,15 +1,20 @@
 package com.gamegoo.dto.member;
 
-import lombok.*;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class MemberResponse {
+
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockListDTO {
+
         List<blockedMemberDTO> blocked_member_dto_list;
         Integer list_size;
         Integer total_page;
@@ -23,6 +28,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockedMemberDTO {
+
         Long member_id;
         String profile_img;
         String email;
@@ -33,8 +39,9 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class LoginResponseDTO {
-        String access_token;
-        String refresh_token;
+
+        String accessToken;
+        String refreshToken;
         String name;
 
     }
@@ -44,9 +51,45 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GameStyleResponseDTO {
+
         Long gameStyleId;
         String gameStyleName;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class RefreshTokenResponseDTO {
 
+        String accessToken;
+        String refreshToken;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myProfileMemberDTO {
+
+        String profileImg;
+        String email;
+        String gameName;
+        String tag;
+        String tier;
+        String rank;
+        String updatedAt;
+        List<GameStyleResponseDTO> gameStyleResponseDTOList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class friendInfoDTO {
+
+        Long memberId;
+        String name;
+        String memberProfileImg;
+        boolean isLiked;
+    }
 }
