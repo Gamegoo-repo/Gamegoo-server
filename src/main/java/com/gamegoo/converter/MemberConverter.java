@@ -15,22 +15,24 @@ public class MemberConverter {
             .collect(Collectors.toList());
 
         return MemberResponse.blockListDTO.builder()
-            .blocked_member_dto_list(blockedMemberDtoList)
-            .list_size(blockedMemberDtoList.size())
-            .total_page(blockList.getTotalPages())
-            .total_elements(blockList.getTotalElements())
-            .is_first(blockList.isFirst())
-            .is_last(blockList.isLast())
-            .build();
+                .blockedMemberDTOList(blockedMemberDtoList)
+                .listSize(blockedMemberDtoList.size())
+                .totalPage(blockList.getTotalPages())
+                .totalElements(blockList.getTotalElements())
+                .isFirst(blockList.isFirst())
+                .isLast(blockList.isLast())
+                .build();
+
     }
 
     public static MemberResponse.blockedMemberDTO toBlockedMemberDTO(Member membr) {
         return MemberResponse.blockedMemberDTO.builder()
-            .member_id(membr.getId())
-            .profile_img(membr.getProfileImage())
-            .email(membr.getEmail())
-            .name(membr.getGameName())
-            .build();
+                .memberId(membr.getId())
+                .profileImg(membr.getProfileImage())
+                .email(membr.getEmail())
+                .name(membr.getGameName())
+                .build();
+
     }
 
     public static MemberResponse.myProfileMemberDTO toMyProfileDTO(Member member) {
