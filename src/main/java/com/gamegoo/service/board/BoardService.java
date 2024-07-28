@@ -6,13 +6,17 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.BoardGameStyle;
+import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.dto.board.BoardRequest;
+import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -206,4 +210,33 @@ public class BoardService {
 
         boardRepository.delete(board);
     }
+
+    // 게시판 글 목록 조회
+    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx, int pageSize){
+
+        // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
+        Pageable pageable = PageRequest.of(pageIdx-1, pageSize);
+        List<Board> boards = boardRepository.findAll(pageable).getContent();
+
+        return boards.stream().map(board -> {
+            Member member = board.getMember();
+
+            return BoardResponse.boardListResponseDTO.builder()
+                    .boardId(board.getId())
+                    .memberId(member.getId())
+                    .profileImage(member.getProfileImage())
+                    .gameName(member.getGameName())
+                    .mannerLevel(member.getMannerLevel())
+                    .tier(member.getTier())
+                    .gameMode(board.getMode())
+                    .mainPosition(board.getMainPosition())
+                    .subPosition(board.getSubPosition())
+                    .wantPosition(board.getWantPosition())
+                    .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
+                    .winRate(member.getWinRate())
+                    .createdAt(board.getCreatedAt())
+                    .build();
+        }).collect(Collectors.toList());
+
+        }
 }
