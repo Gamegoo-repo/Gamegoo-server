@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/posts")
 @Tag(name = "Board", description = "게시판 관련 API")
 public class BoardController {
-
-
     private final ProfileService profileService;
-
     private final BoardService boardService;
 
     @PostMapping("")
@@ -111,4 +108,13 @@ public class BoardController {
 
         return ApiResponse.onSuccess("게시글을 삭제하였습니다.");
     }
+
+    @GetMapping("")
+    @Operation(summary = "게시판 글 목록 조회 API", description = "게시판에서 글 목록을 조회하는 API 입니다.")
+    @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
+    public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx){
+        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(pageIdx);
+        return ApiResponse.onSuccess(result);
+    }
+
 }

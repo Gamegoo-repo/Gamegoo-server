@@ -3,16 +3,22 @@ package com.gamegoo.service.board;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
+import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.board.BoardGameStyle;
+import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.dto.board.BoardRequest;
+import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -205,5 +211,43 @@ public class BoardService {
         }
 
         boardRepository.delete(board);
+    }
+
+    private final static int PAGE_SIZE = 20;  // 페이지당 표시할 게시물 수
+
+    // 게시판 글 목록 조회
+    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
+
+        // pageIdx 값 검증.
+        if (pageIdx <= 0){
+            throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
+
+        // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
+        Pageable pageable = PageRequest.of(pageIdx-1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        List<Board> boards = boardRepository.findAll(pageable).getContent();
+
+        return boards.stream().map(board -> {
+
+            Member member = board.getMember();
+
+            return BoardResponse.boardListResponseDTO.builder()
+                    .boardId(board.getId())
+                    .memberId(member.getId())
+                    .profileImage(member.getProfileImage())
+                    .gameName(member.getGameName())
+                    .mannerLevel(member.getMannerLevel())
+                    .tier(member.getTier())
+                    .gameMode(board.getMode())
+                    .mainPosition(board.getMainPosition())
+                    .subPosition(board.getSubPosition())
+                    .wantPosition(board.getWantPosition())
+                    .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
+                    .winRate(member.getWinRate())
+                    .createdAt(board.getCreatedAt())
+                    .build();
+
+        }).collect(Collectors.toList());
     }
 }

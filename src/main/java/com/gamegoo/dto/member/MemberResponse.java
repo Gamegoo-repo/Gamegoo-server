@@ -1,10 +1,14 @@
 package com.gamegoo.dto.member;
 
-import lombok.*;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class MemberResponse {
+
     @Builder
     @Getter
     @NoArgsConstructor
@@ -16,6 +20,7 @@ public class MemberResponse {
         Long totalElements;
         Boolean isFirst;
         Boolean isLast;
+
     }
 
     @Builder
@@ -33,6 +38,7 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class LoginResponseDTO {
+
         String accessToken;
         String refreshToken;
         String name;
@@ -44,6 +50,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GameStyleResponseDTO {
+
         Long gameStyleId;
         String gameStyleName;
     }
@@ -52,6 +59,7 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class RefreshTokenResponseDTO {
+
         String accessToken;
         String refreshToken;
     }
@@ -61,6 +69,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class myProfileMemberDTO {
+
         String profileImg;
         String email;
         String gameName;
@@ -69,5 +78,17 @@ public class MemberResponse {
         String rank;
         String updatedAt;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class friendInfoDTO {
+
+        Long memberId;
+        String name;
+        String memberProfileImg;
+        boolean isLiked;
     }
 }
