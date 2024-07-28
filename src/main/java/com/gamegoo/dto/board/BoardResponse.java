@@ -94,4 +94,20 @@ public class BoardResponse {
         List<Long> gameStyles;
         String contents;
     }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myBoardListResponseDTO {
+        Long boardId;
+        Long memberId;
+        String profileImage;
+        String gameName;
+        String tag;
+        String tier;
+        String contents;
+        LocalDateTime createdAt;
+    }
 }
