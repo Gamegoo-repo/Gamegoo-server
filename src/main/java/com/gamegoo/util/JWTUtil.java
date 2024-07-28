@@ -1,6 +1,7 @@
 package com.gamegoo.util;
 
 import com.gamegoo.security.CustomUserDetails;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,9 @@ public class JWTUtil {
     }
 
     public Long getId(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new JwtException("Token null");
+        }
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
     }
 
