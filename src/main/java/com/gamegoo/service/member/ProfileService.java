@@ -106,7 +106,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public Member getMyProfile(Long memberId) {
+    public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
