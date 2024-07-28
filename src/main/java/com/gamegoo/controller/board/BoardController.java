@@ -36,7 +36,7 @@ public class BoardController {
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Member memberProfile = profileService.getMyProfile(memberId);
+        Member memberProfile = profileService.findMember(memberId);
 
         Board saveBoard = boardService.save(request,memberId);
 
@@ -73,7 +73,7 @@ public class BoardController {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Member memberProfile = profileService.getMyProfile(memberId);
+        Member memberProfile = profileService.findMember(memberId);
 
         Board updateBoard = boardService.update(request, memberId, postId);
 
