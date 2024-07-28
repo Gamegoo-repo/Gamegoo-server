@@ -26,7 +26,6 @@ public class JWTUtil {
         if (token == null || token.trim().isEmpty()) {
             throw new JwtException("Token null");
         }
-        System.out.println(token);
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Long.class);
     }
 
