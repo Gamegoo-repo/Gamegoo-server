@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,7 +22,6 @@ public class ProfileService {
     private final MemberRepository memberRepository;
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
-
 
     @Transactional
     public List<MemberGameStyle> addMemberGameStyles(MemberRequest.GameStyleRequestDTO request, Long memberId) {
@@ -35,37 +35,38 @@ public class ProfileService {
                         .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
                 .toList();
 
-
         // db에는 존재하나, request에는 존재하지 않는 gameStyle을 삭제
-        member.getMemberGameStyleList().stream()
-                .filter(memberGameStyle -> !requestGameStyleList.contains(memberGameStyle.getGameStyle()))
-                .forEach(memberGameStyle -> {
-                    memberGameStyle.removeMember(member); // 양방향 연관관계 제거
-                    memberGameStyleRepository.delete(memberGameStyle);
-                });
+        List<MemberGameStyle> toRemove = new ArrayList<>();
+        for (MemberGameStyle memberGameStyle : member.getMemberGameStyleList()) {
+            if (!requestGameStyleList.contains(memberGameStyle.getGameStyle())) {
+                toRemove.add(memberGameStyle);
+            }
+        }
+
+        for (MemberGameStyle memberGameStyle : toRemove) {
+            memberGameStyle.removeMember(member); // 양방향 연관관계 제거
+            memberGameStyleRepository.delete(memberGameStyle);
+        }
 
         // request에는 존재하나, db에는 존재하지 않는 gameStyle을 추가
-        // 1. 현재 member가 가지고 있는 GameStyleList 추출
         List<GameStyle> currentGameStyleList = member.getMemberGameStyleList().stream()
                 .map(MemberGameStyle::getGameStyle)
                 .toList();
 
-        // 2. memberGameStyle 엔티티 생성 및 연관관계 매핑, db 저장
-        requestGameStyleList.stream()
-                .filter(reqGameStyle -> !currentGameStyleList.contains(reqGameStyle))
-                .forEach(reqGameStyle -> {
-                    MemberGameStyle memberGameStyle = MemberGameStyle.builder()
-                            .gameStyle(reqGameStyle)
-                            .build();
-                    memberGameStyle.setMember(member); // 양방향 연관관계 매핑
-                    memberGameStyleRepository.save(memberGameStyle);
-                });
+        for (GameStyle reqGameStyle : requestGameStyleList) {
+            if (!currentGameStyleList.contains(reqGameStyle)) {
+                MemberGameStyle memberGameStyle = MemberGameStyle.builder()
+                        .gameStyle(reqGameStyle)
+                        .build();
+                memberGameStyle.setMember(member); // 양방향 연관관계 매핑
+                memberGameStyleRepository.save(memberGameStyle);
+            }
+        }
 
         return member.getMemberGameStyleList();
     }
 
     public void deleteMember(Long userId) {
-
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
@@ -75,8 +76,6 @@ public class ProfileService {
     }
 
     public void modifyPosition(Long userId, int mainP, int subP) {
-
-        // 만약 mainP, subP 가 1~5의 값이 아닐 경우
         if (mainP <= 0 || subP <= 0 || mainP > 5 || subP > 5) {
             throw new MemberHandler(ErrorStatus.POSITION_NOT_FOUND);
         }
@@ -90,8 +89,6 @@ public class ProfileService {
     }
 
     public void modifyProfileImage(Long userId, String profileImage) {
-        System.out.println(userId + profileImage);
-
         if (profileImage.length() > 30) {
             throw new MemberHandler(ErrorStatus.PROFILE_IMAGE_BAD_REQUEST);
         }
@@ -101,8 +98,6 @@ public class ProfileService {
 
         member.setProfileImage(profileImage);
         memberRepository.save(member);
-
-
     }
 
     @Transactional
