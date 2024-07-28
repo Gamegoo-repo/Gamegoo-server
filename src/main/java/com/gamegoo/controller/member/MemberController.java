@@ -2,6 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
+import com.gamegoo.domain.Friend;
 import com.gamegoo.domain.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.MemberService;
@@ -9,6 +10,8 @@ import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -60,5 +63,19 @@ public class MemberController {
         memberService.unBlockMember(memberId, targetMemberId);
 
         return ApiResponse.onSuccess("차단 해제 성공");
+    }
+
+    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다.")
+    @GetMapping("/friends")
+    public ApiResponse<Object> getFriendList() {
+        Long memberId = JWTUtil.getCurrentUserId();
+        List<Friend> friends = memberService.getFriends(memberId);
+
+        List<MemberResponse.friendInfoDTO> friendInfoDTOList = friends.stream()
+            .map(MemberConverter::toFriendInfoDto).collect(
+                Collectors.toList());
+
+        return ApiResponse.onSuccess(friendInfoDTOList);
+
     }
 }
