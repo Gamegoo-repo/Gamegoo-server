@@ -147,7 +147,7 @@ public class ChatCommandService {
      * 채팅 등록 메소드
      *
      * @param request
-     * @param member
+     * @param memberId
      * @return
      */
     @Transactional
