@@ -151,5 +151,13 @@ public class AuthService {
         return certificationMessage;
     }
 
+    // 로그아웃
+    public void logoutMember(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.setRefreshToken(null);
+        memberRepository.save(member);
+    }
+
 
 }
