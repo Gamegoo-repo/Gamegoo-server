@@ -1,5 +1,6 @@
 package com.gamegoo.dto.chat;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ public class ChatResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChatroomCreateResultDto {
+    public static class ChatroomCreateResultDTO {
 
         Long chatroomId;
         String uuid;
@@ -23,7 +24,7 @@ public class ChatResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChatroomViewDto {
+    public static class ChatroomViewDTO {
 
         Long chatroomId;
         String uuid;
