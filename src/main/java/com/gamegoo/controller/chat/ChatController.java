@@ -49,4 +49,12 @@ public class ChatController {
             ChatConverter.toChatroomCreateResultDto(chatroom, request.getTargetMemberId()));
     }
 
+    @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
+    @GetMapping("/member/chatroom")
+    public ApiResponse<List<ChatResponse.ChatroomViewDto>> getChatroom() {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
+    }
+
 }
