@@ -57,4 +57,14 @@ public class ChatController {
         return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
     }
 
+    @Operation(summary = "채팅방 입장 API", description = "특정 채팅방에 입장하는 API 입니다. 채팅 상대의 id, 프로필 이미지, 닉네임 및 해당 채팅방의 안읽은 메시지 및 최근 메시지 목록을 리턴합니다.")
+    @GetMapping("/chat/{chatroomUuid}/enter")
+    public ApiResponse<ChatResponse.ChatroomEnterDTO> enterChatroom(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(chatCommandService.enterChatroom(chatroomUuid, memberId));
+    }
+
 }
