@@ -21,4 +21,18 @@ public class ChatResponse {
         Long targetMemberId;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatroomViewDto {
+
+        Long chatroomId;
+        String uuid;
+        String targetMemberImg;
+        String targetMemberName;
+        String lastMsg;
+        String lastMsgAt;
+        Integer notReadMsgCnt;
+    }
 }
