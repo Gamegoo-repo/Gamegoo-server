@@ -109,7 +109,7 @@ public class BoardController {
         return ApiResponse.onSuccess("게시글을 삭제하였습니다.");
     }
 
-    @GetMapping("")
+    @GetMapping("/list")
     @Operation(summary = "게시판 글 목록 조회 API", description = "게시판에서 글 목록을 조회하는 API 입니다.")
     @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
     public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx){
@@ -117,4 +117,27 @@ public class BoardController {
         return ApiResponse.onSuccess(result);
     }
 
+    @GetMapping("/list/{boardId}")
+    @Operation(summary = "게시판 글 조회 API", description = "게시판에서 글을 조회하는 API 입니다.")
+    @Parameter(name = "boardId", description = "조회할 게시판 글 id 입니다.")
+    public ApiResponse<BoardResponse.boardByIdResponseDTO> getBoardById(@PathVariable Long boardId) {
+
+        BoardResponse.boardByIdResponseDTO result = boardService.getBoardById(boardId);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "내가 작성한 게시판 글 목록 조회 API", description = "내가 작성한 게시판 글을 조회하는 API 입니다.")
+    @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
+    public ApiResponse<List<BoardResponse.myBoardListResponseDTO>> getMyBoardList(@RequestParam(defaultValue = "1") int pageIdx) {
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        List<BoardResponse.myBoardListResponseDTO> result = boardService.getMyBoardList(memberId, pageIdx);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
+
+
