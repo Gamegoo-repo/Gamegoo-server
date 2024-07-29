@@ -10,7 +10,6 @@ public class ChatConverter {
 
         return ChatResponse.ChatroomCreateResultDto.builder()
             .chatroomId(chatroom.getId())
-            .chatroomType(chatroom.getChatroomType())
             .uuid(chatroom.getUuid())
             .postUrl(chatroom.getPostUrl())
             .targetMemberId(targetMemberId)
