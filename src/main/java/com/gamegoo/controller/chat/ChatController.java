@@ -10,16 +10,19 @@ import com.gamegoo.service.chat.ChatCommandService;
 import com.gamegoo.service.chat.ChatQueryService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -79,6 +82,22 @@ public class ChatController {
         Chat chat = chatCommandService.addChat(request, chatroomUuid, memberId);
 
         return ApiResponse.onSuccess(ChatConverter.toChatCreateResultDTO(chat));
+    }
+
+    @Operation(summary = "채팅 내역 조회 API", description = "특정 채팅방의 메시지 내역을 조회하는 API 입니다.\n\n" +
+        "cursor 파라미터를 보내면, 해당 timestamp 이전에 전송된 메시지 최대 20개를 조회합니다.\n\n" +
+        "cursor 파라미터를 보내지 않으면, 해당 채팅방의 가장 최근 메시지 내역을 조회합니다.")
+    @GetMapping("/chat/{chatroomUuid}/messages")
+    @Parameter(name = "cursor", description = "페이징을 위한 커서, 13자리 timestamp integer를 보내주세요. (UTC 기준)")
+    public ApiResponse<Object> getChatMessages(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid,
+        @RequestParam(name = "cursor", required = false) Long cursor
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+        Slice<Chat> chatMessages = chatQueryService.getChatMessagesByCursor(chatroomUuid, memberId,
+            cursor);
+
+        return ApiResponse.onSuccess(ChatConverter.toChatMessageListDTO(chatMessages));
     }
 
 }
