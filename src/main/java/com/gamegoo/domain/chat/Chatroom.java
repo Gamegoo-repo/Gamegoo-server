@@ -2,11 +2,8 @@ package com.gamegoo.domain.chat;
 
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-import com.gamegoo.domain.enums.ChatroomType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,10 +29,6 @@ public class Chatroom extends BaseDateTimeEntity {
     private Long id;
 
     private String uuid;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
-    private ChatroomType chatroomType;
 
     @Column(columnDefinition = "TEXT")
     private String postUrl;
