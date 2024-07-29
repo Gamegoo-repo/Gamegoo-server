@@ -143,4 +143,43 @@ public class ChatCommandService {
             .build();
     }
 
+    /**
+     * 채팅 등록 메소드
+     *
+     * @param request
+     * @param member
+     * @return
+     */
+    @Transactional
+    public Chat addChat(ChatRequest.ChatCreateRequest request, String chatroomUuid, Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        // 채팅방 조회 및 존재 여부 검증
+        Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        // 해당 채팅방이 회원의 것이 맞는지 검증
+        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                memberId, chatroom.getId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+        // 해당 회원이 이미 나간 채팅방인지 검증
+        if (memberChatroom.getLastJoinDate() == null) {
+            throw new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED);
+        }
+
+        // chat 엔티티 생성
+        Chat chat = Chat.builder()
+            .contents(request.getMessage())
+            .chatroom(chatroom)
+            .fromMember(member)
+            .build();
+
+        // MemberChatroom의 lastViewDate 업데이트
+        Chat savedChat = chatRepository.save(chat);
+        memberChatroom.updateLastViewDate(savedChat.getCreatedAt());
+
+        return savedChat;
+    }
+
 }

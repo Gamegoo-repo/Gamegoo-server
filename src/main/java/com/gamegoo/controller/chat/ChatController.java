@@ -2,6 +2,7 @@ package com.gamegoo.controller.chat;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.ChatConverter;
+import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.dto.chat.ChatRequest;
 import com.gamegoo.dto.chat.ChatResponse;
@@ -66,6 +67,18 @@ public class ChatController {
         Long memberId = JWTUtil.getCurrentUserId();
 
         return ApiResponse.onSuccess(chatCommandService.enterChatroom(chatroomUuid, memberId));
+    }
+
+    @Operation(summary = "채팅 메시지 등록 API", description = "새로운 채팅 메시지를 등록하는 API 입니다.")
+    @PostMapping("/chat/{chatroomUuid}")
+    public ApiResponse<ChatResponse.ChatCreateResultDTO> addChat(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid,
+        @RequestBody ChatRequest.ChatCreateRequest request
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+        Chat chat = chatCommandService.addChat(request, chatroomUuid, memberId);
+
+        return ApiResponse.onSuccess(ChatConverter.toChatCreateResultDTO(chat));
     }
 
 }
