@@ -73,4 +73,18 @@ public class ChatResponse {
         String createdAt;
         Long timestamp;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatCreateResultDTO {
+
+        Long senderId;
+        String senderName;
+        String senderProfileImg;
+        String message;
+        String createdAt;
+        Long timestamp;
+    }
 }
