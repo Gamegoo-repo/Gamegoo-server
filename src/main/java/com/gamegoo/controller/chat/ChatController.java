@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,18 +41,18 @@ public class ChatController {
 
     @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API 입니다.")
     @PostMapping("/chatroom/create/test")
-    public ApiResponse<ChatResponse.ChatroomCreateResultDto> createChatroom(
+    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
         @RequestBody @Valid ChatRequest.ChatroomCreateRequest request
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
         Chatroom chatroom = chatCommandService.createChatroom(request, memberId);
         return ApiResponse.onSuccess(
-            ChatConverter.toChatroomCreateResultDto(chatroom, request.getTargetMemberId()));
+            ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
     }
 
     @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
     @GetMapping("/member/chatroom")
-    public ApiResponse<List<ChatResponse.ChatroomViewDto>> getChatroom() {
+    public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
         Long memberId = JWTUtil.getCurrentUserId();
 
         return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
