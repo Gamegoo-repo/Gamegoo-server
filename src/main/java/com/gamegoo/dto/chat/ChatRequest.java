@@ -11,9 +11,6 @@ public class ChatRequest {
         @NotNull
         Long targetMemberId;
 
-        @NotNull
-        String chatroomType;
-
         String postUrl;
     }
 
