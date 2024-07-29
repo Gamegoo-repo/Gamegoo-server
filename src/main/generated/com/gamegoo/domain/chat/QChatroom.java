@@ -24,8 +24,6 @@ public class QChatroom extends EntityPathBase<Chatroom> {
 
     public final com.gamegoo.domain.common.QBaseDateTimeEntity _super = new com.gamegoo.domain.common.QBaseDateTimeEntity(this);
 
-    public final EnumPath<com.gamegoo.domain.enums.ChatroomType> chatroomType = createEnum("chatroomType", com.gamegoo.domain.enums.ChatroomType.class);
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
