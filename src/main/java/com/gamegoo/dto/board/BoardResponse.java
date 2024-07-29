@@ -69,4 +69,45 @@ public class BoardResponse {
         Double winRate;
         LocalDateTime createdAt;
     }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class boardByIdResponseDTO{
+        Long boardId;
+        Long memberId;
+        LocalDateTime createdAt;
+        String profileImage;
+        String gameName;
+        String tag;
+        Integer mannerLevel;
+        String tier;
+        Boolean voice;
+        List<Long> championList;
+        Integer gameMode;
+        Integer mainPosition;
+        Integer subPosition;
+        Integer wantPosition;
+        Double winRate;
+        List<Long> gameStyles;
+        String contents;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myBoardListResponseDTO {
+        Long boardId;
+        Long memberId;
+        String profileImage;
+        String gameName;
+        String tag;
+        String tier;
+        String contents;
+        LocalDateTime createdAt;
+    }
 }
