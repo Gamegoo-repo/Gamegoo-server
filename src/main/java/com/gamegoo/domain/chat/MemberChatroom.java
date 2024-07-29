@@ -48,4 +48,9 @@ public class MemberChatroom extends BaseDateTimeEntity {
         this.member = member;
         this.member.getMemberChatroomList().add(this);
     }
+
+    public void updateLastViewDate(LocalDateTime lastViewDate) {
+        this.lastViewDate = lastViewDate;
+    }
+
 }

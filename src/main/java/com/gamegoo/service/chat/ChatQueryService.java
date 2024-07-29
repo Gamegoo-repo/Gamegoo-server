@@ -45,14 +45,14 @@ public class ChatQueryService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ChatResponse.ChatroomViewDto> getChatroomList(Long memberId) {
+    public List<ChatResponse.ChatroomViewDTO> getChatroomList(Long memberId) {
         Member member = profileService.findMember(memberId);
 
         // 현재 참여중인 memberChatroom을 각 memberChatroom에 속한 chat의 마지막 createdAt 기준 desc 정렬해 조회
         List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomOrderByLastChat(
             member.getId());
 
-        List<ChatResponse.ChatroomViewDto> chatroomViewDtoList = activeMemberChatroom.stream()
+        List<ChatResponse.ChatroomViewDTO> chatroomViewDtoList = activeMemberChatroom.stream()
             .map(memberChatroom -> {
                 // 채팅 상대 회원 조회
                 Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
@@ -74,7 +74,7 @@ public class ChatQueryService {
                         .format(DateTimeFormatter.ISO_DATE_TIME);
                 }
 
-                return ChatResponse.ChatroomViewDto.builder()
+                return ChatResponse.ChatroomViewDTO.builder()
                     .chatroomId(chatroom.getId())
                     .uuid(chatroom.getUuid())
                     .targetMemberImg(targetMember.getProfileImage())

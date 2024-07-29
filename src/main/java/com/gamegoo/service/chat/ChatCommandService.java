@@ -3,15 +3,24 @@ package com.gamegoo.service.chat;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.dto.chat.ChatRequest;
+import com.gamegoo.dto.chat.ChatResponse;
+import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
+import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +32,7 @@ public class ChatCommandService {
     private final MemberRepository memberRepository;
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatroomRepository chatroomRepository;
+    private final ChatRepository chatRepository;
 
     /**
      * 대상 회원과의 채팅방 생성
@@ -67,6 +77,70 @@ public class ChatCommandService {
         memberChatroomRepository.save(targetMemberChatroom);
 
         return savedChatroom;
+    }
+
+    /**
+     * chatroomUuid에 해당하는 채팅방에 입장 처리: 채팅 상대 회원 정보 조회, 메시지 내역 조회 및 lastViewDate 업데이트
+     *
+     * @param chatroomUuid
+     * @param memberId
+     * @return
+     */
+    @Transactional
+    public ChatResponse.ChatroomEnterDTO enterChatroom(String chatroomUuid, Long memberId) {
+        // chatroom 엔티티 조회 및 해당 회원의 채팅방이 맞는지 검증
+        Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                memberId, chatroom.getId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+        // 해당 회원이 퇴장한 채팅방은 아닌지도 나중에 검증 추가하기
+
+        // 채팅 상대 회원 정보 조회
+        Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+            chatroom.getId(), memberId);
+
+        // 최근 메시지 내역 조회
+        Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.getId(),
+            memberChatroom.getId());
+
+        // 해당 채팅방의 lastViewDate 업데이트
+        memberChatroom.updateLastViewDate(LocalDateTime.now());
+
+        // chatMessageDtoList 생성
+        List<ChatResponse.ChatMessageDTO> chatMessageDtoList = recentChats.stream()
+            .map(chat -> {
+                // ISO 8601 형식의 문자열로 변환
+                String createdAtIoString = chat.getCreatedAt()
+                    .format(DateTimeFormatter.ISO_DATE_TIME);
+
+                return ChatResponse.ChatMessageDTO.builder()
+                    .senderId(chat.getFromMember().getId())
+                    .senderName(chat.getFromMember().getGameName())
+                    .senderProfileImg(chat.getFromMember().getProfileImage())
+                    .message(chat.getContents())
+                    .createdAt(createdAtIoString)
+                    .timestamp(chat.getTimestamp())
+                    .build();
+            }).collect(Collectors.toList());
+
+        // ChatMessageListDTO 생성
+        ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
+            .chatMessageDtoList(chatMessageDtoList)
+            .list_size(chatMessageDtoList.size())
+            .has_next(recentChats.hasNext())
+            .next_cursor(recentChats.hasNext() ? recentChats.getContent().get(0).getTimestamp()
+                : null) // next cursor를 현재 chat list의 가장 오래된 chat의 timestamp로 주기
+            .build();
+
+        return ChatroomEnterDTO.builder()
+            .memberId(targetMember.getId())
+            .gameName(targetMember.getGameName())
+            .memberProfileImg(targetMember.getProfileImage())
+            .chatMessageList(chatMessageListDTO)
+            .build();
     }
 
 }
