@@ -33,4 +33,43 @@ public class ChatResponse {
         String lastMsgAt;
         Integer notReadMsgCnt;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatroomEnterDTO {
+
+        Long memberId;
+        String gameName;
+        String memberProfileImg;
+        ChatMessageListDTO chatMessageList;
+
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatMessageListDTO {
+
+        List<ChatMessageDTO> chatMessageDtoList;
+        Integer list_size;
+        Boolean has_next;
+        Long next_cursor;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChatMessageDTO {
+
+        Long senderId;
+        String senderName;
+        String senderProfileImg;
+        String message;
+        String createdAt;
+        Long timestamp;
+    }
 }

@@ -35,6 +35,8 @@ public class QChat extends EntityPathBase<Chat> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final NumberPath<Long> timestamp = createNumber("timestamp", Long.class);
+
     public final com.gamegoo.domain.QMember toMember;
 
     //inherited
