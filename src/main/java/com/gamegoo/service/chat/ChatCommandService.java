@@ -182,4 +182,33 @@ public class ChatCommandService {
         return savedChat;
     }
 
+    /**
+     * memberChatroom의 lastViewDate을 업데이트
+     *
+     * @param chatroomUuid
+     * @param timestamp
+     * @param memberId
+     */
+    @Transactional
+    public void readChatMessages(String chatroomUuid, Long timestamp, Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        // chatroom 엔티티 조회 및 해당 회원의 채팅방이 맞는지 검증
+        Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                memberId, chatroom.getId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+        if (timestamp == null) { // timestamp 파라미터가 넘어오지 않은 경우, lastViewDate를 현재 시각으로 업데이트
+            memberChatroom.updateLastViewDate(LocalDateTime.now());
+
+        } else { // timestamp 파라미터가 넘어온 경우, lastViewDate를 해당 timestamp의 chat의 createdAt으로 업데이트
+            Chat chat = chatRepository.findByChatroomAndTimestamp(chatroom, timestamp)
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_MESSAGE_NOT_FOUND));
+            memberChatroom.updateLastViewDate(chat.getCreatedAt());
+        }
+    }
+
 }

@@ -100,4 +100,16 @@ public class ChatController {
         return ApiResponse.onSuccess(ChatConverter.toChatMessageListDTO(chatMessages));
     }
 
+    @Operation(summary = "채팅 메시지 읽음 처리 API", description = "특정 채팅방의 메시지를 읽음 처리하는 API 입니다.")
+    @GetMapping("/chatroom/{chatroomUuid}/read")
+    @Parameter(name = "timestamp", description = "특정 메시지를 읽음 처리하는 경우, 그 메시지의 timestamp를 함께 보내주세요.")
+    public ApiResponse<String> readChatMessage(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid,
+        @RequestParam(name = "timestamp", required = false) Long timestamp
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        chatCommandService.readChatMessages(chatroomUuid, timestamp, memberId);
+        return ApiResponse.onSuccess("채팅 메시지 읽음 처리 성공");
+    }
 }
