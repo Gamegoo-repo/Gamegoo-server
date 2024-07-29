@@ -2,9 +2,19 @@ package com.gamegoo.domain.chat;
 
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -12,6 +22,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Chat extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_id")
@@ -19,6 +30,9 @@ public class Chat extends BaseDateTimeEntity {
 
     @Column(nullable = false, length = 1000)
     private String contents;
+
+    @Column(nullable = false)
+    private Long timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id", nullable = false)
@@ -29,6 +43,6 @@ public class Chat extends BaseDateTimeEntity {
     private Member fromMember;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_member_id", nullable = false)
+    @JoinColumn(name = "to_member_id")
     private Member toMember;
 }
