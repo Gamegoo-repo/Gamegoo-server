@@ -54,6 +54,17 @@ public class ChatController {
             ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
     }
 
+    @Operation(summary = "채팅방 생성 by Matching API", description = "매칭을 통한 채팅방을 생성하는 API 입니다.")
+    @PostMapping("/chatroom/create/matched")
+    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroomByMatching(
+        @RequestBody @Valid ChatRequest.ChatroomCreateByMatchRequest request
+    ) {
+        Chatroom chatroomByMatch = chatCommandService.createChatroomByMatch(request);
+        return ApiResponse.onSuccess(
+            ChatConverter.toChatroomCreateResultDTO(chatroomByMatch, null));
+        
+    }
+
     @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
     @GetMapping("/member/chatroom")
     public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
