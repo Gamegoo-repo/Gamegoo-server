@@ -30,9 +30,6 @@ public class Chatroom extends BaseDateTimeEntity {
 
     private String uuid;
 
-    @Column(columnDefinition = "TEXT")
-    private String postUrl;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "start_member_id")
     private Member startMember;

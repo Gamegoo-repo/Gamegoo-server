@@ -53,7 +53,6 @@ public class ChatCommandService {
         String uuid = UUID.randomUUID().toString();
         Chatroom chatroom = Chatroom.builder()
             .uuid(uuid)
-            .postUrl(request.getPostUrl())
             .startMember(member)
             .build();
 
@@ -63,6 +62,7 @@ public class ChatCommandService {
         // 나의 MemberChatroom 엔티티
         MemberChatroom memberChatroom = MemberChatroom.builder()
             .lastViewDate(null)
+            .lastJoinDate(null)
             .chatroom(chatroom)
             .build();
         memberChatroom.setMember(member);
@@ -71,10 +71,52 @@ public class ChatCommandService {
         // 상대방의 MemberChatroom 엔티티
         MemberChatroom targetMemberChatroom = MemberChatroom.builder()
             .lastViewDate(null)
+            .lastJoinDate(null)
             .chatroom(chatroom)
             .build();
         targetMemberChatroom.setMember(targetMember);
         memberChatroomRepository.save(targetMemberChatroom);
+
+        return savedChatroom;
+    }
+
+    @Transactional
+    public Chatroom createChatroomByMatch(ChatRequest.ChatroomCreateByMatchRequest request) {
+        if (request.getMemberList().size() != 2) {
+            throw new ChatHandler(ErrorStatus._BAD_REQUEST);
+        }
+        Member member1 = profileService.findMember(request.getMemberList().get(0));
+        Member member2 = profileService.findMember(request.getMemberList().get(1));
+
+        // chatroom 엔티티 생성
+        String uuid = UUID.randomUUID().toString();
+        Chatroom chatroom = Chatroom.builder()
+            .uuid(uuid)
+            .startMember(null)
+            .build();
+
+        Chatroom savedChatroom = chatroomRepository.save(chatroom);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // MemberChatroom 엔티티 생성 및 연관관계 매핑
+        // member1의 MemberChatroom 엔티티
+        MemberChatroom memberChatroom1 = MemberChatroom.builder()
+            .lastViewDate(null)
+            .lastJoinDate(now)
+            .chatroom(chatroom)
+            .build();
+        memberChatroom1.setMember(member1);
+        memberChatroomRepository.save(memberChatroom1);
+
+        // member2의 MemberChatroom 엔티티
+        MemberChatroom memberChatroom2 = MemberChatroom.builder()
+            .lastViewDate(null)
+            .lastJoinDate(now)
+            .chatroom(chatroom)
+            .build();
+        memberChatroom2.setMember(member2);
+        memberChatroomRepository.save(memberChatroom2);
 
         return savedChatroom;
     }
