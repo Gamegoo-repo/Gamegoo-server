@@ -124,7 +124,7 @@ public class ChatController {
         return ApiResponse.onSuccess("채팅방 나가기 성공");
     }
 
-    @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API 입니다. 서버 테스트용!!")
+    @Operation(summary = "채팅방 생성 API (서버 테스트용)", description = "채팅방을 생성하는 API 입니다. 서버 테스트용!!")
     @PostMapping("/test/chatroom/create")
     public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
         @RequestBody @Valid ChatRequest.ChatroomCreateRequest request
@@ -135,7 +135,7 @@ public class ChatController {
             ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
     }
 
-    @Operation(summary = "채팅방 생성 by Matching API", description = "매칭을 통한 채팅방을 생성하는 API 입니다. 서버 테스트용!!")
+    @Operation(summary = "채팅방 생성 by Matching API (서버 테스트용)", description = "매칭을 통한 채팅방을 생성하는 API 입니다. 서버 테스트용!!")
     @PostMapping("/test/chatroom/create/matched")
     public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroomByMatching(
         @RequestBody @Valid ChatRequest.ChatroomCreateByMatchRequest request
