@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChatCommandService {
 
     private final ProfileService profileService;
@@ -35,13 +36,12 @@ public class ChatCommandService {
     private final ChatRepository chatRepository;
 
     /**
-     * 대상 회원과의 채팅방 생성
+     * 대상 회원과의 채팅방 생성 (게시글 및 친구 목록을 통해 생성)
      *
      * @param request
      * @param memberId
      * @return
      */
-    @Transactional
     public Chatroom createChatroom(ChatRequest.ChatroomCreateRequest request, Long memberId) {
         Member member = profileService.findMember(memberId);
 
@@ -80,7 +80,12 @@ public class ChatCommandService {
         return savedChatroom;
     }
 
-    @Transactional
+    /**
+     * 매칭을 통해 새 채팅방을 생성
+     *
+     * @param request
+     * @return
+     */
     public Chatroom createChatroomByMatch(ChatRequest.ChatroomCreateByMatchRequest request) {
         if (request.getMemberList().size() != 2) {
             throw new ChatHandler(ErrorStatus._BAD_REQUEST);
@@ -205,10 +210,10 @@ public class ChatCommandService {
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
-        // 해당 회원이 이미 나간 채팅방인지 검증
-        if (memberChatroom.getLastJoinDate() == null) {
-            throw new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED);
-        }
+//        // 해당 회원이 이미 나간 채팅방인지 검증
+//        if (memberChatroom.getLastJoinDate() == null) {
+//            throw new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED);
+//        }
 
         // chat 엔티티 생성
         Chat chat = Chat.builder()
@@ -254,6 +259,28 @@ public class ChatCommandService {
         }
     }
 
+    /**
+     * 해당 채팅방 나가기
+     *
+     * @param chatroomUuid
+     * @param memberId
+     */
+    @Transactional
+    public void exitChatroom(String chatroomUuid, Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        // chatroom 엔티티 조회 및 해당 회원의 채팅방이 맞는지 검증
+        Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                memberId, chatroom.getId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+        memberChatroom.updateLastJoinDate(null);
+
+    }
+
     private void updateLastViewDateByAddChat(MemberChatroom memberChatroom,
         LocalDateTime lastViewDate) {
         // lastJoinDate가 null인 경우
@@ -264,22 +291,21 @@ public class ChatCommandService {
             // lastJoinDate 업데이트
             memberChatroom.updateLastJoinDate(lastViewDate);
 
-            // 상대 회원의 memberChatroom의 latJoinDate가 null인 경우, 상대 회원의 lastJoinDate 업데이트
-            Chatroom chatroom = memberChatroom.getChatroom();
-
-            Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
-                chatroom.getId(), memberChatroom.getMember().getId());
-            MemberChatroom targetMemberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-                targetMember.getId(), chatroom.getId()).get();
-            if (targetMemberChatroom.getLastJoinDate() == null) {
-                targetMemberChatroom.updateLastJoinDate(lastViewDate);
-
-            }
-
         } else {
             // lastViewDate 업데이트
             memberChatroom.updateLastViewDate(lastViewDate);
 
+        }
+
+        // 상대 회원의 memberChatroom의 latJoinDate가 null인 경우, 상대 회원의 lastJoinDate 업데이트
+        Chatroom chatroom = memberChatroom.getChatroom();
+
+        Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+            chatroom.getId(), memberChatroom.getMember().getId());
+        MemberChatroom targetMemberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+            targetMember.getId(), chatroom.getId()).get();
+        if (targetMemberChatroom.getLastJoinDate() == null) {
+            targetMemberChatroom.updateLastJoinDate(lastViewDate);
         }
     }
 

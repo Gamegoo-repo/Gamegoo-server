@@ -62,7 +62,7 @@ public class ChatController {
         Chatroom chatroomByMatch = chatCommandService.createChatroomByMatch(request);
         return ApiResponse.onSuccess(
             ChatConverter.toChatroomCreateResultDTO(chatroomByMatch, null));
-        
+
     }
 
     @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
@@ -100,7 +100,7 @@ public class ChatController {
         "cursor 파라미터를 보내지 않으면, 해당 채팅방의 가장 최근 메시지 내역을 조회합니다.")
     @GetMapping("/chat/{chatroomUuid}/messages")
     @Parameter(name = "cursor", description = "페이징을 위한 커서, 13자리 timestamp integer를 보내주세요. (UTC 기준)")
-    public ApiResponse<Object> getChatMessages(
+    public ApiResponse<ChatResponse.ChatMessageListDTO> getChatMessages(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
         @RequestParam(name = "cursor", required = false) Long cursor
     ) {
@@ -123,4 +123,16 @@ public class ChatController {
         chatCommandService.readChatMessages(chatroomUuid, timestamp, memberId);
         return ApiResponse.onSuccess("채팅 메시지 읽음 처리 성공");
     }
+
+    @Operation(summary = "채팅방 나가기 API", description = "채팅방 나가기 API 입니다.")
+    @GetMapping("/chatroom/{chatroomUuid}/exit")
+    public ApiResponse<Object> exitChatroom(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        chatCommandService.exitChatroom(chatroomUuid, memberId);
+        return ApiResponse.onSuccess("채팅방 나가기 성공");
+    }
+
 }
