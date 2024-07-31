@@ -41,6 +41,7 @@ public class ChatResponse {
     @AllArgsConstructor
     public static class ChatroomEnterDTO {
 
+        String uuid;
         Long memberId;
         String gameName;
         String memberProfileImg;

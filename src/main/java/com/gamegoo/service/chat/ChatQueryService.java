@@ -77,6 +77,9 @@ public class ChatQueryService {
                 if (lastChat.isPresent()) {
                     lastAtIoString = lastChat.get().getCreatedAt()
                         .format(DateTimeFormatter.ISO_DATE_TIME);
+                } else {
+                    lastAtIoString = memberChatroom.getLastJoinDate()
+                        .format(DateTimeFormatter.ISO_DATE_TIME);
                 }
 
                 return ChatResponse.ChatroomViewDTO.builder()
@@ -122,7 +125,8 @@ public class ChatQueryService {
 
         // requestParam으로 cursor가 넘어온 경우
         if (cursor != null) {
-            return chatRepository.findChatsByCursor(cursor, chatroom.getId(), pageRequest);
+            return chatRepository.findChatsByCursor(cursor, chatroom.getId(),
+                memberChatroom.getId(), pageRequest);
         } else { // cursor가 넘어오지 않은 경우 = 해당 chatroom의 가장 최근 chat을 조회하는 요청
             return chatRepository.findRecentChats(chatroom.getId(), memberChatroom.getId());
         }
