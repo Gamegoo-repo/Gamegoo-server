@@ -50,6 +50,7 @@ public class MannerController {
     }
 
     @PostMapping("/bad")
+    @Operation(summary = "비매너 평가 등록 API",  description = "비매너 평가하기 API 입니다.")
     public ApiResponse<MannerResponse.mannerInsertResponseDTO> badMannerInsert(
             @RequestBody MannerRequest.mannerInsertDTO request
     ){
