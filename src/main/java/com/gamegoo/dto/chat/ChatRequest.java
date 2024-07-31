@@ -17,6 +17,15 @@ public class ChatRequest {
     }
 
     @Getter
+    public static class ChatroomStartRequest {
+
+        @NotNull
+        Long targetMemberId;
+
+        String postUrl;
+    }
+
+    @Getter
     public static class ChatroomCreateByMatchRequest {
 
         @NotNull
