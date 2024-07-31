@@ -43,6 +43,14 @@ public class ChatController {
         return ApiResponse.onSuccess(chatroomUuids);
     }
 
+    @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
+    @GetMapping("/member/chatroom")
+    public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
+    }
+
     @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API 입니다.")
     @PostMapping("/chatroom/create/test")
     public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
@@ -63,14 +71,6 @@ public class ChatController {
         return ApiResponse.onSuccess(
             ChatConverter.toChatroomCreateResultDTO(chatroomByMatch, null));
 
-    }
-
-    @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
-    @GetMapping("/member/chatroom")
-    public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
-        Long memberId = JWTUtil.getCurrentUserId();
-
-        return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
     }
 
     @Operation(summary = "채팅방 입장 API", description = "특정 채팅방에 입장하는 API 입니다. 채팅 상대의 id, 프로필 이미지, 닉네임 및 해당 채팅방의 안읽은 메시지 및 최근 메시지 목록을 리턴합니다.")
@@ -112,7 +112,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅 메시지 읽음 처리 API", description = "특정 채팅방의 메시지를 읽음 처리하는 API 입니다.")
-    @GetMapping("/chatroom/{chatroomUuid}/read")
+    @GetMapping("/chat/{chatroomUuid}/read")
     @Parameter(name = "timestamp", description = "특정 메시지를 읽음 처리하는 경우, 그 메시지의 timestamp를 함께 보내주세요.")
     public ApiResponse<String> readChatMessage(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
@@ -125,7 +125,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅방 나가기 API", description = "채팅방 나가기 API 입니다.")
-    @GetMapping("/chatroom/{chatroomUuid}/exit")
+    @GetMapping("/chat/{chatroomUuid}/exit")
     public ApiResponse<Object> exitChatroom(
         @PathVariable(name = "chatroomUuid") String chatroomUuid
     ) {
