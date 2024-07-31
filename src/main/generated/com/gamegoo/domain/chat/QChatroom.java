@@ -29,8 +29,6 @@ public class QChatroom extends EntityPathBase<Chatroom> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final StringPath postUrl = createString("postUrl");
-
     public final com.gamegoo.domain.QMember startMember;
 
     //inherited

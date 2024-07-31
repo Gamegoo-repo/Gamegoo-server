@@ -43,23 +43,23 @@ public class ChatController {
         return ApiResponse.onSuccess(chatroomUuids);
     }
 
-    @Operation(summary = "채팅방 생성 API", description = "채팅방을 생성하는 API 입니다.")
-    @PostMapping("/chatroom/create/test")
-    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
-        @RequestBody @Valid ChatRequest.ChatroomCreateRequest request
-    ) {
-        Long memberId = JWTUtil.getCurrentUserId();
-        Chatroom chatroom = chatCommandService.createChatroom(request, memberId);
-        return ApiResponse.onSuccess(
-            ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
-    }
-
     @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
     @GetMapping("/member/chatroom")
     public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
         Long memberId = JWTUtil.getCurrentUserId();
 
         return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
+    }
+
+    @Operation(summary = "채팅방 시작 API", description = "특정 대상 회원과의 채팅방을 시작하는 API 입니다.\n\n" +
+        "대상 회원과의 채팅방이 이미 존재하는 경우, 채팅방 uuid, 상대 회원 정보와 채팅 메시지 내역을 리턴합니다.\n\n" +
+        "대상 회원과의 채팅방이 존재하지 않는 경우, 채팅방을 새로 생성해 해당 채팅방의 uuid, 상대 회원 정보를 리턴합니다.")
+    @PostMapping("/chat/start")
+    public ApiResponse<ChatResponse.ChatroomEnterDTO> startChatroom(
+        @RequestBody @Valid ChatRequest.ChatroomStartRequest request
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+        return ApiResponse.onSuccess(chatCommandService.startChatroom(request, memberId));
     }
 
     @Operation(summary = "채팅방 입장 API", description = "특정 채팅방에 입장하는 API 입니다. 채팅 상대의 id, 프로필 이미지, 닉네임 및 해당 채팅방의 안읽은 메시지 및 최근 메시지 목록을 리턴합니다.")
@@ -89,7 +89,7 @@ public class ChatController {
         "cursor 파라미터를 보내지 않으면, 해당 채팅방의 가장 최근 메시지 내역을 조회합니다.")
     @GetMapping("/chat/{chatroomUuid}/messages")
     @Parameter(name = "cursor", description = "페이징을 위한 커서, 13자리 timestamp integer를 보내주세요. (UTC 기준)")
-    public ApiResponse<Object> getChatMessages(
+    public ApiResponse<ChatResponse.ChatMessageListDTO> getChatMessages(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
         @RequestParam(name = "cursor", required = false) Long cursor
     ) {
@@ -101,7 +101,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅 메시지 읽음 처리 API", description = "특정 채팅방의 메시지를 읽음 처리하는 API 입니다.")
-    @GetMapping("/chatroom/{chatroomUuid}/read")
+    @GetMapping("/chat/{chatroomUuid}/read")
     @Parameter(name = "timestamp", description = "특정 메시지를 읽음 처리하는 경우, 그 메시지의 timestamp를 함께 보내주세요.")
     public ApiResponse<String> readChatMessage(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
@@ -111,5 +111,38 @@ public class ChatController {
 
         chatCommandService.readChatMessages(chatroomUuid, timestamp, memberId);
         return ApiResponse.onSuccess("채팅 메시지 읽음 처리 성공");
+    }
+
+    @Operation(summary = "채팅방 나가기 API", description = "채팅방 나가기 API 입니다.")
+    @GetMapping("/chat/{chatroomUuid}/exit")
+    public ApiResponse<Object> exitChatroom(
+        @PathVariable(name = "chatroomUuid") String chatroomUuid
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        chatCommandService.exitChatroom(chatroomUuid, memberId);
+        return ApiResponse.onSuccess("채팅방 나가기 성공");
+    }
+
+    @Operation(summary = "채팅방 생성 API (서버 테스트용)", description = "채팅방을 생성하는 API 입니다. 서버 테스트용!!")
+    @PostMapping("/test/chatroom/create")
+    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
+        @RequestBody @Valid ChatRequest.ChatroomCreateRequest request
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+        Chatroom chatroom = chatCommandService.createChatroom(request, memberId);
+        return ApiResponse.onSuccess(
+            ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
+    }
+
+    @Operation(summary = "채팅방 생성 by Matching API (서버 테스트용)", description = "매칭을 통한 채팅방을 생성하는 API 입니다. 서버 테스트용!!")
+    @PostMapping("/test/chatroom/create/matched")
+    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroomByMatching(
+        @RequestBody @Valid ChatRequest.ChatroomCreateByMatchRequest request
+    ) {
+        Chatroom chatroomByMatch = chatCommandService.createChatroomByMatch(request);
+        return ApiResponse.onSuccess(
+            ChatConverter.toChatroomCreateResultDTO(chatroomByMatch, null));
+
     }
 }
