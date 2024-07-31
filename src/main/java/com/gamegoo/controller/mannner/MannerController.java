@@ -49,4 +49,24 @@ public class MannerController {
         return ApiResponse.onSuccess(result);
     }
 
+    @PostMapping("/bad")
+    public ApiResponse<MannerResponse.mannerInsertResponseDTO> badMannerInsert(
+            @RequestBody MannerRequest.mannerInsertDTO request
+    ){
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerRating mannerrating = mannerService.insertBadManner(request, memberId);
+
+        List<Long> mannerRatingKeywordList = mannerrating.getMannerRatingKeywordList().stream()
+                .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                .collect(Collectors.toList());
+
+        MannerResponse.mannerInsertResponseDTO result = MannerResponse.mannerInsertResponseDTO.builder()
+                .mannerId(mannerrating.getId())
+                .toMemberId(mannerrating.getToMember().getId())
+                .mannerRatingKeywordList(mannerRatingKeywordList)
+                .build();
+
+        return ApiResponse.onSuccess(result);
+    }
 }
