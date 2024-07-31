@@ -31,7 +31,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
             .from(chat)
             .where(
                 chat.chatroom.id.eq(chatroomId),
-                createdAtGreaterThanSubQuery(memberChatroomId)
+                createdAtGreaterThanLastViewDateSubQuery(memberChatroomId),
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
             )
             .fetchOne();
 
@@ -46,7 +47,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
         List<Chat> unreadChats = queryFactory.selectFrom(chat)
             .where(
                 chat.chatroom.id.eq(chatroomId),
-                createdAtGreaterThanSubQuery(memberChatroomId)
+                createdAtGreaterThanLastViewDateSubQuery(memberChatroomId),
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
             )
             .orderBy(chat.createdAt.desc())
             .fetch();
@@ -58,7 +60,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
             List<Chat> additionalChats = queryFactory.selectFrom(chat)
                 .where(
                     chat.chatroom.id.eq(oldestUnreadChat.getChatroom().getId()),
-                    createdBefore(oldestUnreadChat.getTimestamp())
+                    createdBefore(oldestUnreadChat.getTimestamp()),
+                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
                 )
                 .orderBy(chat.createdAt.desc())
                 .limit(1) // 하나의 추가 메시지만 확인하면 충분
@@ -73,7 +76,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
         } else { // 안읽은 메시지가 20개 미만인 경우, 최근 메시지 20개를 조회해 리턴
             List<Chat> chats = queryFactory.selectFrom(chat)
                 .where(
-                    chat.chatroom.id.eq(chatroomId)
+                    chat.chatroom.id.eq(chatroomId),
+                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
                 )
                 .orderBy(chat.createdAt.desc())
                 .limit(pageable.getPageSize() + 1) // 다음 페이지가 있는지 확인하기 위해 +1
@@ -93,12 +97,14 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
     }
 
     @Override
-    public Slice<Chat> findChatsByCursor(Long cursor, Long chatroomId, Pageable pageable) {
+    public Slice<Chat> findChatsByCursor(Long cursor, Long chatroomId, Long memberChatroomId,
+        Pageable pageable) {
 
         List<Chat> result = queryFactory.selectFrom(chat)
             .where(
                 chat.chatroom.id.eq(chatroomId),
-                createdBefore(cursor)
+                createdBefore(cursor),
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
             )
             .orderBy(chat.createdAt.desc())
             .limit(pageable.getPageSize() + 1) // 다음 페이지가 있는지 확인하기 위해 +1
@@ -117,9 +123,18 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
     }
 
     //--- BooleanExpression ---//
-    private BooleanExpression createdAtGreaterThanSubQuery(Long memberChatroomId) {
+    private BooleanExpression createdAtGreaterThanLastViewDateSubQuery(Long memberChatroomId) {
         return chat.createdAt.gt(
             JPAExpressions.select(memberChatroom.lastViewDate)
+                .from(memberChatroom)
+                .where(memberChatroom.id.eq(memberChatroomId))
+        );
+    }
+
+    private BooleanExpression createdAtGreaterOrEqualThanLastJoinDateSubQuery(
+        Long memberChatroomId) {
+        return chat.createdAt.goe(
+            JPAExpressions.select(memberChatroom.lastJoinDate)
                 .from(memberChatroom)
                 .where(memberChatroom.id.eq(memberChatroomId))
         );
