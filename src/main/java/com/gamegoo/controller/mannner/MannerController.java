@@ -6,6 +6,7 @@ import com.gamegoo.dto.manner.MannerRequest;
 import com.gamegoo.dto.manner.MannerResponse;
 import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.util.JWTUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class MannerController {
     private final MannerService mannerService;
 
     @PostMapping("/good")
+    @Operation(summary = "매너 평가 등록 API",  description = "매너 평가하기 API 입니다.")
     public ApiResponse<MannerResponse.mannerInsertResponseDTO> mannerInsert(
             @RequestBody MannerRequest.mannerInsertDTO request
         ){
