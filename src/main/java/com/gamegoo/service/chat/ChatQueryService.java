@@ -77,6 +77,9 @@ public class ChatQueryService {
                 if (lastChat.isPresent()) {
                     lastAtIoString = lastChat.get().getCreatedAt()
                         .format(DateTimeFormatter.ISO_DATE_TIME);
+                } else {
+                    lastAtIoString = memberChatroom.getLastJoinDate()
+                        .format(DateTimeFormatter.ISO_DATE_TIME);
                 }
 
                 return ChatResponse.ChatroomViewDTO.builder()

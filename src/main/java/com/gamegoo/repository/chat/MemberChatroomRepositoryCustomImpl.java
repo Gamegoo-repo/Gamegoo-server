@@ -35,8 +35,10 @@ public class MemberChatroomRepositoryCustomImpl implements MemberChatroomReposit
                     new Coalesce<LocalDateTime>()
                         .add(JPAExpressions.select(chat.createdAt.max())
                             .from(chat)
-                            .where(chat.chatroom.eq(chatroom)))
-                        .add(chatroom.createdAt)
+                            .where(
+                                chat.chatroom.eq(chatroom),
+                                chat.createdAt.goe(memberChatroom.lastJoinDate)))
+                        .add(memberChatroom.lastJoinDate) // 해당 채팅방에 대화 내역이 없는 경우, lastJoinDate를 기준으로 정렬
                 )
             )
             .fetch();
