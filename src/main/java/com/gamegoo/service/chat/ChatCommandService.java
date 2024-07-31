@@ -219,7 +219,8 @@ public class ChatCommandService {
 
         // MemberChatroom의 lastViewDate 업데이트
         Chat savedChat = chatRepository.save(chat);
-        memberChatroom.updateLastViewDate(savedChat.getCreatedAt());
+        updateLastViewDateByAddChat(memberChatroom, savedChat.getCreatedAt());
+        //memberChatroom.updateLastViewDate(savedChat.getCreatedAt());
 
         return savedChat;
     }
@@ -250,6 +251,35 @@ public class ChatCommandService {
             Chat chat = chatRepository.findByChatroomAndTimestamp(chatroom, timestamp)
                 .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_MESSAGE_NOT_FOUND));
             memberChatroom.updateLastViewDate(chat.getCreatedAt());
+        }
+    }
+
+    private void updateLastViewDateByAddChat(MemberChatroom memberChatroom,
+        LocalDateTime lastViewDate) {
+        // lastJoinDate가 null인 경우
+        if (memberChatroom.getLastJoinDate() == null) {
+            // lastViewDate 업데이트
+            memberChatroom.updateLastViewDate(lastViewDate);
+
+            // lastJoinDate 업데이트
+            memberChatroom.updateLastJoinDate(lastViewDate);
+
+            // 상대 회원의 memberChatroom의 latJoinDate가 null인 경우, 상대 회원의 lastJoinDate 업데이트
+            Chatroom chatroom = memberChatroom.getChatroom();
+
+            Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+                chatroom.getId(), memberChatroom.getMember().getId());
+            MemberChatroom targetMemberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                targetMember.getId(), chatroom.getId()).get();
+            if (targetMemberChatroom.getLastJoinDate() == null) {
+                targetMemberChatroom.updateLastJoinDate(lastViewDate);
+
+            }
+
+        } else {
+            // lastViewDate 업데이트
+            memberChatroom.updateLastViewDate(lastViewDate);
+
         }
     }
 
