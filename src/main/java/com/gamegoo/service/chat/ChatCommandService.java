@@ -17,6 +17,7 @@ import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,113 @@ public class ChatCommandService {
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatroomRepository chatroomRepository;
     private final ChatRepository chatRepository;
+
+
+    /**
+     * 대상 회원과 채팅 시작: 기존에 채팅방이 있는 경우 채팅방 입장 처리, 기존에 채팅방이 없는 경우 새로운 채팅방 생성
+     *
+     * @param request
+     * @param memberId
+     * @return
+     */
+    public ChatResponse.ChatroomEnterDTO startChatroom(ChatRequest.ChatroomStartRequest request,
+        Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        // 채팅 대상 회원의 존재 여부 검증
+        Member targetMember = memberRepository.findById(request.getTargetMemberId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
+
+        // 채팅 대상 회원과의 chatroom 존재 여부 조회
+        Optional<Chatroom> chatroom = chatroomRepository.findChatroomByMemberIds(
+            member.getId(), targetMember.getId());
+
+        // 기존에 채팅방이 존재하는 경우: 메시지 내역, 상대 회원 정보 조회 및 해당 채팅방 입장 처리
+        if (chatroom.isPresent()) {
+            MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                    member.getId(), chatroom.get().getId())
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+            // 최근 메시지 내역 조회
+            Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.get().getId(),
+                memberChatroom.getId());
+
+            // 해당 채팅방의 lastViewDate 업데이트
+            memberChatroom.updateLastViewDate(LocalDateTime.now());
+
+            // chatMessageDtoList 생성
+            List<ChatResponse.ChatMessageDTO> chatMessageDtoList = recentChats.stream()
+                .map(chat -> {
+                    // ISO 8601 형식의 문자열로 변환
+                    String createdAtIoString = chat.getCreatedAt()
+                        .format(DateTimeFormatter.ISO_DATE_TIME);
+
+                    return ChatResponse.ChatMessageDTO.builder()
+                        .senderId(chat.getFromMember().getId())
+                        .senderName(chat.getFromMember().getGameName())
+                        .senderProfileImg(chat.getFromMember().getProfileImage())
+                        .message(chat.getContents())
+                        .createdAt(createdAtIoString)
+                        .timestamp(chat.getTimestamp())
+                        .build();
+                }).collect(Collectors.toList());
+
+            // ChatMessageListDTO 생성
+            ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
+                .chatMessageDtoList(chatMessageDtoList)
+                .list_size(chatMessageDtoList.size())
+                .has_next(recentChats.hasNext())
+                .next_cursor(recentChats.hasNext() ? recentChats.getContent().get(0).getTimestamp()
+                    : null) // next cursor를 현재 chat list의 가장 오래된 chat의 timestamp로 주기
+                .build();
+
+            return ChatroomEnterDTO.builder()
+                .uuid(chatroom.get().getUuid())
+                .memberId(targetMember.getId())
+                .gameName(targetMember.getGameName())
+                .memberProfileImg(targetMember.getProfileImage())
+                .chatMessageList(chatMessageListDTO)
+                .build();
+        } else {
+            // 기존에 채팅방이 존재하지 않는 경우: 새 채팅방 생성
+            // chatroom 엔티티 생성
+            String uuid = UUID.randomUUID().toString();
+            Chatroom newChatroom = Chatroom.builder()
+                .uuid(uuid)
+                .startMember(member)
+                .build();
+
+            Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+            // MemberChatroom 엔티티 생성 및 연관관계 매핑
+            // 나의 MemberChatroom 엔티티
+            MemberChatroom memberChatroom = MemberChatroom.builder()
+                .lastViewDate(null)
+                .lastJoinDate(null)
+                .chatroom(savedChatroom)
+                .build();
+            memberChatroom.setMember(member);
+            memberChatroomRepository.save(memberChatroom);
+
+            // 상대방의 MemberChatroom 엔티티
+            MemberChatroom targetMemberChatroom = MemberChatroom.builder()
+                .lastViewDate(null)
+                .lastJoinDate(null)
+                .chatroom(savedChatroom)
+                .build();
+            targetMemberChatroom.setMember(targetMember);
+            memberChatroomRepository.save(targetMemberChatroom);
+
+            return ChatroomEnterDTO.builder()
+                .uuid(savedChatroom.getUuid())
+                .memberId(targetMember.getId())
+                .gameName(targetMember.getGameName())
+                .memberProfileImg(targetMember.getProfileImage())
+                .chatMessageList(null)
+                .build();
+        }
+
+    }
 
     /**
      * 대상 회원과의 채팅방 생성 (게시글 및 친구 목록을 통해 생성)
@@ -183,6 +291,7 @@ public class ChatCommandService {
             .build();
 
         return ChatroomEnterDTO.builder()
+            .uuid(chatroomUuid)
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
