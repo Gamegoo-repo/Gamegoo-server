@@ -31,5 +31,12 @@ public class MannerRating extends BaseDateTimeEntity {
     @JoinColumn(name = "to_member_id", nullable = false)
     private Member toMember;
 
-
+    // 연관관계 메소드
+    public void setFromMember(Member member){
+        if (this.fromMember != null){
+            this.fromMember.getMannerRatingList().remove(this);
+        }
+        this.fromMember = member;
+        this.fromMember.getMannerRatingList().add(this);
+    }
 }

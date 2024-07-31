@@ -16,9 +16,9 @@ public class MannerKeyword extends BaseDateTimeEntity {
     @Column(name = "manner_keyword_id")
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    @Column(name = "contents", nullable = false, length = 200)
     private String contents;
 
-    @Column(nullable = false)
+    @Column(name = "is_positive", nullable = false)
     private Boolean isPositive;
 }
