@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +29,9 @@ public class MannerController {
     private final MannerService mannerService;
 
     @PostMapping("/good")
-    @Operation(summary = "매너 평가 등록 API",  description = "매너 평가하기 API 입니다.")
+    @Operation(summary = "매너 평가 등록 API",  description = "매너 평가하기 API 입니다. 매너 키워드 유형 1~6 을 입력하세요.")
     public ApiResponse<MannerResponse.mannerInsertResponseDTO> mannerInsert(
-            @RequestBody MannerRequest.mannerInsertDTO request
+            @RequestBody @Valid MannerRequest.mannerInsertDTO request
         ){
         Long memberId = JWTUtil.getCurrentUserId();
 
@@ -50,9 +51,9 @@ public class MannerController {
     }
 
     @PostMapping("/bad")
-    @Operation(summary = "비매너 평가 등록 API",  description = "비매너 평가하기 API 입니다.")
+    @Operation(summary = "비매너 평가 등록 API",  description = "비매너 평가하기 API 입니다. 비매너 키워드 유형 7~12 를 입력하세요.")
     public ApiResponse<MannerResponse.mannerInsertResponseDTO> badMannerInsert(
-            @RequestBody MannerRequest.mannerInsertDTO request
+            @RequestBody @Valid MannerRequest.mannerInsertDTO request
     ){
         Long memberId = JWTUtil.getCurrentUserId();
 
