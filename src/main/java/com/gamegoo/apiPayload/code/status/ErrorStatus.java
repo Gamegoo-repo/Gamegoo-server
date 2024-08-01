@@ -41,13 +41,16 @@ public enum ErrorStatus implements BaseErrorCode {
     POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
 
     // Profile_Image 관련 에러
-    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE_400", "profile_image가 30자를 초과했습니다."),
+    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE400", "profile_image가 30자를 초과했습니다."),
 
     // Email 인증 관련 에러
     EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
     EMAIL_INVALID_CODE(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다."),
     EMAIL_INVALID_TIME(HttpStatus.BAD_REQUEST, "EMAIL400", "이메일 인증 시간이 3분 초과했습니다."),
+
+    // 매칭 관련 에러
+    MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400", "status는 SUCCESS, QUIT 둘 중 하나로만 변경이 가능합니다."),
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
