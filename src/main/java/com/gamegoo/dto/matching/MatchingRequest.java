@@ -37,4 +37,11 @@ public class MatchingRequest {
         @Max(value = 5, message = "원하는 상대 포지션의 값은 1이상이어야합니다.")
         int wantP;
     }
+
+    @Getter
+    @NoArgsConstructor
+    public static class ModifyMatchingRequestDTO {
+        @NotBlank(message = "status는 비워둘 수 없습니다")
+        String status;
+    }
 }

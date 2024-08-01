@@ -1,6 +1,7 @@
 package com.gamegoo.service.matching;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.MatchingHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.MatchingRecord;
 import com.gamegoo.domain.Member;
@@ -39,6 +40,25 @@ public class MatchingService {
 
         matchingRecord.setMember(member);
         matchingRecordRepository.save(matchingRecord);
+
+    }
+
+    @Transactional
+    public void modify(MatchingRequest.ModifyMatchingRequestDTO request, Long id) {
+        // 회원 정보 불러오기
+        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 매칭 기록 불러오기
+        MatchingRecord matchingRecord = matchingRecordRepository.findByMember(member);
+        String status = request.getStatus();
+
+        // 매칭 상태 검사 후 변
+        if (status.equals("QUIT") || status.equals("SUCCESS")) {
+            matchingRecord.setStatus(request.getStatus());
+            matchingRecordRepository.save(matchingRecord);
+        } else {
+            throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
+        }
 
     }
 }
