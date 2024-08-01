@@ -1,6 +1,7 @@
 package com.gamegoo.service.manner;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MannerHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
@@ -14,6 +15,7 @@ import com.gamegoo.repository.manner.MannerRatingKeywordRepository;
 import com.gamegoo.repository.manner.MannerRatingRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +63,7 @@ public class MannerService {
         List<MannerKeyword> mannerRatingKeywordList = new ArrayList<>();
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
-                    MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new TempHandler(ErrorStatus._BAD_REQUEST));
+                    MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
                     mannerRatingKeywordList.add(mannerKeyword);
                 });
 
@@ -125,7 +127,7 @@ public class MannerService {
         List<MannerKeyword> mannerRatingKeywordList = new ArrayList<>();
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
-                    MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new TempHandler(ErrorStatus._BAD_REQUEST));
+                    MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
                     mannerRatingKeywordList.add(mannerKeyword);
                 });
 

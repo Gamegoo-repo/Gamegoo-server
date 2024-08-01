@@ -7,7 +7,6 @@ import java.util.List;
 public class MannerResponse {
     @Getter
     @Builder
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerInsertResponseDTO{
