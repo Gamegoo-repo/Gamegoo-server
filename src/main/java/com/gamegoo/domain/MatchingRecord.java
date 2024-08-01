@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "MatchingRecord")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -36,15 +37,15 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "tier", columnDefinition = "VARCHAR(20)")
     private String tier;
 
-    @Column(name = "rank")
-    private Integer rank;
+    @Column(name = "rank", columnDefinition = "VARCHAR(10)")
+    private String rank;
 
     @Column(name = "winrate")
     private Double winRate;
 
     // FAIL, QUIT, SUCCESS
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10)")
-    private String status = "FAIL";
+    private String status;
 
     // BASIC : 겜구 매칭, PRECISE : 정밀 매칭
     @Column(name = "matching_type", nullable = false, columnDefinition = "VARCHAR(20)")
