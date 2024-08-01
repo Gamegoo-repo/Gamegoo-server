@@ -76,11 +76,11 @@ public class MannerService {
 
         // manner rating 엔티티 생성 및 연관관계 매핑.
         MannerRating mannerRating = MannerRating.builder()
-                .toMember(targetMember)
+                .fromMember(member)
                 .mannerRatingKeywordList(new ArrayList<>())
                 .build();
 
-        mannerRating.setFromMember(member);
+        mannerRating.setToMember(targetMember);
         MannerRating saveManner = mannerRatingRepository.save(mannerRating);
 
         // manner Rating Keyword 엔티티 생성 및 연관관계 매핑.
@@ -140,11 +140,11 @@ public class MannerService {
 
         // manner rating 엔티티 생성 및 연관관계 매핑.
         MannerRating mannerRating = MannerRating.builder()
-                .toMember(targetMember)
+                .fromMember(member)
                 .mannerRatingKeywordList(new ArrayList<>())
                 .build();
 
-        mannerRating.setFromMember(member);
+        mannerRating.setToMember(targetMember);
         MannerRating saveManner = mannerRatingRepository.save(mannerRating);
 
         // manner Rating Keyword 엔티티 생성 및 연관관계 매핑.
