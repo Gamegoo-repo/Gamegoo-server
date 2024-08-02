@@ -30,7 +30,7 @@ public class MatchingRequest {
         int mainP;
 
         @Min(value = 1, message = "서브 포지션의 값은 1이상이어야 합니다.")
-        @Max(value = 5, message = "서브 포지션의 값은 1이상이어야합니다.")
+        @Max(value = 5, message = "서브 포지션의 값은 5이하이어야합니다.")
         int subP;
 
         @Min(value = 1, message = "원하는 상대 포지션의 값은 1이상이어야 합니다.")

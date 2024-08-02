@@ -18,7 +18,7 @@ import javax.validation.Valid;
 public class MatchingController {
     private final MatchingService matchingService;
 
-    @PostMapping("/")
+    @PostMapping("")
     @Operation(summary = "매칭 기록을 DB에 저장하는 API 입니다.", description = "API for recording matching")
     public ApiResponse<String> saveMatching(@RequestBody @Valid MatchingRequest.SaveMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
@@ -27,7 +27,7 @@ public class MatchingController {
         return ApiResponse.onSuccess("매칭 기록에 성공했습니다.");
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     @Operation(summary = "매칭 상태(status)를 수정하는 API입니다.", description = "API for matching status modification")
     public ApiResponse<String> modifyMatching(@RequestBody @Valid MatchingRequest.ModifyMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();

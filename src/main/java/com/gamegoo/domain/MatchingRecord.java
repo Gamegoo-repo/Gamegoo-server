@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "MatchingRecord")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -54,4 +53,9 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
+
+    // status 변경
+    public void updateStatus(String status) {
+        this.status = status;
+    }
 }
