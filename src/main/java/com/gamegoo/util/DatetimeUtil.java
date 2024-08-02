@@ -14,7 +14,8 @@ public class DatetimeUtil {
      * @return
      */
     public static String toKSTString(LocalDateTime localDateTime) {
-        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Asia/Seoul"));
+        // LocalDateTime을 ZonedDateTime으로 변환하고, KST 시간대로 설정
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.of("Asia/Seoul"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         return zonedDateTime.format(formatter);
     }
