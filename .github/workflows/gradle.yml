@@ -80,6 +80,7 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           timeout: 50s
           script: |
+            sudo timedatectl set-timezone Asia/Seoul
             sudo docker pull rimi3226/gamegoo:${{ github.sha }}
             sudo docker stop gamegoo_api
             sudo docker rm gamegoo_api
