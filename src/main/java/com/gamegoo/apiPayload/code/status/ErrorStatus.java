@@ -53,9 +53,11 @@ public enum ErrorStatus implements BaseErrorCode {
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400", "status는 SUCCESS, QUIT 둘 중 하나로만 변경이 가능합니다."),
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "해당 사용자의 매칭 정보가 없습니다."),
 
+
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
-    RIOT_MATCH_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOTMATCH404", "해당 Riot 계정의 매칭을 불러오는 도중 에러가 발생했습니다."),
+    RIOT_MATCH_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOTMATCH404", "해당 Riot 계정의 매칭을 불러오는 도중 에러가 발생했습니다. 최근 100판 이내 이벤트 매칭 제외, 일반 매칭(일반게임,랭크게임,칼바람)을 많이 한 계정으로 다시 시도하세요."),
+    RIOT_PREFER_CHAMPION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "RIOTCHAMPION500", "선호 챔피언을 연동하는 도중 에러가 발생했습니다"),
     CHAMPION_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAMPION404", "해당 챔피언이 존재하지 않습니다."),
     RIOT_MEMBER_CONFLICT(HttpStatus.CONFLICT, "RIOT409", "해당 이메일 계정은 이미 다른 RIOT 계정과 연동되었습니다."),
     RIOT_ACCOUNT_CONFLICT(HttpStatus.CONFLICT, "RIOT409", "해당 RIOT 계정은 이미 다른 이메일과 연동되어있습니다."),

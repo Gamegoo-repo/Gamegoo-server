@@ -29,7 +29,11 @@ public class AuthController {
             @RequestBody @Valid MemberRequest.JoinRequestDTO joinRequestDTO) {
         String email = joinRequestDTO.getEmail();
         String password = joinRequestDTO.getPassword();
-        authService.joinMember(email, password);
+        String gameName = joinRequestDTO.getGameName();
+        String tag = joinRequestDTO.getTag();
+
+        authService.joinMember(email, password, gameName, tag);
+
         return ApiResponse.onSuccess("회원가입에 성공했습니다.");
     }
 
@@ -70,7 +74,7 @@ public class AuthController {
     public ApiResponse<String> logoutMember() {
         Long memberId = JWTUtil.getCurrentUserId();
         authService.logoutMember(memberId);
-        
+
         return ApiResponse.onSuccess("로그아웃에 성공했습니다");
     }
 }
