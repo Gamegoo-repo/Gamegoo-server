@@ -36,9 +36,9 @@ public class MatchingService {
                 .wantPosition(request.getWantP())
                 .winRate(member.getWinRate())
                 .gameMode(request.getGameMode())
+                .member(member)
                 .build();
 
-        matchingRecord.setMember(member);
         matchingRecordRepository.save(matchingRecord);
 
     }
@@ -49,14 +49,18 @@ public class MatchingService {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 매칭 기록 불러오기
-        MatchingRecord matchingRecord = matchingRecordRepository.findByMember(member);
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(member)
+                .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+
         String status = request.getStatus();
 
-        // 매칭 상태 검사 후 변
+        // 매칭 status 값 확인
         if (status.equals("QUIT") || status.equals("SUCCESS")) {
-            matchingRecord.setStatus(request.getStatus());
+            // status 값 변경
+            matchingRecord.updateStatus(request.getStatus());
             matchingRecordRepository.save(matchingRecord);
         } else {
+            // status 값이 이상할 경우 에러처리
             throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
         }
 
