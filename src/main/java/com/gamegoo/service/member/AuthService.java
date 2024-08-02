@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -31,7 +32,13 @@ public class AuthService {
     private final JavaMailSender javaMailSender;
     private final JWTUtil jwtUtil;
 
-    // 회원가입 로직
+    /**
+     * RIOT 제외한 회원 정보 저장 (회원가입)
+     *
+     * @param email
+     * @param password
+     */
+    @Transactional
     public void joinMember(String email, String password) {
 
         // 중복 확인하기
@@ -53,7 +60,12 @@ public class AuthService {
         memberRepository.save(member);
     }
 
-    //이메일 인증코드 전송
+    /**
+     * 이메일 인증코드 발송 & 이메일 전송 기록 저장
+     *
+     * @param email
+     */
+    @Transactional
     public void sendEmail(String email) {
         // 중복 확인하기
         boolean isPresent = memberRepository.findByEmail(email).isPresent();
@@ -76,7 +88,13 @@ public class AuthService {
         emailVerifyRecordRepository.save(emailVerifyRecord);
     }
 
-    // jwt refresh 토큰 검증
+    /**
+     * jwt refresh 토큰 검증
+     *
+     * @param refresh_token
+     * @return
+     */
+    @Transactional
     public MemberResponse.RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
         // refresh Token 검증하기
         Member member = memberRepository.findByRefreshToken(refresh_token)
@@ -96,7 +114,12 @@ public class AuthService {
         return new MemberResponse.RefreshTokenResponseDTO(access_token, new_refresh_token);
     }
 
-    // 이메일 인증코드 검증
+    /**
+     * 이메일 인증코드 검증
+     *
+     * @param email
+     * @param code
+     */
     public void verifyEmail(String email, String code) {
         // 이메일로 보낸 인증 코드 중 가장 최근의 데이터를 불러옴
         EmailVerifyRecord emailVerifyRecord = emailVerifyRecordRepository.findByEmailOrderByUpdatedAtDesc(email, PageRequest.of(0, 1))
@@ -123,7 +146,12 @@ public class AuthService {
         }
     }
 
-    // 메일 전송하는 메소드
+    /**
+     * Gmail 발송
+     *
+     * @param email
+     * @param certificationNumber
+     */
     private void sendEmailInternal(String email, String certificationNumber) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -142,7 +170,12 @@ public class AuthService {
         }
     }
 
-    // 메일 내용
+    /**
+     * 메일 내용 편집
+     *
+     * @param certificationNumber
+     * @return
+     */
     private String getCertificationMessage(String certificationNumber) {
         String certificationMessage = "";
         certificationMessage += "<h1 style='text-align: center;'> [GAMEGOO 인증메일]</h1>";
@@ -151,7 +184,12 @@ public class AuthService {
         return certificationMessage;
     }
 
-    // 로그아웃
+    /**
+     * refresh 토큰 DB에서 삭제 (로그아웃)
+     *
+     * @param id
+     */
+    @Transactional
     public void logoutMember(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 

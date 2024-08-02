@@ -60,11 +60,11 @@ public class MemberRequest {
 
     @Getter
     public static class PositionRequestDTO {
-        @Min(value = 1, message = "메인 포지션의 값은 1이상이어야 합니다.")
+        @Min(value = 0, message = "메인 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "메인 포지션의 값은 5이하이어야 합니다.")
         int mainP;
-        @Min(value = 1, message = "서브 포지션의 값은 1이상이어야 합니다.")
-        @Max(value = 5, message = "서브 포지션의 값은 1이상이어야합니다.")
+        @Min(value = 0, message = "서브 포지션의 값은 0이상이어야 합니다.")
+        @Max(value = 5, message = "서브 포지션의 값은 5이하이어야합니다.")
         int subP;
     }
 

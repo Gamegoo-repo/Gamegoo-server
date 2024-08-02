@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,15 @@ public class RiotService {
 
 
     // Riot GameName으로 DB에 데이터 저장하기
+
+    /**
+     * RIOT 연동 정보 DB에 저장 : GameName, Tag로 Tier, Rank, 승률, 선호 챔피언 3개 조회하기 & DB에 저장
+     *
+     * @param gameName
+     * @param tag
+     * @param email
+     */
+    @Transactional
     public void updateMemberRiotInfo(String gameName, String tag, String email) {
         // emaiL 로 DB에서 member 가져오기
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -118,14 +128,19 @@ public class RiotService {
                         memberChampionRepository.save(memberChampion);
                     });
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
         }
     }
 
-    // RiotAPI - request:game_name, tag / response : puuid
-    private String getRiotPuuid(String game_name, String tag) {
-        String url = String.format(RIOT_ACCOUNT_API_URL_TEMPLATE, game_name, tag, riotAPIKey);
+    /**
+     * RiotAPI 1 gameName, tag으로 puuid 조회
+     *
+     * @param gameName
+     * @param tag
+     * @return
+     */
+    private String getRiotPuuid(String gameName, String tag) {
+        String url = String.format(RIOT_ACCOUNT_API_URL_TEMPLATE, gameName, tag, riotAPIKey);
         RiotResponse.RiotAccountDTO accountResponse = null;
         try {
             accountResponse = restTemplate.getForObject(url, RiotResponse.RiotAccountDTO.class);
@@ -144,7 +159,12 @@ public class RiotService {
 
     }
 
-    // RiotAPI - request:puuid / response : encryptedSummonerId
+    /**
+     * RiotAPI 2 - puuid로 encryptedSummonerId 조회
+     *
+     * @param puuid
+     * @return
+     */
     private String getSummonerId(String puuid) {
 
         String summonerUrl = String.format(RIOT_SUMMONER_API_URL_TEMPLATE, puuid, riotAPIKey);
@@ -162,7 +182,14 @@ public class RiotService {
         return summonerResponse.getId();
     }
 
-    // RiotAPI - request: encryptedSummonerId / response : tier, rank
+    /**
+     * RiotAPI 3 - encryptedSummonerId로 tier, rank, winrate 조회
+     *
+     * @param member
+     * @param gameName
+     * @param encryptedSummonerId
+     * @param tag
+     */
     private void updateMemberWithLeagueInfo(Member member, String gameName, String encryptedSummonerId, String tag) {
         // 3. account id로 티어, 랭크, 불러오기
         String leagueUrl = String.format(RIOT_LEAGUE_API_URL_TEMPLATE, encryptedSummonerId, riotAPIKey);
@@ -193,7 +220,13 @@ public class RiotService {
         member.setTag(tag);
     }
 
-    // RiotAPI - request: puuid / response : matchId
+    /**
+     * RiotAPI 4 - puuid로 최근 매칭 20개의 matchId 가져오기
+     *
+     * @param puuid
+     * @param count
+     * @return
+     */
     private List<String> getRecentMatchIds(String puuid, int count) {
         // 최근 매칭 ID 20개 가져오기
         String matchUrl = String.format(RIOT_MATCH_API_URL_TEMPLATE, puuid, count, riotAPIKey);
@@ -206,7 +239,14 @@ public class RiotService {
         return Arrays.asList(matchIds);
     }
 
-    // RiotAPI - request: matchId / response : championId
+
+    /**
+     * RiotAPI 5 - matchId로 선호 챔피언 데이터 조회
+     *
+     * @param matchId
+     * @param gameName
+     * @return
+     */
     private Integer getChampionIdFromMatch(String matchId, String gameName) {
         // 매치 정보 가져오기
         String matchInfoUrl = String.format(RIOT_MATCH_INFO_API_URL_TEMPLATE, matchId, riotAPIKey);

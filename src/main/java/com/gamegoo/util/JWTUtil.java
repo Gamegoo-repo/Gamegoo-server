@@ -48,6 +48,11 @@ public class JWTUtil {
                 .compact();
     }
 
+    /**
+     * jwt 토큰에 담겨있는 사용자 Id 조회
+     *
+     * @return
+     */
     public static Long getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
