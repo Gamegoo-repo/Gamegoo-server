@@ -114,8 +114,6 @@ public class AuthService {
                     memberChampionRepository.save(memberChampion);
                 });
 
-        // DB에 저장
-        memberRepository.save(member);
 
         return member;
     }

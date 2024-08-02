@@ -42,7 +42,7 @@ public class RiotUtil {
      */
     @Transactional
     public List<Integer> getPreferChampionfromMatch(String gameName, String puuid) {
-        // 최근 플레이한 챔피언 리스트 조회
+        // 1. 최근 플레이한 챔피언 리스트 조회
         List<Integer> recentChampionIds = null;
         int count = 20;
 
@@ -63,6 +63,7 @@ public class RiotUtil {
             throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
         }
 
+        // 최근 선호 챔피언 수가 충분하지 않을 경우 에러 발생
         if (recentChampionIds.size() < 3) {
             throw new MemberHandler(ErrorStatus.RIOT_INSUFFICIENT_MATCHES);
         }
