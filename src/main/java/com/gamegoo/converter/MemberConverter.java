@@ -26,12 +26,12 @@ public class MemberConverter {
 
     }
 
-    public static MemberResponse.blockedMemberDTO toBlockedMemberDTO(Member membr) {
+    public static MemberResponse.blockedMemberDTO toBlockedMemberDTO(Member member) {
         return MemberResponse.blockedMemberDTO.builder()
-                .memberId(membr.getId())
-                .profileImg(membr.getProfileImage())
-                .email(membr.getEmail())
-                .name(membr.getGameName())
+                .memberId(member.getId())
+                .profileImg(member.getProfileImage())
+                .email(member.getEmail())
+                .name(member.getGameName())
                 .build();
 
     }
