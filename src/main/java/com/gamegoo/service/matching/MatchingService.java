@@ -19,6 +19,12 @@ public class MatchingService {
     private final MemberRepository memberRepository;
     private final MatchingRecordRepository matchingRecordRepository;
 
+    /**
+     * 매칭 정보 저장
+     *
+     * @param request
+     * @param id
+     */
     @Transactional
     public void save(MatchingRequest.SaveMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
@@ -43,6 +49,12 @@ public class MatchingService {
 
     }
 
+    /**
+     * 매칭 상태(status) 수정 : 회원의 가장 최신 매칭만 상태 변경 가능
+     *
+     * @param request
+     * @param id
+     */
     @Transactional
     public void modify(MatchingRequest.ModifyMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
