@@ -4,12 +4,17 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.EmailVerifyRecord;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.champion.Champion;
+import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.repository.member.ChampionRepository;
 import com.gamegoo.repository.member.EmailVerifyRecordRepository;
+import com.gamegoo.repository.member.MemberChampionRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
 import com.gamegoo.util.JWTUtil;
+import com.gamegoo.util.RiotUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,32 +27,51 @@ import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;
+    private final ChampionRepository championRepository;
+    private final MemberChampionRepository memberChampionRepository;
     private final EmailVerifyRecordRepository emailVerifyRecordRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JavaMailSender javaMailSender;
     private final JWTUtil jwtUtil;
+    private final RiotUtil riotUtil;
 
     /**
-     * RIOT 제외한 회원 정보 저장 (회원가입)
+     * 회원가입 : Riot 연동 포함
      *
      * @param email
      * @param password
+     * @param gameName
+     * @param tag
+     * @return
      */
     @Transactional
-    public void joinMember(String email, String password) {
+    public Member joinMember(String email, String password, String gameName, String tag) {
 
-        // 중복 확인하기
         // 중복 확인하기
         if (memberRepository.existsByEmail(email)) {
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
-        // DB에 넣을 정보 설정
+        // puuid 조회
+        String puuid = riotUtil.getRiotPuuid(gameName, tag);
+
+        // 최근 선호 챔피언 3개 리스트 조회
+        List<Integer> top3Champions = null;
+        try {
+            top3Champions = riotUtil.getPreferChampionfromMatch(gameName, puuid);
+        } catch (Exception e) {
+            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
+        }
+
+        // tier, rank, winrate
+        // DB 저장
+        // 1. Riot 정보 제외 저장
         Member member = Member.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
@@ -56,8 +80,43 @@ public class AuthService {
                 .blind(false)
                 .build();
 
+
+        // 2. tier, rank, winrate 저장
+        String encryptedSummonerId = riotUtil.getSummonerId(puuid);
+        riotUtil.addTierRankWinRate(member, gameName, encryptedSummonerId, tag);
+
+
+        // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
+        //    (1) 해당 email을 가진 사용자의 정보가 MemberChampion 테이블에 있을 경우 제거
+        if (member.getMemberChampionList() != null) {
+            member.getMemberChampionList()
+                    .forEach(memberChampion -> {
+                        memberChampion.removeMember(member); // 양방향 연관관계 제거
+                        memberChampionRepository.delete(memberChampion);
+                    });
+
+        }
+
         // DB에 저장
         memberRepository.save(member);
+
+        //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
+        top3Champions
+                .forEach(championId -> {
+                    System.out.println(championId);
+                    Champion champion = championRepository.findById(Long.valueOf(championId))
+                            .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
+
+                    MemberChampion memberChampion = MemberChampion.builder()
+                            .champion(champion)
+                            .build();
+
+                    memberChampion.setMember(member);
+                    memberChampionRepository.save(memberChampion);
+                });
+
+
+        return member;
     }
 
     /**

@@ -47,6 +47,10 @@ public class MemberRequest {
         String email;
         @NotBlank(message = "password는 비워둘 수 없습니다.")
         String password;
+        @NotBlank(message = "gameName 값은 비워둘 수 없습니다.")
+        String gameName;
+        @NotBlank(message = "tag 값은 비워둘 수 없습니다.")
+        String tag;
 
     }
 
@@ -82,8 +86,6 @@ public class MemberRequest {
 
     @Getter
     public static class verifyRiotRequestDTO {
-        @NotBlank(message = "email 값은 비워둘 수 없습니다.")
-        String email;
         @NotBlank(message = "gameName 값은 비워둘 수 없습니다.")
         String gameName;
         @NotBlank(message = "tag 값은 비워둘 수 없습니다.")
