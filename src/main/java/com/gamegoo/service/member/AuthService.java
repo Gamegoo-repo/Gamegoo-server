@@ -97,7 +97,6 @@ public class AuthService {
 
         }
 
-        // DB에 저장
         memberRepository.save(member);
 
         //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
@@ -115,6 +114,8 @@ public class AuthService {
                     memberChampionRepository.save(memberChampion);
                 });
 
+        // DB에 저장
+        memberRepository.save(member);
 
         return member;
     }

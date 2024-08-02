@@ -14,6 +14,13 @@ import javax.transaction.Transactional;
 public class RiotService {
     private final RiotUtil riotUtil;
 
+    /**
+     * Riot 계정 유무 확인
+     *
+     * @param gameName
+     * @param tag
+     * @return
+     */
     @Transactional
     public String verifyRiot(String gameName, String tag) {
         String riotPuuid = riotUtil.getRiotPuuid(gameName, tag);
