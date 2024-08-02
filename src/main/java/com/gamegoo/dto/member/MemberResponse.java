@@ -1,11 +1,8 @@
 package com.gamegoo.dto.member;
 
+import lombok.*;
+
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class MemberResponse {
 
@@ -55,6 +52,16 @@ public class MemberResponse {
         String gameStyleName;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChampionResponseDTO {
+
+        Long championId;
+        String championName;
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -78,6 +85,7 @@ public class MemberResponse {
         String rank;
         String updatedAt;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
+        List<ChampionResponseDTO> championResponseDTOList;
     }
 
     @Builder

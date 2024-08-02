@@ -23,6 +23,13 @@ public class ProfileService {
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
 
+    /**
+     * MemberGameStyle 데이터 추가 : 회원에 따른 게임 스타일 정보 저장하기
+     *
+     * @param request
+     * @param memberId
+     * @return
+     */
     @Transactional
     public List<MemberGameStyle> addMemberGameStyles(MemberRequest.GameStyleRequestDTO request, Long memberId) {
         // 회원 엔티티 조회
@@ -66,6 +73,12 @@ public class ProfileService {
         return member.getMemberGameStyleList();
     }
 
+    /**
+     * 회원 탈퇴 처리
+     *
+     * @param userId
+     */
+    @Transactional
     public void deleteMember(Long userId) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -75,8 +88,16 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
+    /**
+     * 메인 포지션, 서브 포지션 수정
+     *
+     * @param userId
+     * @param mainP
+     * @param subP
+     */
+    @Transactional
     public void modifyPosition(Long userId, int mainP, int subP) {
-        if (mainP <= 0 || subP <= 0 || mainP > 5 || subP > 5) {
+        if (mainP < 0 || subP < 0 || mainP > 5 || subP > 5) {
             throw new MemberHandler(ErrorStatus.POSITION_NOT_FOUND);
         }
 
@@ -88,6 +109,13 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
+    /**
+     * 프로필 이미지 수정
+     *
+     * @param userId
+     * @param profileImage
+     */
+    @Transactional
     public void modifyProfileImage(Long userId, String profileImage) {
         if (profileImage.length() > 30) {
             throw new MemberHandler(ErrorStatus.PROFILE_IMAGE_BAD_REQUEST);
@@ -100,7 +128,13 @@ public class ProfileService {
         memberRepository.save(member);
     }
 
-    @Transactional
+    /**
+     * 회원 정보 조회
+     *
+     * @param memberId
+     * @return
+     */
+    @Transactional(readOnly = true)
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
