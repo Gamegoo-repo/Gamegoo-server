@@ -95,6 +95,7 @@ public class RiotUtil {
      * @return
      */
     public String getRiotPuuid(String gameName, String tag) {
+        System.out.println("riotAPIKey: " + riotAPIKey);
         String url = String.format(RIOT_ACCOUNT_API_URL_TEMPLATE, gameName, tag, riotAPIKey);
         RiotResponse.RiotAccountDTO accountResponse = null;
         try {

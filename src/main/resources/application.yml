@@ -39,6 +39,13 @@ spring:
           starttls:
             enable: true
 
+server:
+  port: 8080
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: pwd
+    key-store-type: PKCS12
 
 springdoc:
   swagger-ui:
