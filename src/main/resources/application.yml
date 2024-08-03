@@ -39,14 +39,6 @@ spring:
           starttls:
             enable: true
 
-server:
-  port: 8080
-  ssl:
-    enabled: true
-    key-store: classpath:keystore.p12
-    key-store-password: pwd
-    key-store-type: PKCS12
-
 springdoc:
   swagger-ui:
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
