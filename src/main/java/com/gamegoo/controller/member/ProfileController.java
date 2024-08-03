@@ -80,6 +80,7 @@ public class ProfileController {
     @Operation(summary = "회원 조회하는 API 입니다.", description = "API for looking up member")
     @GetMapping("/profile")
     public ApiResponse<MemberResponse.myProfileMemberDTO> getBlockList() {
+        System.out.println("PROFILE : ");
         Long memberId = JWTUtil.getCurrentUserId();
 
         Member myProfile = profileService.findMember(memberId);
