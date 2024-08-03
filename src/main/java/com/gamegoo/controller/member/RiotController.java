@@ -25,6 +25,7 @@ public class RiotController {
     @Operation(summary = "실제 존재하는 Riot 계정인지 검증하는 API", description = "API for verifying account by riot API")
     public ApiResponse<String> VerifyRiot(
             @RequestBody @Valid MemberRequest.verifyRiotRequestDTO verifyRiotRequestDTO) {
+        System.out.println("RIOT_API 호출");
         String gameName = verifyRiotRequestDTO.getGameName();
         String tag = verifyRiotRequestDTO.getTag();
 
