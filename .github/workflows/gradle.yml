@@ -32,7 +32,7 @@ jobs:
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
           spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.password: ${{ secrets.GMAIL_PWD }}
-          spring.riot.api.key: $${{ secrets.RIOT_API }}
+          spring.riot.api.key: ${{ secrets.RIOT_API }}
 
       # Spring Boot 어플리케이션 Build (4)
       - name: Spring Boot Build
