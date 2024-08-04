@@ -39,7 +39,6 @@ spring:
           starttls:
             enable: true
 
-
 springdoc:
   swagger-ui:
     tags-sorter: alpha            # alpha: 알파벳 순 태그 정렬, method: HTTP Method 순 정렬
