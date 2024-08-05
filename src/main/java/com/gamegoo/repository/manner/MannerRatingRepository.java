@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MannerRatingRepository extends JpaRepository<MannerRating, Long> {
-    List<MannerRating> findByToMemberId(Long toMember);
+    List<MannerRating> findByFromMemberIdAndToMemberId(Long fromMember, Long toMember);
 }
