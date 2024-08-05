@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,19 +45,13 @@ public class MannerService {
         }
 
         // 매너평가 최초 시도 여부 검증.
-        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
-        if (!mannerRatings.isEmpty()){
-            for (MannerRating mannerRating : mannerRatings) {
-                if (mannerRating.getFromMember().getId().equals(member.getId())){
-                    List<MannerRatingKeyword> mannerKeywords = mannerRatingKeywordRepository.findByMannerRating(mannerRating);
-                    if (!mannerKeywords.isEmpty()){
-                        MannerRatingKeyword mannerKeyword = mannerKeywords.get(0);  // 첫번째 키워드만 조회.
-                        if (mannerKeyword.getMannerKeyword().getIsPositive()){
-                            throw new MannerHandler(ErrorStatus.MANNER_CONFLICT);
-                        }
-                    }
-                }
-            }
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberIdAndToMemberId(member.getId(), targetMember.getId());
+        List<MannerRating> positiveMannerRatings = mannerRatings.stream()
+                .filter(MannerRating::getIsPositive)
+                .collect(Collectors.toList());
+
+        if(!positiveMannerRatings.isEmpty()){
+            throw new MannerHandler(ErrorStatus.MANNER_CONFLICT);
         }
 
         // mannerKeyword 의 실제 존재 여부 검증.
@@ -64,20 +59,17 @@ public class MannerService {
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
                     MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
+                    if(!mannerKeyword.getIsPositive()){
+                        throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
+                    }
                     mannerRatingKeywordList.add(mannerKeyword);
                 });
-
-        // mannerKeyword 유형 검증.
-        for (Long keyword : request.getMannerRatingKeywordList()){
-            if (keyword < 1 || keyword > 6) {
-                throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
-            }
-        }
 
         // manner rating 엔티티 생성 및 연관관계 매핑.
         MannerRating mannerRating = MannerRating.builder()
                 .fromMember(member)
                 .mannerRatingKeywordList(new ArrayList<>())
+                .isPositive(true)
                 .build();
 
         mannerRating.setToMember(targetMember);
@@ -108,19 +100,13 @@ public class MannerService {
         }
 
         // 비매너평가 최초 시도 여부 검증.
-        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
-        if (!mannerRatings.isEmpty()){
-            for (MannerRating mannerRating : mannerRatings) {
-                if (mannerRating.getFromMember().getId().equals(member.getId())){
-                    List<MannerRatingKeyword> mannerKeywords = mannerRatingKeywordRepository.findByMannerRating(mannerRating);
-                    if (!mannerKeywords.isEmpty()){
-                        MannerRatingKeyword mannerKeyword = mannerKeywords.get(0);  // 첫번째 키워드만 조회.
-                        if (!mannerKeyword.getMannerKeyword().getIsPositive()){
-                            throw new MannerHandler(ErrorStatus.BAD_MANNER_CONFLICT);
-                        }
-                    }
-                }
-            }
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberIdAndToMemberId(member.getId(), targetMember.getId());
+        List<MannerRating> negativeMannerRatings = mannerRatings.stream()
+                .filter(rating -> !rating.getIsPositive())
+                .collect(Collectors.toList());
+
+        if(!negativeMannerRatings.isEmpty()){
+            throw new MannerHandler(ErrorStatus.BAD_MANNER_CONFLICT);
         }
 
         // mannerKeyword 의 실제 존재 여부 검증.
@@ -128,20 +114,17 @@ public class MannerService {
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
                     MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
+                    if(mannerKeyword.getIsPositive()){
+                        throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
+                    }
                     mannerRatingKeywordList.add(mannerKeyword);
                 });
-
-        // mannerKeyword 유형 검증.
-        for (Long keyword : request.getMannerRatingKeywordList()){
-            if (keyword < 7 || keyword > 12) {
-                throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
-            }
-        }
 
         // manner rating 엔티티 생성 및 연관관계 매핑.
         MannerRating mannerRating = MannerRating.builder()
                 .fromMember(member)
                 .mannerRatingKeywordList(new ArrayList<>())
+                .isPositive(false)
                 .build();
 
         mannerRating.setToMember(targetMember);
