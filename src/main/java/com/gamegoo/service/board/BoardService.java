@@ -40,7 +40,7 @@ public class BoardService {
 
     // 게시판 글 작성.
     @Transactional
-    public Board save(BoardRequest.boardInsertDTO request,Long memberId){
+    public Board save(BoardRequest.boardInsertDTO request,Long memberId, Member memberProfile){
 
         Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
@@ -80,6 +80,15 @@ public class BoardService {
                         .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
                 .collect(Collectors.toList());
 
+        // 게시판 글 작성 - 프로필 이미지 수정 여부 검증.
+        String boardProfileImage;
+        if (request.getBoardProfileImage()!=null && !request.getBoardProfileImage().isEmpty()){
+            boardProfileImage = request.getBoardProfileImage();
+        } else{
+            // 프로필 페이지에 있는 프로필 이미지 정보 가져오기.
+            boardProfileImage = memberProfile.getProfileImage();
+        }
+
         Board board = Board.builder()
                 .mode(request.getGameMode())
                 .mainPosition(request.getMainPosition())
@@ -88,6 +97,7 @@ public class BoardService {
                 .voice(request.getVoice())
                 .boardGameStyles(new ArrayList<>())
                 .content(request.getContents())
+                .boardProfileImage(boardProfileImage)
                 .build();
 
         board.setMember(member);
@@ -148,6 +158,15 @@ public class BoardService {
                         .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
                 .collect(Collectors.toList());
 
+        // 게시판 글 수정 - 프로필 이미지 수정 여부 검증.
+        String boardProfileImage;
+        if (request.getBoardProfileImage()!=null && !request.getBoardProfileImage().isEmpty()){
+            boardProfileImage = request.getBoardProfileImage();
+        } else{
+            // 기존 게시글에 있는 프로필 이미지 정보 가져오기.
+            boardProfileImage = board.getBoardProfileImage();
+        }
+
         // 마이크 설정 (null인 경우 기본값 false)
         if (request.getVoice() == null) {
             request.setVoice(false);
@@ -160,7 +179,8 @@ public class BoardService {
                 request.getSubPosition(),
                 request.getWantPosition(),
                 request.getVoice(),
-                request.getContents()
+                request.getContents(),
+                boardProfileImage
         );
 
         // 기존 BoardGameStyle 엔티티 업데이트
