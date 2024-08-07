@@ -31,7 +31,7 @@ public class QFriendRequests extends EntityPathBase<FriendRequests> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isApproved = createBoolean("isApproved");
+    public final EnumPath<FriendRequestStatus> status = createEnum("status", FriendRequestStatus.class);
 
     public final com.gamegoo.domain.QMember toMember;
 

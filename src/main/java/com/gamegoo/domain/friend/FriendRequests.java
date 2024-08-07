@@ -4,6 +4,8 @@ import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,8 +30,9 @@ public class FriendRequests extends BaseDateTimeEntity {
     @Column(name = "friend_request_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean isApproved;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
+    private FriendRequestStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_member_id", nullable = false)

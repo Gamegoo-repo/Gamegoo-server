@@ -1,5 +1,6 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.friend;
 
+import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
