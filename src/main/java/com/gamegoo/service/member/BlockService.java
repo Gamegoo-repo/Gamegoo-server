@@ -103,6 +103,19 @@ public class BlockService {
         blockRepository.delete(block);
     }
 
+    /**
+     * member가 targetMember를 차단한 상태인지 검증
+     *
+     * @param member
+     * @param targetMember
+     * @return
+     */
+    public boolean isBocked(Member member, Member targetMember) {
+
+        return member.getBlockList().stream()
+            .anyMatch(block -> block.getBlockedMember().equals(targetMember));
+    }
+
 
     /**
      * 해당 회원이 탈퇴했는지 검증

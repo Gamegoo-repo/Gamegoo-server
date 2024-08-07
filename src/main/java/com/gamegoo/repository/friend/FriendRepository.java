@@ -1,4 +1,4 @@
-package com.gamegoo.repository.member;
+package com.gamegoo.repository.friend;
 
 import com.gamegoo.domain.Friend;
 import java.util.List;
