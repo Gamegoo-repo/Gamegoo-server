@@ -78,7 +78,6 @@ public class MemberResponse {
     public static class myProfileMemberDTO {
 
         Long id;
-        Integer passwordLength;
         Integer profileImg;
         Boolean mike;
         String email;
