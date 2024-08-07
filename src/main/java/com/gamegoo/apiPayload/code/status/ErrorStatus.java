@@ -73,6 +73,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "BLOCK401", "차단 대상 회원을 찾을 수 없습니다."),
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다."),
     TARGET_MEMBER_NOT_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK403", "차단 목록에 존재하지 않는 회원입니다."),
+    BLOCK_MEMBER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "BLOCK404", "잘못된 친구 차단 요청입니다."),
 
     // 신고 관련 에러
     REPORT_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT401", "신고 대상 회원을 찾을 수 없습니다."),
@@ -103,16 +104,16 @@ public enum ErrorStatus implements BaseErrorCode {
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
 
     // 채팅 관련 에러
-    CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4001", "채팅 대상 회원을 찾을 수 없습니다."),
-    CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT4002", "채팅방을 찾을 수 없습니다."),
-    CHATROOM_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "CHAT4003", "접근할 수 없는 채팅방 입니다."),
-    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4004", "해당 메시지를 찾을 수 없습니다"),
+    CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT401", "채팅 대상 회원을 찾을 수 없습니다."),
+    CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT402", "채팅방을 찾을 수 없습니다."),
+    CHATROOM_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "CHAT403", "접근할 수 없는 채팅방 입니다."),
+    CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT404", "해당 메시지를 찾을 수 없습니다"),
 
     // 친구 관련 에러
-    FRIEND_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND4001", "잘못된 친구 요청입니다."),
-    FRIEND_TARGET_IS_BLOCKED(HttpStatus.BAD_REQUEST, "FRIEND4002",
+    FRIEND_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND401", "잘못된 친구 요청입니다."),
+    FRIEND_TARGET_IS_BLOCKED(HttpStatus.BAD_REQUEST, "FRIEND402",
         "내가 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
-    BLOCKED_BY_FRIEND_TARGET(HttpStatus.BAD_REQUEST, "FRIEND4003",
+    BLOCKED_BY_FRIEND_TARGET(HttpStatus.BAD_REQUEST, "FRIEND403",
         "나를 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
 
     ;
