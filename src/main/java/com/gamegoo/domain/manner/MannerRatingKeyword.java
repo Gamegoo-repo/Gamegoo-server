@@ -24,4 +24,13 @@ public class MannerRatingKeyword extends BaseDateTimeEntity {
     @JoinColumn(name = "manner_keyword_id", nullable = false)
     private MannerKeyword mannerKeyword;
 
+    // 연관관계 메소드
+    public void setMannerRating(MannerRating mannerRating){
+        if (this.mannerRating != null){
+            this.mannerRating.getMannerRatingKeywordList().remove(this);
+        }
+        this.mannerRating = mannerRating;
+        this.mannerRating.getMannerRatingKeywordList().add(this);
+    }
+
 }
