@@ -38,6 +38,11 @@ public class BlockService {
         Member targetMember = memberRepository.findById(targetMemberId)
             .orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
 
+        // 본인이 본인을 차단 시도하는 경우
+        if (member.equals(targetMember)) {
+            throw new MemberHandler(ErrorStatus.BLOCK_MEMBER_BAD_REQUEST);
+        }
+
         // 대상 회원의 탈퇴 여부 검증
         checkBlind(targetMember);
 
@@ -101,19 +106,6 @@ public class BlockService {
 
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);
-    }
-
-    /**
-     * member가 targetMember를 차단한 상태인지 검증
-     *
-     * @param member
-     * @param targetMember
-     * @return
-     */
-    public boolean isBocked(Member member, Member targetMember) {
-
-        return member.getBlockList().stream()
-            .anyMatch(block -> block.getBlockedMember().equals(targetMember));
     }
 
 
