@@ -88,6 +88,14 @@ public enum ErrorStatus implements BaseErrorCode {
     // 게시판 글 삭제 관련 에러
     BOARD_DELETE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 삭제 가능합니다."),
 
+    // 매너평가 관련 에러
+    MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
+    MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401", "매너 키워드 유형은 1~6만 가능합니다."),
+    BAD_MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401", "비매너 키워드 유형은 7~12만 가능합니다."),
+    MANNER_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너 키워드를 찾을 수 없습니다."),
+    MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
+    BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
+
     // 채팅 관련 에러
     CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT4001", "채팅 대상 회원을 찾을 수 없습니다."),
     CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT4002", "채팅방을 찾을 수 없습니다."),
