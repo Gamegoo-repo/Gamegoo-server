@@ -9,24 +9,11 @@ import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.report.Report;
+import lombok.*;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
@@ -50,7 +37,7 @@ public class Member extends BaseDateTimeEntity {
     private String password;
 
     @Column(name = "profile_image", length = 30)
-    private String profileImage = "default";
+    private Integer profileImage;
 
     @Column(name = "manner_level")
     private Integer mannerLevel = 0;

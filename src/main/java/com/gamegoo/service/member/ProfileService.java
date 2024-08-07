@@ -116,11 +116,7 @@ public class ProfileService {
      * @param profileImage
      */
     @Transactional
-    public void modifyProfileImage(Long userId, String profileImage) {
-        if (profileImage.length() > 30) {
-            throw new MemberHandler(ErrorStatus.PROFILE_IMAGE_BAD_REQUEST);
-        }
-
+    public void modifyProfileImage(Long userId, Integer profileImage) {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
