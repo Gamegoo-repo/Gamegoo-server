@@ -40,7 +40,7 @@ public class Board extends BaseDateTimeEntity {
     private String content;
 
     @Column(name = "board_profile_image")
-    private String boardProfileImage;
+    private Integer boardProfileImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
@@ -50,8 +50,8 @@ public class Board extends BaseDateTimeEntity {
     private List<BoardGameStyle> boardGameStyles = new ArrayList<>();
 
     // 연관관계 메소드
-    public void setMember(Member member){
-        if (this.member != null){
+    public void setMember(Member member) {
+        if (this.member != null) {
             this.member.getBoardList().remove(this);
         }
         this.member = member;
@@ -60,7 +60,7 @@ public class Board extends BaseDateTimeEntity {
         }
     }
 
-    public void updateBoard(Integer mode, Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean voice, String content, String boardProfileImage) {
+    public void updateBoard(Integer mode, Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean voice, String content, Integer boardProfileImage) {
         this.mode = mode;
         this.mainPosition = mainPosition;
         this.subPosition = subPosition;
