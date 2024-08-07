@@ -2,7 +2,6 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
-import com.gamegoo.domain.Friend;
 import com.gamegoo.domain.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.MemberService;
@@ -10,8 +9,6 @@ import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,18 +21,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Tag(name = "Member", description = "회원 관련 API")
+@Tag(name = "Block", description = "회원 차단 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/member")
-public class MemberController {
+@RequestMapping("/v1/member/block")
+public class BlockController {
 
     private final MemberService memberService;
 
 
     @Operation(summary = "회원 차단 API", description = "대상 회원을 차단하는 API 입니다.")
     @Parameter(name = "memberId", description = "차단할 대상 회원의 id 입니다.")
-    @PostMapping("/block/{memberId}")
+    @PostMapping("/{memberId}")
     public ApiResponse<String> blockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
         memberService.blockMember(memberId, targetMemberId);
@@ -45,7 +42,7 @@ public class MemberController {
 
     @Operation(summary = "차단한 회원 목록 조회 API", description = "내가 차단한 회원의 목록을 조회하는 API 입니다.")
     @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
-    @GetMapping("/block")
+    @GetMapping
     public ApiResponse<MemberResponse.blockListDTO> getBlockList(
         @RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();
@@ -57,7 +54,7 @@ public class MemberController {
 
     @Operation(summary = "회원 차단 해제 API", description = "해당 회원에 대한 차단을 해제하는 API 입니다.")
     @Parameter(name = "memberId", description = "차단을 해제할 대상 회원의 id 입니다.")
-    @DeleteMapping("/block/{memberId}")
+    @DeleteMapping("/{memberId}")
     public ApiResponse<String> unBlockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
         memberService.unBlockMember(memberId, targetMemberId);
@@ -65,17 +62,4 @@ public class MemberController {
         return ApiResponse.onSuccess("차단 해제 성공");
     }
 
-    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다.")
-    @GetMapping("/friends")
-    public ApiResponse<Object> getFriendList() {
-        Long memberId = JWTUtil.getCurrentUserId();
-        List<Friend> friends = memberService.getFriends(memberId);
-
-        List<MemberResponse.friendInfoDTO> friendInfoDTOList = friends.stream()
-            .map(MemberConverter::toFriendInfoDto).collect(
-                Collectors.toList());
-
-        return ApiResponse.onSuccess(friendInfoDTOList);
-
-    }
 }
