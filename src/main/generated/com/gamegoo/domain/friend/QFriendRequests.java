@@ -1,4 +1,4 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.friend;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QFriendRequests extends EntityPathBase<FriendRequests> {
 
-    private static final long serialVersionUID = -955592314L;
+    private static final long serialVersionUID = -1336304498L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -27,13 +27,13 @@ public class QFriendRequests extends EntityPathBase<FriendRequests> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final QMember fromMember;
+    public final com.gamegoo.domain.QMember fromMember;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final BooleanPath isApproved = createBoolean("isApproved");
 
-    public final QMember toMember;
+    public final com.gamegoo.domain.QMember toMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -56,8 +56,8 @@ public class QFriendRequests extends EntityPathBase<FriendRequests> {
 
     public QFriendRequests(Class<? extends FriendRequests> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.fromMember = inits.isInitialized("fromMember") ? new QMember(forProperty("fromMember")) : null;
-        this.toMember = inits.isInitialized("toMember") ? new QMember(forProperty("toMember")) : null;
+        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.QMember(forProperty("fromMember")) : null;
+        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.QMember(forProperty("toMember")) : null;
     }
 
 }

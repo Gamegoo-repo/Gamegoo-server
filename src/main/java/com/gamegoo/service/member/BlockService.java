@@ -8,6 +8,7 @@ import com.gamegoo.domain.Block;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -44,7 +45,7 @@ public class BlockService {
         }
 
         // 대상 회원의 탈퇴 여부 검증
-        checkBlind(targetMember);
+        MemberUtils.checkBlind(targetMember);
 
         // 이미 차단한 회원인지 검증
         boolean isblocked = blockRepository.existsByBlockerMemberAndBlockedMember(member,
@@ -106,19 +107,6 @@ public class BlockService {
 
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);
-    }
-
-
-    /**
-     * 해당 회원이 탈퇴했는지 검증
-     *
-     * @param member
-     */
-    public static boolean checkBlind(Member member) {
-        if (member.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
-        return false;
     }
 
 

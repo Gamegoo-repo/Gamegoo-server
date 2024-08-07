@@ -1,7 +1,7 @@
 package com.gamegoo.converter;
 
-import com.gamegoo.domain.Friend;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.dto.member.MemberResponse;
 import java.util.List;
 import java.util.stream.Collectors;

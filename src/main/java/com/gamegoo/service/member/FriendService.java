@@ -2,12 +2,12 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.FriendHandler;
-import com.gamegoo.domain.Friend;
-import com.gamegoo.domain.FriendRequests;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.friend.Friend;
+import com.gamegoo.domain.friend.FriendRequests;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
-import com.gamegoo.util.BlockUtils;
+import com.gamegoo.util.MemberUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,12 +51,12 @@ public class FriendService {
         }
 
         // 내가 상대방을 차단한 경우
-        if (BlockUtils.isBocked(member, targetMember)) {
+        if (MemberUtils.isBocked(member, targetMember)) {
             throw new FriendHandler(ErrorStatus.FRIEND_TARGET_IS_BLOCKED);
         }
 
         // 상대방이 나를 차단한 경우
-        if (BlockUtils.isBocked(targetMember, member)) {
+        if (MemberUtils.isBocked(targetMember, member)) {
             throw new FriendHandler(ErrorStatus.BLOCKED_BY_FRIEND_TARGET);
         }
 
