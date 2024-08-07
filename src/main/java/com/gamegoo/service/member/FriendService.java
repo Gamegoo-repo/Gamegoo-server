@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.FriendHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.friend.Friend;
+import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
@@ -61,7 +62,7 @@ public class FriendService {
         }
 
         FriendRequests friendRequests = FriendRequests.builder()
-            .isApproved(false)
+            .status(FriendRequestStatus.PENDING)
             .fromMember(member)
             .toMember(targetMember)
             .build();
