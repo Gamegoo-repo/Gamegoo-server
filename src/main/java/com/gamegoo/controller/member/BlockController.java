@@ -4,7 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.Member;
 import com.gamegoo.dto.member.MemberResponse;
-import com.gamegoo.service.member.MemberService;
+import com.gamegoo.service.member.BlockService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/member/block")
 public class BlockController {
 
-    private final MemberService memberService;
+    private final BlockService blockService;
 
 
     @Operation(summary = "회원 차단 API", description = "대상 회원을 차단하는 API 입니다.")
@@ -35,7 +35,7 @@ public class BlockController {
     @PostMapping("/{memberId}")
     public ApiResponse<String> blockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
-        memberService.blockMember(memberId, targetMemberId);
+        blockService.blockMember(memberId, targetMemberId);
 
         return ApiResponse.onSuccess("회원 차단 성공");
     }
@@ -47,7 +47,7 @@ public class BlockController {
         @RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Page<Member> blockList = memberService.getBlockList(memberId, page - 1);
+        Page<Member> blockList = blockService.getBlockList(memberId, page - 1);
 
         return ApiResponse.onSuccess(MemberConverter.toBlockListDTO(blockList));
     }
@@ -57,7 +57,7 @@ public class BlockController {
     @DeleteMapping("/{memberId}")
     public ApiResponse<String> unBlockMember(@PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
-        memberService.unBlockMember(memberId, targetMemberId);
+        blockService.unBlockMember(memberId, targetMemberId);
 
         return ApiResponse.onSuccess("차단 해제 성공");
     }
