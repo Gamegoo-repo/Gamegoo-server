@@ -28,6 +28,7 @@ import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -72,11 +73,12 @@ public class AuthService {
         // tier, rank, winrate
         // DB 저장
         // 1. Riot 정보 제외 저장
+        int randomProfileImage = ThreadLocalRandom.current().nextInt(1, 9);
         Member member = Member.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
                 .loginType(LoginType.GENERAL)
-                .profileImage("default")
+                .profileImage(randomProfileImage)
                 .blind(false)
                 .build();
 
