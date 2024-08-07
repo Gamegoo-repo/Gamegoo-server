@@ -13,6 +13,7 @@ public class BoardRequest {
     @Getter
     @Setter
     public static class boardInsertDTO{
+        String boardProfileImage;
         @NotNull
         Integer gameMode;
 
@@ -37,6 +38,7 @@ public class BoardRequest {
     @Getter
     @Setter
     public static class boardUpdateDTO{
+        String boardProfileImage;
         Integer gameMode;
 
         Integer mainPosition;

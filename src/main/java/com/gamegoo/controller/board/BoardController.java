@@ -35,7 +35,7 @@ public class BoardController {
 
         Member memberProfile = profileService.findMember(memberId);
 
-        Board saveBoard = boardService.save(request,memberId);
+        Board saveBoard = boardService.save(request,memberId,memberProfile);
 
         List<Long> gameStyles = saveBoard.getBoardGameStyles().stream()
             .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
@@ -44,7 +44,7 @@ public class BoardController {
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()
                 .boardId(saveBoard.getId())
                 .memberId(memberId)
-                .profileImage(memberProfile.getProfileImage())
+                .profileImage(saveBoard.getBoardProfileImage())
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
@@ -81,7 +81,7 @@ public class BoardController {
         BoardResponse.boardUpdateResponseDTO result= BoardResponse.boardUpdateResponseDTO.builder()
                 .boardId(updateBoard.getId())
                 .memberId(memberId)
-                .profileImage(memberProfile.getProfileImage())
+                .profileImage(updateBoard.getBoardProfileImage())
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
