@@ -118,7 +118,7 @@ public class BoardController {
                                                                            @RequestParam(required = false) Integer mainPosition,
                                                                            @RequestParam(required = false) Boolean voice){
 
-        // <포지션 정보> 전체 : 0 , 빠른대전 : 1, 솔로랭크 : 2, 자유랭크 : 3, 칼바람 나락 : 4
+        // <포지션 정보> 전체: 0, 탑: 1, 정글: 2, 미드: 3, 바텀:4, 서포터:5
         if (mainPosition != null && mainPosition == 0) {
             // 전체 포지션 선택 시 필터링에서 제외
             mainPosition = null;
