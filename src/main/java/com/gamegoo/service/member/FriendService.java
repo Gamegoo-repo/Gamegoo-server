@@ -7,6 +7,7 @@ import com.gamegoo.domain.FriendRequests;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
+import com.gamegoo.util.BlockUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,6 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final FriendRequestsRepository friendRequestsRepository;
     private final ProfileService profileService;
-    private final BlockService blockService;
 
     /**
      * memberId에 해당하는 회원의 친구 목록 조회
@@ -51,12 +51,12 @@ public class FriendService {
         }
 
         // 내가 상대방을 차단한 경우
-        if (blockService.isBocked(member, targetMember)) {
+        if (BlockUtils.isBocked(member, targetMember)) {
             throw new FriendHandler(ErrorStatus.FRIEND_TARGET_IS_BLOCKED);
         }
 
         // 상대방이 나를 차단한 경우
-        if (blockService.isBocked(targetMember, member)) {
+        if (BlockUtils.isBocked(targetMember, member)) {
             throw new FriendHandler(ErrorStatus.BLOCKED_BY_FRIEND_TARGET);
         }
 
