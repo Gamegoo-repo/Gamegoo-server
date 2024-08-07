@@ -36,7 +36,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "password", nullable = false, length = 500)
     private String password;
 
-    @Column(name = "profile_image", length = 30)
+    @Column(name = "profile_image")
     private Integer profileImage;
 
     @Column(name = "manner_level")
