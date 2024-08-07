@@ -60,7 +60,7 @@ public class ProfileController {
     public ApiResponse<String> modifyPosition(
             @RequestBody MemberRequest.ProfileImageRequestDTO profileImageDTO) {
         Long userId = JWTUtil.getCurrentUserId();
-        String profileImage = profileImageDTO.getProfileImage();
+        Integer profileImage = profileImageDTO.getProfileImage();
 
         profileService.modifyProfileImage(userId, profileImage);
 
