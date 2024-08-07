@@ -5,12 +5,9 @@ import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.Block;
-import com.gamegoo.domain.Friend;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.BlockRepository;
-import com.gamegoo.repository.member.FriendRepository;
 import com.gamegoo.repository.member.MemberRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MemberService {
+public class BlockService {
 
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
-    private final FriendRepository friendRepository;
 
     Integer pageSize = 9;
 
@@ -107,16 +103,6 @@ public class MemberService {
         blockRepository.delete(block);
     }
 
-    /**
-     * memberId에 해당하는 회원의 친구 목록 조회
-     *
-     * @param memberId
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public List<Friend> getFriends(Long memberId) {
-        return friendRepository.findAllByFromMemberId(memberId);
-    }
 
     /**
      * 해당 회원이 탈퇴했는지 검증
