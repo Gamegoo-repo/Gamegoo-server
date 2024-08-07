@@ -26,7 +26,7 @@ public class MemberResponse {
     @AllArgsConstructor
     public static class blockedMemberDTO {
         Long memberId;
-        String profileImg;
+        Integer profileImg;
         String email;
         String name;
     }
@@ -77,7 +77,10 @@ public class MemberResponse {
     @AllArgsConstructor
     public static class myProfileMemberDTO {
 
-        String profileImg;
+        Long id;
+        Integer passwordLength;
+        Integer profileImg;
+        Boolean mike;
         String email;
         String gameName;
         String tag;
@@ -96,7 +99,7 @@ public class MemberResponse {
 
         Long memberId;
         String name;
-        String memberProfileImg;
+        Integer memberProfileImg;
         boolean isLiked;
     }
 }

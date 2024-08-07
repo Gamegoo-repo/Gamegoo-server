@@ -37,6 +37,7 @@ public class MemberConverter {
     }
 
     public static MemberResponse.myProfileMemberDTO toMyProfileDTO(Member member) {
+        int passwordLength = member.getPassword().length();
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
         if (member.getMemberGameStyleList() != null) {
             gameStyleResponseDTOList = member.getMemberGameStyleList().stream()
@@ -57,6 +58,9 @@ public class MemberConverter {
 
 
         return MemberResponse.myProfileMemberDTO.builder()
+                .id(member.getId())
+                .mike(true)
+                .passwordLength(passwordLength)
                 .email(member.getEmail())
                 .gameName(member.getGameName())
                 .tag(member.getTag())
