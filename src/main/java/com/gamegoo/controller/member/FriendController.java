@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Friend", description = "친구 관련 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/member/friends")
+@RequestMapping("/v1/friends")
 public class FriendController {
 
     private final MemberService memberService;
@@ -38,5 +38,6 @@ public class FriendController {
         return ApiResponse.onSuccess(friendInfoDTOList);
 
     }
+
 
 }
