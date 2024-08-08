@@ -118,6 +118,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 알림 관련 에러
     NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "잘못된 알림 타입입니다."),
+    NOTIFICATION_METHOD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "NOTI402", "알림 생성 메소드 호출이 잘못되었습니다."),
 
     ;
 
