@@ -19,7 +19,6 @@ import java.util.List;
 @Entity
 @Table(name = "Member")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -73,6 +72,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column(name = "mike")
+    private Boolean mike = false;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 
@@ -97,5 +99,46 @@ public class Member extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberChatroom> memberChatroomList = new ArrayList<>();
 
+    public void updatePosition(Integer mainPosition, Integer subPosition) {
+        this.mainPosition = mainPosition;
+        this.subPosition = subPosition;
+    }
+
+    public void updateProfileImage(Integer profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void deactiveMember() {
+        this.blind = true;
+    }
+
+    public void updateMemberFromMatching(Integer mainPosition, Integer subPosition, Boolean mike) {
+        this.mainPosition = mainPosition;
+        this.subPosition = subPosition;
+        this.mike = mike;
+    }
+
+    public void initializeMemberChampionList() {
+        this.memberChampionList = new ArrayList<>();
+    }
+
+    public void updateRiotDetails(String tier, String rank, Double winRate) {
+        this.tier = tier;
+        this.rank = rank;
+        this.winRate = winRate;
+    }
+
+    public void updateRiotBasic(String gameName, String tag) {
+        this.gameName = gameName;
+        this.tag = tag;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
 

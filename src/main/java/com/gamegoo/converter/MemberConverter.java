@@ -58,7 +58,7 @@ public class MemberConverter {
 
         return MemberResponse.myProfileMemberDTO.builder()
                 .id(member.getId())
-                .mike(true)
+                .mike(member.getMike())
                 .email(member.getEmail())
                 .gameName(member.getGameName())
                 .tag(member.getTag())

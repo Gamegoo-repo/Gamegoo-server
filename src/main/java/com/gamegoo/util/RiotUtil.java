@@ -162,16 +162,13 @@ public class RiotUtil {
                 winrate = Math.round(winrate * 1000) / 10.0;
 
                 // DB에 저장
-                member.setTier(entry.getTier());
-                member.setRank(entry.getRank());
-                member.setWinRate(winrate);
+                member.updateRiotDetails(entry.getTier(), entry.getRank(), winrate);
                 break;
             }
         }
 
         // 솔랭을 하지 않는 유저는 gameName만 저장
-        member.setGameName(gameName);
-        member.setTag(tag);
+        member.updateRiotBasic(gameName, tag);
     }
 
     /**
