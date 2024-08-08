@@ -30,8 +30,9 @@ public class ProfileController {
     public ApiResponse<List<MemberResponse.GameStyleResponseDTO>> addGameStyle(
             @RequestBody MemberRequest.GameStyleRequestDTO gameStyleRequestDTO) {
         Long memberId = JWTUtil.getCurrentUserId();
+        List<Long> gameStyleIdList = gameStyleRequestDTO.getGameStyleIdList();
         List<MemberGameStyle> memberGameStyles = profileService.addMemberGameStyles(
-                gameStyleRequestDTO, memberId);
+                gameStyleIdList, memberId);
 
         List<MemberResponse.GameStyleResponseDTO> dtoList = memberGameStyles.stream()
                 .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()

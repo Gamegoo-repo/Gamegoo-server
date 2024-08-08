@@ -7,6 +7,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class MatchingRequest {
     @Getter
@@ -36,6 +37,9 @@ public class MatchingRequest {
         @Min(value = 1, message = "원하는 상대 포지션의 값은 1이상이어야 합니다.")
         @Max(value = 5, message = "원하는 상대 포지션의 값은 1이상이어야합니다.")
         int wantP;
+
+        @NotBlank(message = "gameStyleList은 비워둘 수 없습니다.")
+        List<Long> gameStyleIdList;
     }
 
     @Getter

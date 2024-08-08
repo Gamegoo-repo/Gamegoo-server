@@ -5,7 +5,6 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
-import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -26,18 +25,19 @@ public class ProfileService {
     /**
      * MemberGameStyle 데이터 추가 : 회원에 따른 게임 스타일 정보 저장하기
      *
-     * @param request
+     * @param gameStyleIdList
      * @param memberId
      * @return
      */
     @Transactional
-    public List<MemberGameStyle> addMemberGameStyles(MemberRequest.GameStyleRequestDTO request, Long memberId) {
+    public List<MemberGameStyle> addMemberGameStyles(List<Long> gameStyleIdList, Long memberId) {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+
         // 요청으로 온 gamestyleId로 GameStyle 엔티티 리스트를 생성 및 gamestyleId에 해당하는 gamestyle이 db에 존재하는지 검증
-        List<GameStyle> requestGameStyleList = request.getGameStyleIdList().stream()
+        List<GameStyle> requestGameStyleList = gameStyleIdList.stream()
                 .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
                         .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
                 .toList();
@@ -85,7 +85,7 @@ public class ProfileService {
 
         // Blind 처리
         member.deactiveMember();
-        
+
         memberRepository.save(member);
     }
 
