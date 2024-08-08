@@ -6,8 +6,10 @@ import com.gamegoo.domain.Member;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
+import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
+import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final FriendRequestsRepository friendRequestsRepository;
     private final ProfileService profileService;
+    private final NotificationService notificationService;
 
     /**
      * memberId에 해당하는 회원의 친구 목록 조회
@@ -47,6 +50,7 @@ public class FriendService {
 
         Member targetMember = profileService.findMember(targetMemberId);
 
+        // targetMember로 나 자신을 요청한 경우
         if (member.equals(targetMember)) {
             throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
         }
@@ -67,7 +71,18 @@ public class FriendService {
             .toMember(targetMember)
             .build();
 
-        return friendRequestsRepository.save(friendRequests);
+        FriendRequests savedFriendRequests = friendRequestsRepository.save(friendRequests);
+
+        // 친구 요청 알림 생성
+        // member -> targetMember
+        notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_SEND,
+            targetMember.getGameName(), null, member);
+
+        // targetMember -> member
+        notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
+            member.getGameName(), member.getId(), targetMember);
+
+        return savedFriendRequests;
     }
 
     /**

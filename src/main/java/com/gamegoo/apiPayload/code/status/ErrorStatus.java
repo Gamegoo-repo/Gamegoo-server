@@ -40,10 +40,6 @@ public enum ErrorStatus implements BaseErrorCode {
     // Position 관련 에러
     POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
 
-    // Profile_Image 관련 에러
-    PROFILE_IMAGE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "PROFILE_IMAGE400",
-        "profile_image가 30자를 초과했습니다."),
-
     // Email 인증 관련 에러
     EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
@@ -119,6 +115,10 @@ public enum ErrorStatus implements BaseErrorCode {
         "내가 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
     BLOCKED_BY_FRIEND_TARGET(HttpStatus.BAD_REQUEST, "FRIEND403",
         "나를 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
+
+    // 알림 관련 에러
+    NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "잘못된 알림 타입입니다."),
+    NOTIFICATION_METHOD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "NOTI402", "알림 생성 메소드 호출이 잘못되었습니다."),
 
     ;
 
