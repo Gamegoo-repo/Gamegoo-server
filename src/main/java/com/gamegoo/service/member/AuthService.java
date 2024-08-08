@@ -28,6 +28,7 @@ import javax.transaction.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -72,12 +73,14 @@ public class AuthService {
         // tier, rank, winrate
         // DB 저장
         // 1. Riot 정보 제외 저장
+        int randomProfileImage = ThreadLocalRandom.current().nextInt(1, 9);
         Member member = Member.builder()
                 .email(email)
                 .password(bCryptPasswordEncoder.encode(password))
                 .loginType(LoginType.GENERAL)
-                .profileImage("default")
+                .profileImage(randomProfileImage)
                 .blind(false)
+                .mike(false)
                 .build();
 
 
@@ -166,7 +169,7 @@ public class AuthService {
         String new_refresh_token = jwtUtil.createJwt(60 * 60 * 24 * 30 * 1000L);    // 30일
 
         // refresh token 저장하기
-        member.setRefreshToken(new_refresh_token);
+        member.updateRefreshToken(new_refresh_token);
         memberRepository.save(member);
 
         return new MemberResponse.RefreshTokenResponseDTO(access_token, new_refresh_token);
@@ -251,7 +254,7 @@ public class AuthService {
     public void logoutMember(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        member.setRefreshToken(null);
+        member.updateRefreshToken(null);
         memberRepository.save(member);
     }
 

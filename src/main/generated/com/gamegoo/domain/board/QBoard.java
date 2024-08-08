@@ -26,7 +26,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final ListPath<BoardGameStyle, QBoardGameStyle> boardGameStyles = this.<BoardGameStyle, QBoardGameStyle>createList("boardGameStyles", BoardGameStyle.class, QBoardGameStyle.class, PathInits.DIRECT2);
 
-    public final StringPath boardProfileImage = createString("boardProfileImage");
+    public final NumberPath<Integer> boardProfileImage = createNumber("boardProfileImage", Integer.class);
 
     public final StringPath content = createString("content");
 
