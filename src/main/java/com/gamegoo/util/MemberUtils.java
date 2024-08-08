@@ -13,7 +13,7 @@ public class MemberUtils {
      * @param targetMember
      * @return
      */
-    public static boolean isBocked(Member member, Member targetMember) {
+    public static boolean isBlocked(Member member, Member targetMember) {
 
         return member.getBlockList().stream()
             .anyMatch(block -> block.getBlockedMember().equals(targetMember));

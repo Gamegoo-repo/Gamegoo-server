@@ -52,12 +52,12 @@ public class FriendService {
         }
 
         // 내가 상대방을 차단한 경우
-        if (MemberUtils.isBocked(member, targetMember)) {
+        if (MemberUtils.isBlocked(member, targetMember)) {
             throw new FriendHandler(ErrorStatus.FRIEND_TARGET_IS_BLOCKED);
         }
 
         // 상대방이 나를 차단한 경우
-        if (MemberUtils.isBocked(targetMember, member)) {
+        if (MemberUtils.isBlocked(targetMember, member)) {
             throw new FriendHandler(ErrorStatus.BLOCKED_BY_FRIEND_TARGET);
         }
 
