@@ -52,7 +52,7 @@ public class ChatCommandService {
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
 
         // 내가 채팅 대상 회원을 차단한 경우
-        if (MemberUtils.isBocked(member, targetMember)) {
+        if (MemberUtils.isBlocked(member, targetMember)) {
             throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
         }
 
@@ -67,7 +67,7 @@ public class ChatCommandService {
                 .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
             // 채팅 대상 회원이 나를 차단함 && 내가 해당 채팅방을 퇴장한 상태인 경우
-            if (MemberUtils.isBocked(targetMember, member)
+            if (MemberUtils.isBlocked(targetMember, member)
                 && memberChatroom.getLastJoinDate() == null) {
                 throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
             }
@@ -88,11 +88,12 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
+                .isBlocked(MemberUtils.isBlocked(targetMember, member))
                 .chatMessageList(chatMessageListDTO)
                 .build();
         } else {
             // 채팅 상대 회원이 나를 차단한 경우
-            if (MemberUtils.isBocked(targetMember, member)) {
+            if (MemberUtils.isBlocked(targetMember, member)) {
                 throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
             }
 
@@ -130,6 +131,7 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
+                .isBlocked(false)
                 .chatMessageList(null)
                 .build();
         }
@@ -251,8 +253,14 @@ public class ChatCommandService {
             chatroom.getId(), memberId);
 
         // 내가 채팅 상대 회원을 차단한 경우
-        if (MemberUtils.isBocked(member, targetMember)) {
+        if (MemberUtils.isBlocked(member, targetMember)) {
             throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+        }
+
+        // 상대방이 나를 차단 && 내가 이 채팅방을 나간 상태인 경우
+        if (MemberUtils.isBlocked(targetMember, member)
+            && memberChatroom.getLastJoinDate() == null) {
+            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
         }
 
         // 최근 메시지 내역 조회
@@ -271,6 +279,7 @@ public class ChatCommandService {
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
+            .isBlocked(MemberUtils.isBlocked(targetMember, member))
             .chatMessageList(chatMessageListDTO)
             .build();
     }
