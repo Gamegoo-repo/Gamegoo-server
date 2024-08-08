@@ -69,4 +69,32 @@ public class FriendService {
 
         return friendRequestsRepository.save(friendRequests);
     }
+
+    /**
+     * fromMember와 toMember가 서로 친구 관계이면, 친구 관계 끊기
+     *
+     * @param fromMember
+     * @param toMember
+     */
+    public void removeFriendshipIfPresent(Member fromMember, Member toMember) {
+        friendRepository.findByFromMemberAndToMember(fromMember, toMember)
+            .ifPresent(friend -> {
+                friendRepository.deleteById(friend.getId());
+                friendRepository.findByFromMemberAndToMember(toMember, fromMember)
+                    .ifPresent(reverseFriend -> friendRepository.deleteById(reverseFriend.getId()));
+            });
+    }
+
+    /**
+     * fromMember -> toMember의 FriendRequest 중 PENDING 상태인 요청을 취소 처리
+     *
+     * @param fromMember
+     * @param toMember
+     */
+    public void cancelPendingFriendRequests(Member fromMember, Member toMember) {
+        friendRequestsRepository.findByFromMemberAndToMemberAndStatus(fromMember, toMember,
+                FriendRequestStatus.PENDING)
+            .ifPresent(
+                friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+    }
 }
