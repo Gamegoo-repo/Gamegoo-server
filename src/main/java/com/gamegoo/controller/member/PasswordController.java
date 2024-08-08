@@ -23,13 +23,13 @@ public class PasswordController {
     private final PasswordService passwordService;
 
     @PostMapping("/check")
-    @Operation(summary = "비밀번호 확인 API 입니다.", description = "API for checking password")
-    public ApiResponse<String> checkPassword(
-        @RequestBody MemberRequest.PasswordRequestDTO passwordRequestDTO) {
+    @Operation(summary = "JWT 토큰이 필요한 비밀번호 확인 API 입니다.", description = "API for checking password with JWT")
+    public ApiResponse<String> checkPasswordWithJWT(
+            @RequestBody MemberRequest.PasswordRequestJWTDTO passwordRequestDTO) {
         Long currentUserId = JWTUtil.getCurrentUserId(); //헤더에 있는 jwt 토큰에서 id를 가져오는 코드
 
         boolean isPasswordValid = passwordService.checkPasswordById(currentUserId,
-            passwordRequestDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
+                passwordRequestDTO.getPassword()); //request body에 있는 password와 currentUserId를 전달
 
         if (isPasswordValid) {
             return ApiResponse.onSuccess("비밀번호가 일치합니다.");
@@ -38,13 +38,23 @@ public class PasswordController {
         }
     }
 
-    @PostMapping("/reset")
-    @Operation(summary = "비밀번호 재설정 API 입니다.", description = "API for reseting password")
-    public ApiResponse<String> resetPassword(
-        @RequestBody MemberRequest.PasswordRequestDTO passwordRequestDTO) {
+    @PostMapping("/reset/jwt")
+    @Operation(summary = "JWT 토큰이 필요한 비밀번호 재설정 API 입니다.", description = "API for reseting password with JWT")
+    public ApiResponse<String> resetPasswordWithJWT(
+            @RequestBody MemberRequest.PasswordRequestJWTDTO passwordRequestDTO) {
         Long currentUserId = JWTUtil.getCurrentUserId();
 
         passwordService.updatePassword(currentUserId, passwordRequestDTO.getPassword());
+
+        return ApiResponse.onSuccess("비밀번호 재설정을 완료했습니다.");
+    }
+
+    @PostMapping("/reset")
+    @Operation(summary = "비밀번호 재설정 API 입니다.", description = "API for reseting password")
+    public ApiResponse<String> resetPassword(
+            @RequestBody MemberRequest.PasswordRequestDTO passwordRequestDTO) {
+
+        passwordService.updatePasswordWithEmail(passwordRequestDTO.getEmail(), passwordRequestDTO.getPassword());
 
         return ApiResponse.onSuccess("비밀번호 재설정을 완료했습니다.");
     }
