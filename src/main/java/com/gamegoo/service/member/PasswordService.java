@@ -44,4 +44,20 @@ public class PasswordService {
         memberRepository.save(member);
     }
 
+    /**
+     * 비밀번호 수정
+     *
+     * @param email
+     * @param newPassword
+     */
+    public void updatePasswordWithEmail(String email, String newPassword) {
+        // jwt 토큰으로 멤버 찾기
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 비밀번호 재설정
+        member.updatePassword(bCryptPasswordEncoder.encode(newPassword));
+        memberRepository.save(member);
+    }
+
 }
