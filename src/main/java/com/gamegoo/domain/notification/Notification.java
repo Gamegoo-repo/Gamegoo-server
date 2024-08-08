@@ -44,4 +44,13 @@ public class Notification extends BaseDateTimeEntity {
     @JoinColumn(name = "notification_type_id", nullable = false)
     private NotificationType notificationType;
 
+    // 연관관계 메소드
+    public void setMember(Member member) {
+        if (this.member != null) {
+            this.member.getNotificationList().remove(this);
+        }
+        this.member = member;
+        this.member.getNotificationList().add(this);
+    }
+
 }
