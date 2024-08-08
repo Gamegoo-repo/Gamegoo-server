@@ -1,8 +1,11 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.friend;
 
+import com.gamegoo.domain.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,15 +23,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Friend extends BaseDateTimeEntity {
+public class FriendRequests extends BaseDateTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "friend_id")
+    @Column(name = "friend_request_id")
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean isLiked;
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "VARCHAR(30)", nullable = false)
+    private FriendRequestStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_member_id", nullable = false)
