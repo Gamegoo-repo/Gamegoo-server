@@ -1,9 +1,16 @@
 package com.gamegoo.domain.notification;
 
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -11,6 +18,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class NotificationType extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_type_id")
@@ -24,6 +32,8 @@ public class NotificationType extends BaseDateTimeEntity {
 
     @Column(nullable = false, length = 200)
     private String imgUrl;
+    
+    private String sourceUrl;
 
 
 }
