@@ -45,6 +45,9 @@ public class MatchingService {
                 .member(member)
                 .build();
 
+        // 매칭 기록에 따라 member 정보 변경하기
+
+
         matchingRecordRepository.save(matchingRecord);
 
     }

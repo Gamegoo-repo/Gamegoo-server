@@ -51,6 +51,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<com.gamegoo.domain.gamestyle.MemberGameStyle, com.gamegoo.domain.gamestyle.QMemberGameStyle> memberGameStyleList = this.<com.gamegoo.domain.gamestyle.MemberGameStyle, com.gamegoo.domain.gamestyle.QMemberGameStyle>createList("memberGameStyleList", com.gamegoo.domain.gamestyle.MemberGameStyle.class, com.gamegoo.domain.gamestyle.QMemberGameStyle.class, PathInits.DIRECT2);
 
+    public final BooleanPath mike = createBoolean("mike");
+
     public final ListPath<com.gamegoo.domain.notification.Notification, com.gamegoo.domain.notification.QNotification> notificationList = this.<com.gamegoo.domain.notification.Notification, com.gamegoo.domain.notification.QNotification>createList("notificationList", com.gamegoo.domain.notification.Notification.class, com.gamegoo.domain.notification.QNotification.class, PathInits.DIRECT2);
 
     public final StringPath password = createString("password");

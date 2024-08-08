@@ -84,7 +84,8 @@ public class ProfileService {
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // Blind 처리
-        member.setBlind(true);
+        member.deactiveMember();
+        
         memberRepository.save(member);
     }
 
@@ -104,8 +105,7 @@ public class ProfileService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        member.setMainPosition(mainP);
-        member.setSubPosition(subP);
+        member.updatePosition(mainP, subP);
         memberRepository.save(member);
     }
 
@@ -120,7 +120,8 @@ public class ProfileService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        member.setProfileImage(profileImage);
+        member.updateProfileImage(profileImage);
+
         memberRepository.save(member);
     }
 
