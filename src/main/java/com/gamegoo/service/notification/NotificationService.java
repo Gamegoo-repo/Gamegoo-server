@@ -9,6 +9,7 @@ import com.gamegoo.domain.notification.NotificationType;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.repository.notification.NotificationRepository;
 import com.gamegoo.repository.notification.NotificationTypeRepository;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,12 @@ public class NotificationService {
             case MANNER_KEYWORD_RATED:
                 return createMannerKeywordRatedNotification(notificationType, content, member);
             case TEST_ALARM:
-                return createTestNotification(notificationType, content, member);
+                // 랜덤 숫자 생성
+                Random random = new Random();
+                int i = random.nextInt(1000) + 1;
+                // 숫자를 String 형으로 변환
+                String randomNumberString = Integer.toString(i);
+                return createTestNotification(notificationType, randomNumberString, member);
             default:
                 throw new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND);
         }
