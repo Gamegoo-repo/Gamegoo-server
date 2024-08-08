@@ -108,6 +108,10 @@ public enum ErrorStatus implements BaseErrorCode {
         "채팅 상대 회원을 차단한 상태입니다. 채팅 시작이 불가능합니다."),
     BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED(HttpStatus.FORBIDDEN, "CHAT406",
         "채팅 상대 회원이 나를 차단했습니다. 채팅 시작이 불가능합니다."),
+    CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED(HttpStatus.FORBIDDEN, "CHAT407",
+        "채팅 상대 회원을 차단한 상태입니다. 채팅 메시지 전송이 불가능합니다."),
+    BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED(HttpStatus.FORBIDDEN, "CHAT408",
+        "채팅 상대 회원이 나를 차단했습니다. 채팅 메시지 전송이 불가능합니다."),
 
     // 친구 관련 에러
     FRIEND_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND401", "잘못된 친구 요청입니다."),

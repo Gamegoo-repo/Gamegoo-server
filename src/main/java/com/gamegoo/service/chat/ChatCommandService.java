@@ -304,6 +304,17 @@ public class ChatCommandService {
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
+        // 회원 간 차단 여부 검증
+        // 대화 상대 회원 조회
+        Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+            chatroom.getId(), memberId);
+        if (MemberUtils.isBlocked(member, targetMember)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED);
+        }
+        if (MemberUtils.isBlocked(targetMember, member)) {
+            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED);
+        }
+
         // chat 엔티티 생성
         Chat chat = Chat.builder()
             .contents(request.getMessage())
