@@ -7,7 +7,9 @@ public enum NotificationTypeTitle {
     FRIEND_REQUEST_REJECTED("님이 친구를 거절했어요.", null),
     MANNER_LEVEL_UP("매너레벨이 n단계로 올라갔어요!", "/member/manner"),
     MANNER_LEVEL_DOWN("매너레벨이 n단계로 떨어졌어요.", "/member/manner"),
-    MANNER_KEYWORD_RATED("지난 매칭에서 n 키워드를 받았어요.", "/member/manner");
+    MANNER_KEYWORD_RATED("지난 매칭에서 n 키워드를 받았어요.", "/member/manner"),
+    TEST_ALARM("TEST PUSH. NUMBER: ", null),
+    ;
 
     private final String content;
     private final String sourceUrl;

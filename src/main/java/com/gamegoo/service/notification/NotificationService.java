@@ -55,6 +55,8 @@ public class NotificationService {
                 return createMannerLevelUpDownNotification(notificationType, content, member);
             case MANNER_KEYWORD_RATED:
                 return createMannerKeywordRatedNotification(notificationType, content, member);
+            case TEST_ALARM:
+                return createTestNotification(notificationType, content, member);
             default:
                 throw new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND);
         }
@@ -162,6 +164,26 @@ public class NotificationService {
         Notification notification = Notification.builder()
             .notificationType(notificationType)
             .content(notificationContent)
+            .isRead(false)
+            .build();
+        notification.setMember(member);
+
+        return notificationRepository.save(notification);
+    }
+
+    /**
+     * 테스트 알림 생성
+     *
+     * @param notificationType
+     * @param content
+     * @param member
+     * @return
+     */
+    private Notification createTestNotification(NotificationType notificationType, String content,
+        Member member) {
+        Notification notification = Notification.builder()
+            .notificationType(notificationType)
+            .content(notificationType.getContent() + content)
             .isRead(false)
             .build();
         notification.setMember(member);
