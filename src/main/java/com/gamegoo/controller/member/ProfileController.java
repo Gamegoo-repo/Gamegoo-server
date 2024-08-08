@@ -30,8 +30,9 @@ public class ProfileController {
     public ApiResponse<List<MemberResponse.GameStyleResponseDTO>> addGameStyle(
             @RequestBody MemberRequest.GameStyleRequestDTO gameStyleRequestDTO) {
         Long memberId = JWTUtil.getCurrentUserId();
+        List<Long> gameStyleIdList = gameStyleRequestDTO.getGameStyleIdList();
         List<MemberGameStyle> memberGameStyles = profileService.addMemberGameStyles(
-                gameStyleRequestDTO, memberId);
+                gameStyleIdList, memberId);
 
         List<MemberResponse.GameStyleResponseDTO> dtoList = memberGameStyles.stream()
                 .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
@@ -60,7 +61,7 @@ public class ProfileController {
     public ApiResponse<String> modifyPosition(
             @RequestBody MemberRequest.ProfileImageRequestDTO profileImageDTO) {
         Long userId = JWTUtil.getCurrentUserId();
-        String profileImage = profileImageDTO.getProfileImage();
+        Integer profileImage = profileImageDTO.getProfileImage();
 
         profileService.modifyProfileImage(userId, profileImage);
 
@@ -80,7 +81,6 @@ public class ProfileController {
     @Operation(summary = "회원 조회하는 API 입니다.", description = "API for looking up member")
     @GetMapping("/profile")
     public ApiResponse<MemberResponse.myProfileMemberDTO> getBlockList() {
-        System.out.println("PROFILE : ");
         Long memberId = JWTUtil.getCurrentUserId();
 
         Member myProfile = profileService.findMember(memberId);

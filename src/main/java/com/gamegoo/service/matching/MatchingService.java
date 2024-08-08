@@ -8,6 +8,7 @@ import com.gamegoo.domain.Member;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.member.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import javax.transaction.Transactional;
 public class MatchingService {
     private final MemberRepository memberRepository;
     private final MatchingRecordRepository matchingRecordRepository;
+    private final ProfileService profileService;
 
     /**
      * 매칭 정보 저장
@@ -44,6 +46,10 @@ public class MatchingService {
                 .gameMode(request.getGameMode())
                 .member(member)
                 .build();
+
+        // 매칭 기록에 따라 member 정보 변경하기
+        member.updateMemberFromMatching(request.getMainP(), request.getSubP(), request.getMike());
+        profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
 
         matchingRecordRepository.save(matchingRecord);
 

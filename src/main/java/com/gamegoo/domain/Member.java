@@ -9,30 +9,16 @@ import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.report.Report;
+import lombok.*;
+
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 
 @Entity
 @Table(name = "Member")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -49,8 +35,8 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "password", nullable = false, length = 500)
     private String password;
 
-    @Column(name = "profile_image", length = 30)
-    private String profileImage = "default";
+    @Column(name = "profile_image")
+    private Integer profileImage;
 
     @Column(name = "manner_level")
     private Integer mannerLevel = 0;
@@ -86,6 +72,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column(name = "mike")
+    private Boolean mike = false;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 
@@ -110,5 +99,46 @@ public class Member extends BaseDateTimeEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberChatroom> memberChatroomList = new ArrayList<>();
 
+    public void updatePosition(Integer mainPosition, Integer subPosition) {
+        this.mainPosition = mainPosition;
+        this.subPosition = subPosition;
+    }
+
+    public void updateProfileImage(Integer profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void deactiveMember() {
+        this.blind = true;
+    }
+
+    public void updateMemberFromMatching(Integer mainPosition, Integer subPosition, Boolean mike) {
+        this.mainPosition = mainPosition;
+        this.subPosition = subPosition;
+        this.mike = mike;
+    }
+
+    public void initializeMemberChampionList() {
+        this.memberChampionList = new ArrayList<>();
+    }
+
+    public void updateRiotDetails(String tier, String rank, Double winRate) {
+        this.tier = tier;
+        this.rank = rank;
+        this.winRate = winRate;
+    }
+
+    public void updateRiotBasic(String gameName, String tag) {
+        this.gameName = gameName;
+        this.tag = tag;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
 

@@ -55,16 +55,19 @@ public class MemberConverter {
         }
 
         return MemberResponse.myProfileMemberDTO.builder()
-            .email(member.getEmail())
-            .gameName(member.getGameName())
-            .tag(member.getTag())
-            .tier(member.getTier())
-            .rank(member.getRank())
-            .profileImg(member.getProfileImage())
-            .updatedAt(String.valueOf(member.getUpdatedAt()))
-            .gameStyleResponseDTOList(gameStyleResponseDTOList)
-            .championResponseDTOList(championResponseDTOList)
-            .build();
+                .id(member.getId())
+                .mike(member.getMike())
+                .email(member.getEmail())
+                .gameName(member.getGameName())
+                .tag(member.getTag())
+                .tier(member.getTier())
+                .rank(member.getRank())
+                .profileImg(member.getProfileImage())
+                .updatedAt(String.valueOf(member.getUpdatedAt()))
+                .gameStyleResponseDTOList(gameStyleResponseDTOList)
+                .championResponseDTOList(championResponseDTOList)
+                .build();
+
     }
 
     public static MemberResponse.friendInfoDTO toFriendInfoDto(Friend friend) {
