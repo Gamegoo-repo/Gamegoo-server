@@ -56,5 +56,18 @@ public class FriendController {
 
     }
 
+    @Operation(summary = "친구 요청 수락 API", description = "대상 회원이 보낸 친구 요청을 수락 처리하는 API 입니다.")
+    @Parameter(name = "memberId", description = "친구 요청을 수락할 대상 회원의 id 입니다.")
+    @GetMapping("/request/{memberId}/accept")
+    public ApiResponse<String> acceptFriendRequest(
+        @PathVariable(name = "memberId") Long targetMemberId
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        friendService.acceptFriendRequest(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess("친구 요청 수락 성공");
+    }
+
 
 }
