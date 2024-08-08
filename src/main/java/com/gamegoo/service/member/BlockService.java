@@ -5,12 +5,10 @@ import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.Block;
-import com.gamegoo.domain.Friend;
 import com.gamegoo.domain.Member;
 import com.gamegoo.repository.member.BlockRepository;
-import com.gamegoo.repository.member.FriendRepository;
 import com.gamegoo.repository.member.MemberRepository;
-import java.util.List;
+import com.gamegoo.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class MemberService {
+public class BlockService {
 
     private final MemberRepository memberRepository;
     private final BlockRepository blockRepository;
-    private final FriendRepository friendRepository;
 
     Integer pageSize = 9;
 
@@ -42,8 +39,13 @@ public class MemberService {
         Member targetMember = memberRepository.findById(targetMemberId)
             .orElseThrow(() -> new MemberHandler(ErrorStatus.TARGET_MEMBER_NOT_FOUND));
 
+        // 본인이 본인을 차단 시도하는 경우
+        if (member.equals(targetMember)) {
+            throw new MemberHandler(ErrorStatus.BLOCK_MEMBER_BAD_REQUEST);
+        }
+
         // 대상 회원의 탈퇴 여부 검증
-        checkBlind(targetMember);
+        MemberUtils.checkBlind(targetMember);
 
         // 이미 차단한 회원인지 검증
         boolean isblocked = blockRepository.existsByBlockerMemberAndBlockedMember(member,
@@ -105,29 +107,6 @@ public class MemberService {
 
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);
-    }
-
-    /**
-     * memberId에 해당하는 회원의 친구 목록 조회
-     *
-     * @param memberId
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public List<Friend> getFriends(Long memberId) {
-        return friendRepository.findAllByFromMemberId(memberId);
-    }
-
-    /**
-     * 해당 회원이 탈퇴했는지 검증
-     *
-     * @param member
-     */
-    public static boolean checkBlind(Member member) {
-        if (member.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
-        return false;
     }
 
 
