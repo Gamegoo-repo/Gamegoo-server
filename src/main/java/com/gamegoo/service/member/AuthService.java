@@ -80,6 +80,7 @@ public class AuthService {
                 .loginType(LoginType.GENERAL)
                 .profileImage(randomProfileImage)
                 .blind(false)
+                .mike(false)
                 .build();
 
 
