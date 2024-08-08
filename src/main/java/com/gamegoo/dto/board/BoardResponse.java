@@ -68,6 +68,7 @@ public class BoardResponse {
         List<Long> championList;
         Double winRate;
         LocalDateTime createdAt;
+        Boolean voice;
     }
 
     @Getter
