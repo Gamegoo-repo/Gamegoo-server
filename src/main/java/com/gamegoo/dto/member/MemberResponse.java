@@ -1,8 +1,11 @@
 package com.gamegoo.dto.member;
 
-import lombok.*;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class MemberResponse {
 
@@ -11,6 +14,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockListDTO {
+
         List<blockedMemberDTO> blockedMemberDTOList;
         Integer listSize;
         Integer totalPage;
@@ -25,6 +29,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockedMemberDTO {
+
         Long memberId;
         String profileImg;
         String email;
@@ -99,4 +104,5 @@ public class MemberResponse {
         String memberProfileImg;
         boolean isLiked;
     }
+
 }
