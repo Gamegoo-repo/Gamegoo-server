@@ -46,7 +46,7 @@ public class FriendService {
      * @param targetMemberId
      * @return
      */
-    public FriendRequests sendFriendRequest(Long memberId, Long targetMemberId) {
+    public void sendFriendRequest(Long memberId, Long targetMemberId) {
         Member member = profileService.findMember(memberId);
 
         Member targetMember = profileService.findMember(targetMemberId);
@@ -102,8 +102,6 @@ public class FriendService {
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
             member.getGameName(), member.getId(), targetMember);
-
-        return savedFriendRequests;
     }
 
     /**
@@ -113,7 +111,7 @@ public class FriendService {
      * @param targetMemberId
      * @return
      */
-    public FriendRequests acceptFriendRequest(Long memberId, Long targetMemberId) {
+    public void acceptFriendRequest(Long memberId, Long targetMemberId) {
         Member member = profileService.findMember(memberId);
 
         Member targetMember = profileService.findMember(targetMemberId);
@@ -154,8 +152,39 @@ public class FriendService {
         // targetMember에게 친구 요청 수락 알림 생성
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_ACCEPTED,
             member.getGameName(), null, targetMember);
+    }
 
-        return pendingFriendRequest.get();
+    /**
+     * targetMember -> member로 요청한 FriendRequest를 REJECTED 처리
+     *
+     * @param memberId
+     * @param targetMemberId
+     */
+    public void rejectFriendRequest(Long memberId, Long targetMemberId) {
+        Member member = profileService.findMember(memberId);
+
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // targetMember로 나 자신을 요청한 경우
+        if (member.equals(targetMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+
+        // 수락 대기 상태인 FriendRequest 엔티티 조회
+        Optional<FriendRequests> pendingFriendRequest = friendRequestsRepository.findByFromMemberAndToMemberAndStatus(
+            targetMember, member, FriendRequestStatus.PENDING);
+
+        // 수락 대기 중인 친구 요청이 존재하지 않는 경우
+        if (pendingFriendRequest.isEmpty()) {
+            throw new FriendHandler(ErrorStatus.PENDING_FRIEND_REQUEST_NOT_EXIST);
+        }
+
+        // FriendRequest 엔티티 상태 변경
+        pendingFriendRequest.get().updateStatus(FriendRequestStatus.REJECTED);
+
+        // targetMember에게 친구 요청 거절 알림 생성
+        notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_REJECTED,
+            member.getGameName(), null, targetMember);
     }
 
     /**
