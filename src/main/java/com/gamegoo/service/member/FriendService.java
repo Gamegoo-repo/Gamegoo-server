@@ -65,11 +65,18 @@ public class FriendService {
             throw new FriendHandler(ErrorStatus.BLOCKED_BY_FRIEND_TARGET);
         }
 
-        // 이미 PENDING 상태인 친구 요청이 존재하는 경우
+        // member -> targetMember로 보낸 친구 요청 중 PENDING 상태인 친구 요청이 존재하는 경우
         friendRequestsRepository.findByFromMemberAndToMemberAndStatus(member, targetMember,
                 FriendRequestStatus.PENDING)
             .ifPresent(friendRequest -> {
-                throw new FriendHandler(ErrorStatus.PENDING_FRIEND_REQUEST_EXIST);
+                throw new FriendHandler(ErrorStatus.MY_PENDING_FRIEND_REQUEST_EXIST);
+            });
+
+        // targetMember -> member에게 보낸 친구 요청 중 PENDING 상태인 친구 요청이 존재하는 경우
+        friendRequestsRepository.findByFromMemberAndToMemberAndStatus(targetMember, member,
+                FriendRequestStatus.PENDING)
+            .ifPresent(friendRequests -> {
+                throw new FriendHandler(ErrorStatus.TARGET_PENDING_FRIEND_REQUEST_EXIST);
             });
 
         FriendRequests friendRequests = FriendRequests.builder()

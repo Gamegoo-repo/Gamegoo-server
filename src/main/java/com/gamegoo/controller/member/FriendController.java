@@ -3,7 +3,6 @@ package com.gamegoo.controller.member;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.friend.Friend;
-import com.gamegoo.domain.friend.FriendRequests;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.JWTUtil;
@@ -51,7 +50,7 @@ public class FriendController {
         @PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        FriendRequests friendRequests = friendService.sendFriendRequest(memberId, targetMemberId);
+        friendService.sendFriendRequest(memberId, targetMemberId);
 
         return ApiResponse.onSuccess("친구 요청 전송 성공");
 
