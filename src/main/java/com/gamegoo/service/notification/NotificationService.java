@@ -41,6 +41,9 @@ public class NotificationService {
             case FRIEND_REQUEST_SEND:
                 return createFriendRequestSendNotification(notificationType, content, member);
             case FRIEND_REQUEST_RECEIVED:
+                if (sourceId == null) {
+                    throw new NotificationHandler(ErrorStatus.NOTIFICATION_METHOD_BAD_REQUEST);
+                }
                 return createFriendRequestReceivedNotification(notificationType, content, sourceId,
                     member);
             case FRIEND_REQUEST_ACCEPTED:
