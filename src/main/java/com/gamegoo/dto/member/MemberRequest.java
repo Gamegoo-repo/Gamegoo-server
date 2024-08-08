@@ -55,12 +55,22 @@ public class MemberRequest {
     }
 
     @Getter
-    public static class PasswordRequestDTO {
-
+    public static class PasswordRequestJWTDTO {
         @NotBlank(message = "password는 비워둘 수 없습니다.")
         String password;
 
     }
+
+    @Getter
+    public static class PasswordRequestDTO {
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
+        String email;
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
+        String password;
+
+    }
+
 
     @Getter
     public static class PositionRequestDTO {
