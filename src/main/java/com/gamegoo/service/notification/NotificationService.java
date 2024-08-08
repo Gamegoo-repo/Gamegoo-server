@@ -26,9 +26,9 @@ public class NotificationService {
      * 새로운 알림 생성 및 저장 메소드
      *
      * @param notificationTypeTitle
-     * @param content
-     * @param sourceId
-     * @param member
+     * @param content               각 알림에 포함되어어야 할 정보 (사용자 닉네임, 매너레벨 단계, 키둬드)
+     * @param sourceId              이동해야할 url의 고유 id 파라미터, FRIEND_REQUEST_RECEIVED에서만 필요
+     * @param member                알림을 받을 대상 회원
      * @return
      */
     public Notification createNotification(NotificationTypeTitle notificationTypeTitle,
