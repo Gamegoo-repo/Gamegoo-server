@@ -41,4 +41,8 @@ public class FriendRequests extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_member_id", nullable = false)
     private Member toMember;
+
+    public void updateStatus(FriendRequestStatus status) {
+        this.status = status;
+    }
 }
