@@ -40,7 +40,7 @@ public class PasswordService {
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 비밀번호 재설정
-        member.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        member.updatePassword(bCryptPasswordEncoder.encode(newPassword));
         memberRepository.save(member);
     }
 
