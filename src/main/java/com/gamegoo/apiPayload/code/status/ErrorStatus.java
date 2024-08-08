@@ -119,6 +119,8 @@ public enum ErrorStatus implements BaseErrorCode {
         "내가 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
     BLOCKED_BY_FRIEND_TARGET(HttpStatus.BAD_REQUEST, "FRIEND403",
         "나를 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
+    PENDING_FRIEND_REQUEST_EXIST(HttpStatus.BAD_REQUEST, "FRIEND404",
+        "해당 회원에게 보낸 수락 대기 중인 친구 요청이 존재합니다. 친구 요청을 보낼 수 없습니다."),
 
     // 알림 관련 에러
     NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "잘못된 알림 타입입니다."),
