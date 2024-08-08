@@ -108,6 +108,10 @@ public enum ErrorStatus implements BaseErrorCode {
     CHATROOM_NOT_EXIST(HttpStatus.NOT_FOUND, "CHAT402", "채팅방을 찾을 수 없습니다."),
     CHATROOM_ACCESS_DENIED(HttpStatus.BAD_REQUEST, "CHAT403", "접근할 수 없는 채팅방 입니다."),
     CHAT_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT404", "해당 메시지를 찾을 수 없습니다"),
+    CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED(HttpStatus.FORBIDDEN, "CHAT405",
+        "채팅 상대 회원을 차단한 상태입니다. 채팅 시작이 불가능합니다."),
+    BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED(HttpStatus.FORBIDDEN, "CHAT406",
+        "채팅 상대 회원이 나를 차단했습니다. 채팅 시작이 불가능합니다."),
 
     // 친구 관련 에러
     FRIEND_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND401", "잘못된 친구 요청입니다."),
