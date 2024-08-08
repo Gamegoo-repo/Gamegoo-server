@@ -238,8 +238,7 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx) {
-
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean voice, int pageIdx){
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
@@ -248,7 +247,7 @@ public class BoardService {
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
         Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<Board> boards = boardRepository.findAll(pageable).getContent();
+        List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, voice, pageable).getContent();
 
         return boards.stream().map(board -> {
 
@@ -268,6 +267,7 @@ public class BoardService {
                     .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
                     .winRate(member.getWinRate())
                     .createdAt(board.getCreatedAt())
+                    .voice(board.getVoice())
                     .build();
 
         }).collect(Collectors.toList());
