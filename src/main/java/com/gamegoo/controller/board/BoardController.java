@@ -129,11 +129,22 @@ public class BoardController {
     }
 
     @GetMapping("/list/{boardId}")
-    @Operation(summary = "게시판 글 조회 API", description = "게시판에서 글을 조회하는 API 입니다.")
+    @Operation(summary = "비회원용 게시판 글 조회 API", description = "게시판에서 글을 조회하는 API 입니다.")
     @Parameter(name = "boardId", description = "조회할 게시판 글 id 입니다.")
     public ApiResponse<BoardResponse.boardByIdResponseDTO> getBoardById(@PathVariable Long boardId) {
 
         BoardResponse.boardByIdResponseDTO result = boardService.getBoardById(boardId);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("/member/list/{boardId}")
+    @Operation(summary = "회원용 게시판 글 조회 API")
+    public ApiResponse<BoardResponse.boardByIdResponseForMemberDTO> getBoardByIdForMember(@PathVariable Long boardId) {
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        BoardResponse.boardByIdResponseForMemberDTO result = boardService.getBoardByIdForMember(boardId, memberId);
 
         return ApiResponse.onSuccess(result);
     }

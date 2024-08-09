@@ -101,6 +101,32 @@ public class BoardResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class boardByIdResponseForMemberDTO {
+        Long boardId;
+        Long memberId;
+        Boolean isBlocked;
+        LocalDateTime createdAt;
+        Integer profileImage;
+        String gameName;
+        String tag;
+        Integer mannerLevel;
+        String tier;
+        Boolean mike;
+        List<Long> championList;
+        Integer gameMode;
+        Integer mainPosition;
+        Integer subPosition;
+        Integer wantPosition;
+        Double winRate;
+        List<Long> gameStyles;
+        String contents;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class myBoardListResponseDTO {
         Long boardId;
         Long memberId;
