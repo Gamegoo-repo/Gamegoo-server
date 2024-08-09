@@ -2,6 +2,7 @@ package com.gamegoo.service.chat;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
+import com.gamegoo.converter.ChatConverter;
 import com.gamegoo.domain.Member;
 import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
@@ -15,11 +16,8 @@ import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -69,31 +67,9 @@ public class ChatCommandService {
             // 해당 채팅방의 lastViewDate 업데이트
             memberChatroom.updateLastViewDate(LocalDateTime.now());
 
-            // chatMessageDtoList 생성
-            List<ChatResponse.ChatMessageDTO> chatMessageDtoList = recentChats.stream()
-                .map(chat -> {
-                    // ISO 8601 형식의 문자열로 변환
-                    String createdAtIoString = chat.getCreatedAt()
-                        .format(DateTimeFormatter.ISO_DATE_TIME);
-
-                    return ChatResponse.ChatMessageDTO.builder()
-                        .senderId(chat.getFromMember().getId())
-                        .senderName(chat.getFromMember().getGameName())
-                        .senderProfileImg(chat.getFromMember().getProfileImage())
-                        .message(chat.getContents())
-                        .createdAt(createdAtIoString)
-                        .timestamp(chat.getTimestamp())
-                        .build();
-                }).collect(Collectors.toList());
-
             // ChatMessageListDTO 생성
-            ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
-                .chatMessageDtoList(chatMessageDtoList)
-                .list_size(chatMessageDtoList.size())
-                .has_next(recentChats.hasNext())
-                .next_cursor(recentChats.hasNext() ? recentChats.getContent().get(0).getTimestamp()
-                    : null) // next cursor를 현재 chat list의 가장 오래된 chat의 timestamp로 주기
-                .build();
+            ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatConverter.toChatMessageListDTO(
+                recentChats);
 
             return ChatroomEnterDTO.builder()
                 .uuid(chatroom.get().getUuid())
@@ -264,31 +240,9 @@ public class ChatCommandService {
         // 해당 채팅방의 lastViewDate 업데이트
         memberChatroom.updateLastViewDate(LocalDateTime.now());
 
-        // chatMessageDtoList 생성
-        List<ChatResponse.ChatMessageDTO> chatMessageDtoList = recentChats.stream()
-            .map(chat -> {
-                // ISO 8601 형식의 문자열로 변환
-                String createdAtIoString = chat.getCreatedAt()
-                    .format(DateTimeFormatter.ISO_DATE_TIME);
-
-                return ChatResponse.ChatMessageDTO.builder()
-                    .senderId(chat.getFromMember().getId())
-                    .senderName(chat.getFromMember().getGameName())
-                    .senderProfileImg(chat.getFromMember().getProfileImage())
-                    .message(chat.getContents())
-                    .createdAt(createdAtIoString)
-                    .timestamp(chat.getTimestamp())
-                    .build();
-            }).collect(Collectors.toList());
-
         // ChatMessageListDTO 생성
-        ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
-            .chatMessageDtoList(chatMessageDtoList)
-            .list_size(chatMessageDtoList.size())
-            .has_next(recentChats.hasNext())
-            .next_cursor(recentChats.hasNext() ? recentChats.getContent().get(0).getTimestamp()
-                : null) // next cursor를 현재 chat list의 가장 오래된 chat의 timestamp로 주기
-            .build();
+        ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatConverter.toChatMessageListDTO(
+            recentChats);
 
         return ChatroomEnterDTO.builder()
             .uuid(chatroomUuid)
@@ -319,11 +273,6 @@ public class ChatCommandService {
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
-//        // 해당 회원이 이미 나간 채팅방인지 검증
-//        if (memberChatroom.getLastJoinDate() == null) {
-//            throw new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED);
-//        }
-
         // chat 엔티티 생성
         Chat chat = Chat.builder()
             .contents(request.getMessage())
@@ -334,7 +283,6 @@ public class ChatCommandService {
         // MemberChatroom의 lastViewDate 업데이트
         Chat savedChat = chatRepository.save(chat);
         updateLastViewDateByAddChat(memberChatroom, savedChat.getCreatedAt());
-        //memberChatroom.updateLastViewDate(savedChat.getCreatedAt());
 
         return savedChat;
     }

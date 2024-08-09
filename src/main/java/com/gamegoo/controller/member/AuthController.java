@@ -1,6 +1,8 @@
 package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.converter.MemberConverter;
+import com.gamegoo.domain.Member;
 import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.AuthService;
@@ -25,12 +27,16 @@ public class AuthController {
 
     @PostMapping("/join")
     @Operation(summary = "회원가입 API 입니다.", description = "API for join")
-    public ApiResponse<String> joinMember(
+    public ApiResponse<MemberResponse.myProfileMemberDTO> joinMember(
             @RequestBody @Valid MemberRequest.JoinRequestDTO joinRequestDTO) {
         String email = joinRequestDTO.getEmail();
         String password = joinRequestDTO.getPassword();
-        authService.joinMember(email, password);
-        return ApiResponse.onSuccess("회원가입에 성공했습니다.");
+        String gameName = joinRequestDTO.getGameName();
+        String tag = joinRequestDTO.getTag();
+
+        Member member = authService.joinMember(email, password, gameName, tag);
+
+        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(member));
     }
 
     @PostMapping("/email/send")
@@ -70,7 +76,7 @@ public class AuthController {
     public ApiResponse<String> logoutMember() {
         Long memberId = JWTUtil.getCurrentUserId();
         authService.logoutMember(memberId);
-        
+
         return ApiResponse.onSuccess("로그아웃에 성공했습니다");
     }
 }

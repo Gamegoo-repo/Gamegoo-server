@@ -12,7 +12,8 @@ import java.util.List;
 public class BoardRequest {
     @Getter
     @Setter
-    public static class boardInsertDTO{
+    public static class boardInsertDTO {
+        Integer boardProfileImage;
         @NotNull
         Integer gameMode;
 
@@ -26,7 +27,7 @@ public class BoardRequest {
         Integer wantPosition;
 
         @Schema(description = "마이크 사용 여부", defaultValue = "false")
-        Boolean voice=false;
+        Boolean voice = false;
         List<Long> gameStyles;
         String contents;
 
@@ -36,7 +37,8 @@ public class BoardRequest {
     @AllArgsConstructor
     @Getter
     @Setter
-    public static class boardUpdateDTO{
+    public static class boardUpdateDTO {
+        Integer boardProfileImage;
         Integer gameMode;
 
         Integer mainPosition;

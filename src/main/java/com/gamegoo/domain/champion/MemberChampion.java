@@ -32,8 +32,10 @@ public class MemberChampion extends BaseDateTimeEntity {
             this.member.getMemberChampionList().remove(this);
         }
         this.member = member;
+        if (this.member.getMemberChampionList() == null) {
+            this.member.initializeMemberChampionList();
+        }
         this.member.getMemberChampionList().add(this);
-
     }
 
     public void removeMember(Member member) {

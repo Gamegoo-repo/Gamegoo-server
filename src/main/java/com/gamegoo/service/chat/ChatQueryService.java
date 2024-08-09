@@ -11,7 +11,7 @@ import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.service.member.ProfileService;
-import java.time.format.DateTimeFormatter;
+import com.gamegoo.util.DatetimeUtil;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,23 +72,15 @@ public class ChatQueryService {
                 Integer unReadCnt = chatRepository.countUnreadChats(
                     chatroom.getId(), memberChatroom.getId());
 
-                String lastAtIoString = null;
-                // ISO 8601 형식의 문자열로 변환
-                if (lastChat.isPresent()) {
-                    lastAtIoString = lastChat.get().getCreatedAt()
-                        .format(DateTimeFormatter.ISO_DATE_TIME);
-                } else {
-                    lastAtIoString = memberChatroom.getLastJoinDate()
-                        .format(DateTimeFormatter.ISO_DATE_TIME);
-                }
-
                 return ChatResponse.ChatroomViewDTO.builder()
                     .chatroomId(chatroom.getId())
                     .uuid(chatroom.getUuid())
                     .targetMemberImg(targetMember.getProfileImage())
                     .targetMemberName(targetMember.getGameName())
                     .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)
-                    .lastMsgAt(lastAtIoString)
+                    .lastMsgAt(lastChat.isPresent() ? DatetimeUtil.toKSTString(
+                        lastChat.get().getCreatedAt())
+                        : DatetimeUtil.toKSTString(memberChatroom.getLastJoinDate()))
                     .notReadMsgCnt(unReadCnt)
                     .build();
 
