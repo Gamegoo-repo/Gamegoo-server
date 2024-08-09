@@ -16,11 +16,11 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
             "(:mode IS NULL OR b.mode = :mode) AND " +
             "(:tier IS NULL OR m.tier = :tier) AND " +
             "(:mainPosition IS NULL OR b.mainPosition = :mainPosition OR b.subPosition = :mainPosition) AND " +
-            "(:voice IS NULL OR b.voice = :voice)")
+            "(:mike IS NULL OR b.mike = :mike)")
 
     Page<Board> findByFilters(@Param("mode") Integer mode,
                               @Param("tier") String tier,
                               @Param("mainPosition") Integer mainPosition,
-                              @Param("voice") Boolean voice,
+                              @Param("mike") Boolean mike,
                               Pageable pageable);
 }
