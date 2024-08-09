@@ -3,8 +3,7 @@ package com.gamegoo.service.report;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.apiPayload.exception.handler.ReportHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.report.Report;
 import com.gamegoo.domain.report.ReportType;
 import com.gamegoo.domain.report.ReportTypeMapping;
@@ -23,20 +22,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ReportService{
+public class ReportService {
     private final MemberRepository memberRepository;
     private final ReportRepository reportRepository;
     private final ReportTypeRepository reportTypeRepository;
     private final ReportTypeMappingRepository reportTypeMappingRepository;
 
-    public Report insertReport(ReportRequest.reportInsertDTO request, Long memberId){
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    public Report insertReport(ReportRequest.reportInsertDTO request, Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // target 회원 존재 여부 검증.
-        Member targetMember = memberRepository.findById(request.getTargetMemberId()).orElseThrow(()->new MemberHandler(ErrorStatus.REPORT_TARGET_MEMBER_NOT_FOUND));
+        Member targetMember = memberRepository.findById(request.getTargetMemberId()).orElseThrow(() -> new MemberHandler(ErrorStatus.REPORT_TARGET_MEMBER_NOT_FOUND));
 
         // target 회원 탈퇴 여부 검증.
-        if (targetMember.getBlind()){
+        if (targetMember.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
 
@@ -49,7 +48,7 @@ public class ReportService{
                 });
 
         // member 와 targetMember가 같은 회원인 경우.
-        if (member.getId().equals(targetMember.getId())){
+        if (member.getId().equals(targetMember.getId())) {
             throw new MemberHandler(ErrorStatus.MEMBER_AND_TARGET_MEMBER_SAME);
         }
 

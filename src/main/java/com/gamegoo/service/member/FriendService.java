@@ -2,7 +2,7 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.FriendHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
@@ -11,6 +11,7 @@ import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
+
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -87,17 +88,17 @@ public class FriendService {
             });
 
         FriendRequests friendRequests = FriendRequests.builder()
-            .status(FriendRequestStatus.PENDING)
-            .fromMember(member)
-            .toMember(targetMember)
-            .build();
+                .status(FriendRequestStatus.PENDING)
+                .fromMember(member)
+                .toMember(targetMember)
+                .build();
 
         friendRequestsRepository.save(friendRequests);
 
         // 친구 요청 알림 생성
         // member -> targetMember
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_SEND,
-            targetMember.getGameName(), null, member);
+                targetMember.getGameName(), null, member);
 
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
@@ -281,11 +282,11 @@ public class FriendService {
      */
     public void removeFriendshipIfPresent(Member fromMember, Member toMember) {
         friendRepository.findByFromMemberAndToMember(fromMember, toMember)
-            .ifPresent(friend -> {
-                friendRepository.deleteById(friend.getId());
-                friendRepository.findByFromMemberAndToMember(toMember, fromMember)
-                    .ifPresent(reverseFriend -> friendRepository.deleteById(reverseFriend.getId()));
-            });
+                .ifPresent(friend -> {
+                    friendRepository.deleteById(friend.getId());
+                    friendRepository.findByFromMemberAndToMember(toMember, fromMember)
+                            .ifPresent(reverseFriend -> friendRepository.deleteById(reverseFriend.getId()));
+                });
     }
 
     /**
@@ -296,9 +297,9 @@ public class FriendService {
      */
     public void cancelPendingFriendRequests(Member fromMember, Member toMember) {
         friendRequestsRepository.findByFromMemberAndToMemberAndStatus(fromMember, toMember,
-                FriendRequestStatus.PENDING)
-            .ifPresent(
-                friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+                        FriendRequestStatus.PENDING)
+                .ifPresent(
+                        friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
     }
 
     /**

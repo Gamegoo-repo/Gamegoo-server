@@ -2,7 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.BlockService;
 import com.gamegoo.util.JWTUtil;
@@ -44,7 +44,7 @@ public class BlockController {
     @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
     @GetMapping
     public ApiResponse<MemberResponse.blockListDTO> getBlockList(
-        @RequestParam(name = "page") Integer page) {
+            @RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Page<Member> blockList = blockService.getBlockList(memberId, page - 1);

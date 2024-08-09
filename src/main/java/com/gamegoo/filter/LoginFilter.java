@@ -3,7 +3,7 @@ package com.gamegoo.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetails;

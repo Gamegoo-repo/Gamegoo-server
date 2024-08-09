@@ -1,7 +1,8 @@
 package com.gamegoo.domain.friend;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

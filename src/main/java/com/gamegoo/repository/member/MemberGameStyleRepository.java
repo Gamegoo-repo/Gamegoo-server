@@ -1,6 +1,6 @@
 package com.gamegoo.repository.member;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import org.springframework.data.jpa.repository.JpaRepository;
