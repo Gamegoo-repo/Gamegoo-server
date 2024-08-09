@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -101,7 +102,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅 메시지 읽음 처리 API", description = "특정 채팅방의 메시지를 읽음 처리하는 API 입니다.")
-    @GetMapping("/chat/{chatroomUuid}/read")
+    @PatchMapping("/chat/{chatroomUuid}/read")
     @Parameter(name = "timestamp", description = "특정 메시지를 읽음 처리하는 경우, 그 메시지의 timestamp를 함께 보내주세요.")
     public ApiResponse<String> readChatMessage(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
@@ -114,7 +115,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅방 나가기 API", description = "채팅방 나가기 API 입니다.")
-    @GetMapping("/chat/{chatroomUuid}/exit")
+    @PatchMapping("/chat/{chatroomUuid}/exit")
     public ApiResponse<Object> exitChatroom(
         @PathVariable(name = "chatroomUuid") String chatroomUuid
     ) {
