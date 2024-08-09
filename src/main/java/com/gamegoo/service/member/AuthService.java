@@ -128,10 +128,10 @@ public class AuthService {
      * @param email
      */
     @Transactional
-    public void sendEmail(String email) {
+    public void sendEmail(String email, Boolean ischeck) {
         // 중복 확인하기
         boolean isPresent = memberRepository.findByEmail(email).isPresent();
-        if (isPresent) {
+        if (isPresent && ischeck) {
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
