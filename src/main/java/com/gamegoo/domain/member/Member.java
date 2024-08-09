@@ -1,4 +1,4 @@
-package com.gamegoo.domain.Member;
+package com.gamegoo.domain.member;
 
 import com.gamegoo.domain.Block;
 import com.gamegoo.domain.board.Board;

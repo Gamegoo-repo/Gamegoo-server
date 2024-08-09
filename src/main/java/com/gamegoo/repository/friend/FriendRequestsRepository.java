@@ -1,6 +1,6 @@
 package com.gamegoo.repository.friend;
 
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
 

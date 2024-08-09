@@ -3,7 +3,7 @@ package com.gamegoo.service.notification;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.NotificationHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.notification.NotificationType;
 import com.gamegoo.domain.notification.NotificationTypeTitle;

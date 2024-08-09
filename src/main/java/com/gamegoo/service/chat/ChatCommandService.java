@@ -3,7 +3,7 @@ package com.gamegoo.service.chat;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
 import com.gamegoo.converter.ChatConverter;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;

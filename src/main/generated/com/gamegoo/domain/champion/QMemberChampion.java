@@ -31,7 +31,7 @@ public class QMemberChampion extends EntityPathBase<MemberChampion> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final com.gamegoo.domain.Member.QMember member;
+    public final com.gamegoo.domain.member.QMember member;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -55,7 +55,7 @@ public class QMemberChampion extends EntityPathBase<MemberChampion> {
     public QMemberChampion(Class<? extends MemberChampion> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.champion = inits.isInitialized("champion") ? new QChampion(forProperty("champion")) : null;
-        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.Member.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
     }
 
 }

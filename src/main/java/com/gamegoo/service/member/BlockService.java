@@ -5,7 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.Block;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.chat.ChatCommandService;

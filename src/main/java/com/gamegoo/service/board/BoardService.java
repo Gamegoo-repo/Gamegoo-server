@@ -4,7 +4,7 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.board.BoardGameStyle;
 import com.gamegoo.domain.champion.MemberChampion;

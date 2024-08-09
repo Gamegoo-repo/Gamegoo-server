@@ -1,4 +1,4 @@
-package com.gamegoo.domain.Member;
+package com.gamegoo.domain.member;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QMember extends EntityPathBase<Member> {
 
-    private static final long serialVersionUID = 1120575242L;
+    private static final long serialVersionUID = 321613610L;
 
     public static final QMember member = new QMember("member1");
 

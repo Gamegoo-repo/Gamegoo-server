@@ -3,7 +3,7 @@ package com.gamegoo.controller;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.service.notification.NotificationService;

@@ -2,7 +2,7 @@ package com.gamegoo.util;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 
 public class MemberUtils {
 
