@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.dto.member.MemberResponse.friendRequestResultDTO;
 import com.gamegoo.dto.member.MemberResponse.starFriendResultDTO;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.JWTUtil;
@@ -49,40 +50,55 @@ public class FriendController {
         + "대상 회원에게 친구 요청 알림을 전송하며, 대상 회원이 현재 접속 중인 경우 socket을 통해 실시간 알림을 전송합니다.")
     @Parameter(name = "memberId", description = "친구 요청을 전송할 대상 회원의 id 입니다.")
     @PostMapping("/request/{memberId}")
-    public ApiResponse<String> sendFriendRequest(
+    public ApiResponse<MemberResponse.friendRequestResultDTO> sendFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         friendService.sendFriendRequest(memberId, targetMemberId);
 
-        return ApiResponse.onSuccess("친구 요청 전송 성공");
+        MemberResponse.friendRequestResultDTO result = friendRequestResultDTO.builder()
+            .targetMemberId(targetMemberId)
+            .result("친구 요청 전송 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
 
     }
 
     @Operation(summary = "친구 요청 수락 API", description = "대상 회원이 보낸 친구 요청을 수락 처리하는 API 입니다.")
     @Parameter(name = "memberId", description = "친구 요청을 수락할 대상 회원의 id 입니다.")
     @PatchMapping("/request/{memberId}/accept")
-    public ApiResponse<String> acceptFriendRequest(
+    public ApiResponse<MemberResponse.friendRequestResultDTO> acceptFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         friendService.acceptFriendRequest(memberId, targetMemberId);
 
-        return ApiResponse.onSuccess("친구 요청 수락 성공");
+        MemberResponse.friendRequestResultDTO result = friendRequestResultDTO.builder()
+            .targetMemberId(targetMemberId)
+            .result("친구 요청 수락 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
     }
 
     @Operation(summary = "친구 요청 거절 API", description = "대상 회원이 보낸 친구 요청을 거절 처리하는 API 입니다.")
     @Parameter(name = "memberId", description = "친구 요청을 거절할 대상 회원의 id 입니다.")
     @PatchMapping("/request/{memberId}/reject")
-    public ApiResponse<String> rejectFriendRequest(
+    public ApiResponse<MemberResponse.friendRequestResultDTO> rejectFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         friendService.rejectFriendRequest(memberId, targetMemberId);
 
-        return ApiResponse.onSuccess("친구 요청 거절 성공");
+        MemberResponse.friendRequestResultDTO result = friendRequestResultDTO.builder()
+            .targetMemberId(targetMemberId)
+            .result("친구 요청 거절 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
     }
 
     @Operation(summary = "친구 즐겨찾기 설정 API", description = "대상 친구 회원을 즐겨찾기 설정하는 API 입니다.")
