@@ -33,6 +33,8 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
 
+    public final NumberPath<Integer> mannerLevel = createNumber("mannerLevel", Integer.class);
+
     public final StringPath matchingType = createString("matchingType");
 
     public final QMember member;
