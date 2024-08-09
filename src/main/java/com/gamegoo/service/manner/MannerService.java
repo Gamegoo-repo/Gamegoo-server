@@ -1,11 +1,9 @@
 package com.gamegoo.service.manner;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MannerHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.manner.MannerKeyword;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.manner.MannerRatingKeyword;
@@ -15,7 +13,6 @@ import com.gamegoo.repository.manner.MannerRatingKeywordRepository;
 import com.gamegoo.repository.manner.MannerRatingRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,15 +31,15 @@ public class MannerService {
     private final MannerRatingKeywordRepository mannerRatingKeywordRepository;
     private final MannerKeywordRepository mannerKeywordRepository;
 
-    public MannerRating insertManner(MannerRequest.mannerInsertDTO request, Long memberId){
+    public MannerRating insertManner(MannerRequest.mannerInsertDTO request, Long memberId) {
 
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 매너평가를 받는 회원 존재 여부 검증.
-        Member targetMember = memberRepository.findById(request.getToMemberId()).orElseThrow(()->new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
+        Member targetMember = memberRepository.findById(request.getToMemberId()).orElseThrow(() -> new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
 
         // 매너평가를 받는 회원 탈퇴 여부 검증.
-        if (targetMember.getBlind()){
+        if (targetMember.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
 
@@ -52,7 +49,7 @@ public class MannerService {
                 .filter(MannerRating::getIsPositive)
                 .collect(Collectors.toList());
 
-        if(!positiveMannerRatings.isEmpty()){
+        if (!positiveMannerRatings.isEmpty()) {
             throw new MannerHandler(ErrorStatus.MANNER_CONFLICT);
         }
 
@@ -61,7 +58,7 @@ public class MannerService {
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
                     MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
-                    if(!mannerKeyword.getIsPositive()){
+                    if (!mannerKeyword.getIsPositive()) {
                         throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
                     }
                     mannerRatingKeywordList.add(mannerKeyword);
@@ -89,15 +86,15 @@ public class MannerService {
         return saveManner;
     }
 
-    public MannerRating insertBadManner(MannerRequest.mannerInsertDTO request, Long memberId){
+    public MannerRating insertBadManner(MannerRequest.mannerInsertDTO request, Long memberId) {
 
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 비매너평가를 받는 회원 존재 여부 검증.
-        Member targetMember = memberRepository.findById(request.getToMemberId()).orElseThrow(()->new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
+        Member targetMember = memberRepository.findById(request.getToMemberId()).orElseThrow(() -> new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
 
         // 비매너평가를 받는 회원 탈퇴 여부 검증.
-        if (targetMember.getBlind()){
+        if (targetMember.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
 
@@ -107,7 +104,7 @@ public class MannerService {
                 .filter(rating -> !rating.getIsPositive())
                 .collect(Collectors.toList());
 
-        if(!negativeMannerRatings.isEmpty()){
+        if (!negativeMannerRatings.isEmpty()) {
             throw new MannerHandler(ErrorStatus.BAD_MANNER_CONFLICT);
         }
 
@@ -116,7 +113,7 @@ public class MannerService {
         request.getMannerRatingKeywordList()
                 .forEach(mannerKeywordId -> {
                     MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
-                    if(mannerKeyword.getIsPositive()){
+                    if (mannerKeyword.getIsPositive()) {
                         throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
                     }
                     mannerRatingKeywordList.add(mannerKeyword);
@@ -156,21 +153,21 @@ public class MannerService {
         }
 
         // 매너평가
-        if (mannerRating.getIsPositive()){
+        if (mannerRating.getIsPositive()) {
 
             // mannerKeyword 의 실제 존재 여부 검증 및 매너평가 키워드인지 검증.
             List<MannerKeyword> mannerRatingKeywordList = new ArrayList<>();
             request.getMannerRatingKeywordList()
                     .forEach(mannerKeywordId -> {
                         MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
-                        if(!mannerKeyword.getIsPositive()){
+                        if (!mannerKeyword.getIsPositive()) {
                             throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
                         }
                         mannerRatingKeywordList.add(mannerKeyword);
                     });
 
             // 기존 MannerRatingKeyword 엔티티 업데이트
-            Map<Long,MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
+            Map<Long, MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
                     .collect(Collectors.toMap(
                             mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId(),
                             mannerRatingKeyword -> mannerRatingKeyword,
@@ -214,14 +211,14 @@ public class MannerService {
             request.getMannerRatingKeywordList()
                     .forEach(mannerKeywordId -> {
                         MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
-                        if(mannerKeyword.getIsPositive()){
+                        if (mannerKeyword.getIsPositive()) {
                             throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
                         }
                         mannerRatingKeywordList.add(mannerKeyword);
                     });
 
             // 기존 MannerRatingKeyword 엔티티 업데이트
-            Map<Long,MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
+            Map<Long, MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
                     .collect(Collectors.toMap(
                             mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId(),
                             mannerRatingKeyword -> mannerRatingKeyword,

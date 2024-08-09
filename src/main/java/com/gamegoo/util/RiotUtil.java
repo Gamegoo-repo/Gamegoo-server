@@ -2,7 +2,8 @@ package com.gamegoo.util;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.member.RiotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -160,9 +161,10 @@ public class RiotUtil {
                 int losses = entry.getLosses();
                 double winrate = (double) wins / (wins + losses);
                 winrate = Math.round(winrate * 1000) / 10.0;
+                Tier tier = Tier.valueOf(entry.getTier().toUpperCase());
 
                 // DB에 저장
-                member.updateRiotDetails(entry.getTier(), entry.getRank(), winrate);
+                member.updateRiotDetails(tier, entry.getRank(), winrate);
                 break;
             }
         }

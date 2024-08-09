@@ -27,7 +27,7 @@ public class QMannerRating extends EntityPathBase<MannerRating> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final com.gamegoo.domain.QMember fromMember;
+    public final com.gamegoo.domain.member.QMember fromMember;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
@@ -35,7 +35,7 @@ public class QMannerRating extends EntityPathBase<MannerRating> {
 
     public final ListPath<MannerRatingKeyword, QMannerRatingKeyword> mannerRatingKeywordList = this.<MannerRatingKeyword, QMannerRatingKeyword>createList("mannerRatingKeywordList", MannerRatingKeyword.class, QMannerRatingKeyword.class, PathInits.DIRECT2);
 
-    public final com.gamegoo.domain.QMember toMember;
+    public final com.gamegoo.domain.member.QMember toMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -58,8 +58,8 @@ public class QMannerRating extends EntityPathBase<MannerRating> {
 
     public QMannerRating(Class<? extends MannerRating> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.QMember(forProperty("fromMember")) : null;
-        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.QMember(forProperty("toMember")) : null;
+        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.member.QMember(forProperty("fromMember")) : null;
+        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.member.QMember(forProperty("toMember")) : null;
     }
 
 }
