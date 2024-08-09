@@ -107,4 +107,14 @@ public class MemberResponse {
         boolean isLiked;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class starFriendResultDTO {
+
+        Long friendMemberId;
+        String result;
+    }
+
 }
