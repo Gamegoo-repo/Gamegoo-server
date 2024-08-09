@@ -16,12 +16,11 @@ import java.util.List;
 public class MannerRating extends BaseDateTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "manner_rating_id")
+    @Column(name = "manner_rating_id", nullable = false)
     private Long id;
 
-    @OneToMany(mappedBy = "mannerRating", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "mannerRating", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MannerRatingKeyword> mannerRatingKeywordList = new ArrayList<>();
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_member_id", nullable = false)
@@ -40,6 +39,13 @@ public class MannerRating extends BaseDateTimeEntity {
             this.toMember.getMannerRatingList().remove(this);
         }
         this.toMember = toMember;
-        this.toMember.getMannerRatingList().add(this);
+        if(toMember != null) {
+            this.toMember.getMannerRatingList().add(this);
+        }
+    }
+
+    public void removeMannerRatingKeyword(MannerRatingKeyword mannerRatingKeyword){
+        this.mannerRatingKeywordList.remove(mannerRatingKeyword);
+        mannerRatingKeyword.setMannerRating(null);
     }
 }
