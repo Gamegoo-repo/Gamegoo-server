@@ -40,4 +40,8 @@ public class Friend extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_member_id", nullable = false)
     private Member toMember;
+
+    public void updateIsLiked(Boolean isLiked) {
+        this.isLiked = isLiked;
+    }
 }
