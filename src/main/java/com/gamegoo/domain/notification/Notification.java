@@ -1,7 +1,8 @@
 package com.gamegoo.domain.notification;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

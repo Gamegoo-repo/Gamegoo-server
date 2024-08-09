@@ -33,7 +33,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final BooleanPath isRead = createBoolean("isRead");
 
-    public final com.gamegoo.domain.QMember member;
+    public final com.gamegoo.domain.Member.QMember member;
 
     public final QNotificationType notificationType;
 
@@ -60,7 +60,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public QNotification(Class<? extends Notification> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.Member.QMember(forProperty("member")) : null;
         this.notificationType = inits.isInitialized("notificationType") ? new QNotificationType(forProperty("notificationType")) : null;
     }
 

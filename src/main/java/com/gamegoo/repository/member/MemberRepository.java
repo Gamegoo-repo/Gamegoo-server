@@ -1,6 +1,6 @@
 package com.gamegoo.repository.member;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

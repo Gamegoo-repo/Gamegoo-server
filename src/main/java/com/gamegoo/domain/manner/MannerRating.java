@@ -1,6 +1,6 @@
 package com.gamegoo.domain.manner;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
@@ -34,17 +34,17 @@ public class MannerRating extends BaseDateTimeEntity {
     private Boolean isPositive;
 
     // 연관관계 메소드
-    public void setToMember(Member toMember){
-        if (this.toMember != null){
+    public void setToMember(Member toMember) {
+        if (this.toMember != null) {
             this.toMember.getMannerRatingList().remove(this);
         }
         this.toMember = toMember;
-        if(toMember != null) {
+        if (toMember != null) {
             this.toMember.getMannerRatingList().add(this);
         }
     }
 
-    public void removeMannerRatingKeyword(MannerRatingKeyword mannerRatingKeyword){
+    public void removeMannerRatingKeyword(MannerRatingKeyword mannerRatingKeyword) {
         this.mannerRatingKeywordList.remove(mannerRatingKeyword);
         mannerRatingKeyword.setMannerRating(null);
     }

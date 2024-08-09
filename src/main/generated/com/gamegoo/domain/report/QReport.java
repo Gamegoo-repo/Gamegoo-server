@@ -31,11 +31,11 @@ public class QReport extends EntityPathBase<Report> {
 
     public final StringPath reportContent = createString("reportContent");
 
-    public final com.gamegoo.domain.QMember reporter;
+    public final com.gamegoo.domain.Member.QMember reporter;
 
     public final ListPath<ReportTypeMapping, QReportTypeMapping> reportTypeMappingList = this.<ReportTypeMapping, QReportTypeMapping>createList("reportTypeMappingList", ReportTypeMapping.class, QReportTypeMapping.class, PathInits.DIRECT2);
 
-    public final com.gamegoo.domain.QMember target;
+    public final com.gamegoo.domain.Member.QMember target;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -58,8 +58,8 @@ public class QReport extends EntityPathBase<Report> {
 
     public QReport(Class<? extends Report> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.reporter = inits.isInitialized("reporter") ? new com.gamegoo.domain.QMember(forProperty("reporter")) : null;
-        this.target = inits.isInitialized("target") ? new com.gamegoo.domain.QMember(forProperty("target")) : null;
+        this.reporter = inits.isInitialized("reporter") ? new com.gamegoo.domain.Member.QMember(forProperty("reporter")) : null;
+        this.target = inits.isInitialized("target") ? new com.gamegoo.domain.Member.QMember(forProperty("target")) : null;
     }
 
 }

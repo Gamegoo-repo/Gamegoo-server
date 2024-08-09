@@ -1,11 +1,9 @@
 package com.gamegoo.dto.member;
 
+import com.gamegoo.domain.Member.Tier;
+import lombok.*;
+
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class MemberResponse {
 
@@ -88,7 +86,7 @@ public class MemberResponse {
         String email;
         String gameName;
         String tag;
-        String tier;
+        Tier tier;
         String rank;
         String updatedAt;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;

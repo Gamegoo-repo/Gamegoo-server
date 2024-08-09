@@ -4,7 +4,7 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MatchingHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.MatchingRecord;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;

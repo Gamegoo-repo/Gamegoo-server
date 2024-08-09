@@ -1,5 +1,6 @@
 package com.gamegoo.dto.board;
 
+import com.gamegoo.domain.Member.Tier;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class BoardResponse {
         Integer profileImage;
         String gameName;
         String tag;
-        String tier;
+        Tier tier;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -39,7 +40,7 @@ public class BoardResponse {
         Integer profileImage;
         String gameName;
         String tag;
-        String tier;
+        Tier tier;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -60,7 +61,7 @@ public class BoardResponse {
         Integer profileImage;
         String gameName;
         Integer mannerLevel;
-        String tier;
+        Tier tier;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -84,7 +85,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Integer mannerLevel;
-        String tier;
+        Tier tier;
         Boolean mike;
         List<Long> championList;
         Integer gameMode;
@@ -107,7 +108,7 @@ public class BoardResponse {
         Integer profileImage;
         String gameName;
         String tag;
-        String tier;
+        Tier tier;
         String contents;
         LocalDateTime createdAt;
     }

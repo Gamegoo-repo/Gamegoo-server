@@ -35,7 +35,7 @@ public class QMemberChatroom extends EntityPathBase<MemberChatroom> {
 
     public final DateTimePath<java.time.LocalDateTime> lastViewDate = createDateTime("lastViewDate", java.time.LocalDateTime.class);
 
-    public final com.gamegoo.domain.QMember member;
+    public final com.gamegoo.domain.Member.QMember member;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -59,7 +59,7 @@ public class QMemberChatroom extends EntityPathBase<MemberChatroom> {
     public QMemberChatroom(Class<? extends MemberChatroom> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.chatroom = inits.isInitialized("chatroom") ? new QChatroom(forProperty("chatroom"), inits.get("chatroom")) : null;
-        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.Member.QMember(forProperty("member")) : null;
     }
 
 }
