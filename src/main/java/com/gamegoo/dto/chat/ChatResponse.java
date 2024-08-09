@@ -1,10 +1,11 @@
 package com.gamegoo.dto.chat;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 public class ChatResponse {
 
@@ -28,7 +29,7 @@ public class ChatResponse {
 
         Long chatroomId;
         String uuid;
-        String targetMemberImg;
+        Integer targetMemberImg;
         String targetMemberName;
         String lastMsg;
         String lastMsgAt;
@@ -44,7 +45,7 @@ public class ChatResponse {
         String uuid;
         Long memberId;
         String gameName;
-        String memberProfileImg;
+        Integer memberProfileImg;
         ChatMessageListDTO chatMessageList;
 
     }
@@ -69,7 +70,7 @@ public class ChatResponse {
 
         Long senderId;
         String senderName;
-        String senderProfileImg;
+        Integer senderProfileImg;
         String message;
         String createdAt;
         Long timestamp;
@@ -83,7 +84,7 @@ public class ChatResponse {
 
         Long senderId;
         String senderName;
-        String senderProfileImg;
+        Integer senderProfileImg;
         String message;
         String createdAt;
         Long timestamp;
