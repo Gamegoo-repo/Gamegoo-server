@@ -44,6 +44,7 @@ public class MatchingService {
                 .wantPosition(request.getWantP())
                 .winRate(member.getWinRate())
                 .gameMode(request.getGameMode())
+                .mannerLevel(request.getManner())
                 .member(member)
                 .build();
 

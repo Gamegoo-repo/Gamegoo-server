@@ -50,6 +50,9 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "matching_type", nullable = false, columnDefinition = "VARCHAR(20)")
     private String matchingType;
 
+    @Column(name = "manner_level")
+    private Integer mannerLevel;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
