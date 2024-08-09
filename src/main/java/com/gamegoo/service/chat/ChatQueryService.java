@@ -49,7 +49,6 @@ public class ChatQueryService {
      * @param memberId
      * @return
      */
-    @Transactional(readOnly = true)
     public List<ChatResponse.ChatroomViewDTO> getChatroomList(Long memberId) {
         Member member = profileService.findMember(memberId);
 
@@ -99,7 +98,6 @@ public class ChatQueryService {
      * @param cursor
      * @return
      */
-    @Transactional(readOnly = true)
     public Slice<Chat> getChatMessagesByCursor(String chatroomUuid, Long memberId, Long cursor) {
         Member member = profileService.findMember(memberId);
 
@@ -122,6 +120,17 @@ public class ChatQueryService {
         } else { // cursor가 넘어오지 않은 경우 = 해당 chatroom의 가장 최근 chat을 조회하는 요청
             return chatRepository.findRecentChats(chatroom.getId(), memberChatroom.getId());
         }
+    }
+
+    /**
+     * 두 회원 간의 Chatroom 엔티티 반환
+     *
+     * @param member1
+     * @param member2
+     * @return
+     */
+    public Optional<Chatroom> getChatroomByMembers(Member member1, Member member2) {
+        return chatroomRepository.findChatroomByMemberIds(member1.getId(), member2.getId());
     }
 
 

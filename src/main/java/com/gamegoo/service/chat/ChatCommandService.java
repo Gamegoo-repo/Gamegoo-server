@@ -15,6 +15,7 @@ import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
+import com.gamegoo.util.MemberUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,6 +51,11 @@ public class ChatCommandService {
         Member targetMember = memberRepository.findById(request.getTargetMemberId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
 
+        // 내가 채팅 대상 회원을 차단한 경우
+        if (MemberUtils.isBlocked(member, targetMember)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+        }
+
         // 채팅 대상 회원과의 chatroom 존재 여부 조회
         Optional<Chatroom> chatroom = chatroomRepository.findChatroomByMemberIds(
             member.getId(), targetMember.getId());
@@ -59,6 +65,12 @@ public class ChatCommandService {
             MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                     member.getId(), chatroom.get().getId())
                 .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+            // 채팅 대상 회원이 나를 차단함 && 내가 해당 채팅방을 퇴장한 상태인 경우
+            if (MemberUtils.isBlocked(targetMember, member)
+                && memberChatroom.getLastJoinDate() == null) {
+                throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+            }
 
             // 최근 메시지 내역 조회
             Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.get().getId(),
@@ -76,9 +88,15 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
+                .isBlocked(MemberUtils.isBlocked(targetMember, member))
                 .chatMessageList(chatMessageListDTO)
                 .build();
         } else {
+            // 채팅 상대 회원이 나를 차단한 경우
+            if (MemberUtils.isBlocked(targetMember, member)) {
+                throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+            }
+
             // 기존에 채팅방이 존재하지 않는 경우: 새 채팅방 생성
             // chatroom 엔티티 생성
             String uuid = UUID.randomUUID().toString();
@@ -113,6 +131,7 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
+                .isBlocked(false)
                 .chatMessageList(null)
                 .build();
         }
@@ -219,6 +238,8 @@ public class ChatCommandService {
      */
     @Transactional
     public ChatResponse.ChatroomEnterDTO enterChatroom(String chatroomUuid, Long memberId) {
+        Member member = profileService.findMember(memberId);
+
         // chatroom 엔티티 조회 및 해당 회원의 채팅방이 맞는지 검증
         Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
@@ -227,11 +248,20 @@ public class ChatCommandService {
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
-        // 해당 회원이 퇴장한 채팅방은 아닌지도 나중에 검증 추가하기
-
-        // 채팅 상대 회원 정보 조회
+        // 채팅 상대 회원 조회
         Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
             chatroom.getId(), memberId);
+
+        // 내가 채팅 상대 회원을 차단한 경우
+        if (MemberUtils.isBlocked(member, targetMember)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+        }
+
+        // 상대방이 나를 차단 && 내가 이 채팅방을 나간 상태인 경우
+        if (MemberUtils.isBlocked(targetMember, member)
+            && memberChatroom.getLastJoinDate() == null) {
+            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+        }
 
         // 최근 메시지 내역 조회
         Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.getId(),
@@ -249,6 +279,7 @@ public class ChatCommandService {
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
+            .isBlocked(MemberUtils.isBlocked(targetMember, member))
             .chatMessageList(chatMessageListDTO)
             .build();
     }
@@ -272,6 +303,17 @@ public class ChatCommandService {
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+        // 회원 간 차단 여부 검증
+        // 대화 상대 회원 조회
+        Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+            chatroom.getId(), memberId);
+        if (MemberUtils.isBlocked(member, targetMember)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED);
+        }
+        if (MemberUtils.isBlocked(targetMember, member)) {
+            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED);
+        }
 
         // chat 엔티티 생성
         Chat chat = Chat.builder()
@@ -338,6 +380,12 @@ public class ChatCommandService {
 
     }
 
+    /**
+     * 채팅 등록 시 나와 상대방의 lastViewDate 업데이트
+     *
+     * @param memberChatroom
+     * @param lastViewDate
+     */
     private void updateLastViewDateByAddChat(MemberChatroom memberChatroom,
         LocalDateTime lastViewDate) {
         // lastJoinDate가 null인 경우
