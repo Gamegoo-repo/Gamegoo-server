@@ -14,6 +14,7 @@ import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.member.FriendService;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.MemberUtils;
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatCommandService {
 
     private final ProfileService profileService;
+    private final FriendService friendService;
     private final MemberRepository memberRepository;
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatroomRepository chatroomRepository;
@@ -88,7 +90,8 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(MemberUtils.isBlocked(targetMember, member))
+                .friend(friendService.isFriend(member, targetMember))
+                .blocked(MemberUtils.isBlocked(targetMember, member))
                 .chatMessageList(chatMessageListDTO)
                 .build();
         } else {
@@ -131,7 +134,8 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(false)
+                .friend(friendService.isFriend(member, targetMember))
+                .blocked(false)
                 .chatMessageList(null)
                 .build();
         }
@@ -279,7 +283,8 @@ public class ChatCommandService {
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
-            .isBlocked(MemberUtils.isBlocked(targetMember, member))
+            .friend(friendService.isFriend(member, targetMember))
+            .blocked(MemberUtils.isBlocked(targetMember, member))
             .chatMessageList(chatMessageListDTO)
             .build();
     }
