@@ -290,6 +290,35 @@ public class MannerService {
         return MannerResponse.mannerKeywordResponseDTO.builder()
                 .mannerRatingKeywordList(mannerKeywordIds)
                 .build();
+    }
 
+    // 비매너평가 조회
+    @Transactional(readOnly = true)
+    public MannerResponse.badMannerKeywordResponseDTO getBadMannerKeyword(Long memberId, Long targetMemberId){
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 비매너평가를 받은 회원 존재 여부 검증.
+        Member targetMember = memberRepository.findById(targetMemberId).orElseThrow(() -> new MemberHandler(ErrorStatus.BAD_MANNER_TARGET_MEMBER_NOT_FOUND));
+
+        // 비매너평가 ID 조회
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberIdAndToMemberId(member.getId(), targetMember.getId());
+        List<MannerRating> negativeMannerRatings = mannerRatings.stream()
+                .filter(mannerRating -> !mannerRating.getIsPositive())
+                .collect(Collectors.toList());
+
+        if (negativeMannerRatings.isEmpty()) {
+            throw new MannerHandler(ErrorStatus.BAD_MANNER_NOT_FOUND);
+        }
+
+        MannerRating negativeMannerRating = negativeMannerRatings.get(0);
+
+        List<Long> badMannerKeywordIds = negativeMannerRating.getMannerRatingKeywordList().stream()
+                .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                .collect(Collectors.toList());
+
+        return MannerResponse.badMannerKeywordResponseDTO.builder()
+                .mannerRatingKeywordList(badMannerKeywordIds)
+                .build();
     }
 }

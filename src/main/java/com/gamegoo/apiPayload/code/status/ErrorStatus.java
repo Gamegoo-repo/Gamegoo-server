@@ -93,12 +93,14 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 매너평가 관련 에러
     MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
+    BAD_MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "비매너 평가 대상 회원을 찾을 수 없습니다."),
     MANNER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "MANNER401", "매너평가 작성자만 수정 가능합니다."),
     MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401", "매너 키워드 유형은 1~6만 가능합니다."),
     BAD_MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401",
             "비매너 키워드 유형은 7~12만 가능합니다."),
     MANNER_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너 키워드를 찾을 수 없습니다."),
     MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너평가를 찾을 수 없습니다."),
+    BAD_MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 비매너평가를 찾을 수 없습니다."),
     MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
 

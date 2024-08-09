@@ -105,4 +105,14 @@ public class MannerController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping("bad/{memberId}")
+    public ApiResponse<MannerResponse.badMannerKeywordResponseDTO> getBadMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.badMannerKeywordResponseDTO result = mannerService.getBadMannerKeyword(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
