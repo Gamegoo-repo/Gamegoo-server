@@ -139,7 +139,8 @@ public class BoardController {
     }
 
     @GetMapping("/member/list/{boardId}")
-    @Operation(summary = "회원용 게시판 글 조회 API")
+    @Operation(summary = "회원용 게시판 글 조회 API", description = "게시판에서 글을 조회하는 API 입니다.")
+    @Parameter(name = "boardId", description = "조회할 게시판 글 id 입니다.")
     public ApiResponse<BoardResponse.boardByIdResponseForMemberDTO> getBoardByIdForMember(@PathVariable Long boardId) {
 
         Long memberId = JWTUtil.getCurrentUserId();
