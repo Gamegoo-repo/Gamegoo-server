@@ -1,11 +1,11 @@
 package com.gamegoo.dto.chat;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 public class ChatResponse {
 
@@ -40,13 +40,21 @@ public class ChatResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonPropertyOrder({
+        "uuid",
+        "memberId",
+        "gameName",
+        "memberProfileImg",
+        "blocked",
+        "chatMessageList"
+    })
     public static class ChatroomEnterDTO {
 
         String uuid;
         Long memberId;
         String gameName;
         Integer memberProfileImg;
-        boolean isBlocked;
+        boolean blocked;
         ChatMessageListDTO chatMessageList;
 
     }

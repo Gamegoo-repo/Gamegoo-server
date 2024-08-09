@@ -88,7 +88,7 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(MemberUtils.isBlocked(targetMember, member))
+                .blocked(MemberUtils.isBlocked(targetMember, member))
                 .chatMessageList(chatMessageListDTO)
                 .build();
         } else {
@@ -131,7 +131,7 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(false)
+                .blocked(false)
                 .chatMessageList(null)
                 .build();
         }
@@ -279,7 +279,7 @@ public class ChatCommandService {
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
-            .isBlocked(MemberUtils.isBlocked(targetMember, member))
+            .blocked(MemberUtils.isBlocked(targetMember, member))
             .chatMessageList(chatMessageListDTO)
             .build();
     }
