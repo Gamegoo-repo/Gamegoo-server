@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +48,7 @@ public class FriendController {
     @Operation(summary = "친구 요청 전송 API", description = "대상 회원에게 친구 요청을 전송하는 API 입니다."
         + "대상 회원에게 친구 요청 알림을 전송하며, 대상 회원이 현재 접속 중인 경우 socket을 통해 실시간 알림을 전송합니다.")
     @Parameter(name = "memberId", description = "친구 요청을 전송할 대상 회원의 id 입니다.")
-    @PostMapping("/send/{memberId}")
+    @PostMapping("/request/{memberId}")
     public ApiResponse<String> sendFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
@@ -60,7 +61,7 @@ public class FriendController {
 
     @Operation(summary = "친구 요청 수락 API", description = "대상 회원이 보낸 친구 요청을 수락 처리하는 API 입니다.")
     @Parameter(name = "memberId", description = "친구 요청을 수락할 대상 회원의 id 입니다.")
-    @GetMapping("/request/{memberId}/accept")
+    @PatchMapping("/request/{memberId}/accept")
     public ApiResponse<String> acceptFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId
     ) {
@@ -73,7 +74,7 @@ public class FriendController {
 
     @Operation(summary = "친구 요청 거절 API", description = "대상 회원이 보낸 친구 요청을 거절 처리하는 API 입니다.")
     @Parameter(name = "memberId", description = "친구 요청을 거절할 대상 회원의 id 입니다.")
-    @GetMapping("/request/{memberId}/reject")
+    @PatchMapping("/request/{memberId}/reject")
     public ApiResponse<String> rejectFriendRequest(
         @PathVariable(name = "memberId") Long targetMemberId
     ) {
@@ -86,7 +87,7 @@ public class FriendController {
 
     @Operation(summary = "친구 즐겨찾기 설정 API", description = "대상 친구 회원을 즐겨찾기 설정하는 API 입니다.")
     @Parameter(name = "memberId", description = "즐겨찾기 설정할 친구 회원의 id 입니다.")
-    @GetMapping("/{memberId}/star")
+    @PatchMapping("/{memberId}/star")
     public ApiResponse<MemberResponse.starFriendResultDTO> starFriend(
         @PathVariable(name = "memberId") Long friendMemberId
     ) {
