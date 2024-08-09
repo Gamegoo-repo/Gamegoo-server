@@ -2,8 +2,8 @@ package com.gamegoo.util;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member.Member;
-import com.gamegoo.domain.Member.Tier;
+import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.member.RiotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

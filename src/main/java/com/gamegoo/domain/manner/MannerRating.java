@@ -1,6 +1,6 @@
 package com.gamegoo.domain.manner;
 
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 

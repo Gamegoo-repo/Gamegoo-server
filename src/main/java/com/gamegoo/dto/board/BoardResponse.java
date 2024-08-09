@@ -1,6 +1,6 @@
 package com.gamegoo.dto.board;
 
-import com.gamegoo.domain.Member.Tier;
+import com.gamegoo.domain.member.Tier;
 import lombok.*;
 
 import java.time.LocalDateTime;

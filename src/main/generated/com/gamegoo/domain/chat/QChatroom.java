@@ -29,7 +29,7 @@ public class QChatroom extends EntityPathBase<Chatroom> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final com.gamegoo.domain.Member.QMember startMember;
+    public final com.gamegoo.domain.member.QMember startMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -54,7 +54,7 @@ public class QChatroom extends EntityPathBase<Chatroom> {
 
     public QChatroom(Class<? extends Chatroom> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.startMember = inits.isInitialized("startMember") ? new com.gamegoo.domain.Member.QMember(forProperty("startMember")) : null;
+        this.startMember = inits.isInitialized("startMember") ? new com.gamegoo.domain.member.QMember(forProperty("startMember")) : null;
     }
 
 }

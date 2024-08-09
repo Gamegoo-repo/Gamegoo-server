@@ -3,7 +3,7 @@ package com.gamegoo.service.report;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.report.Report;
 import com.gamegoo.domain.report.ReportType;
 import com.gamegoo.domain.report.ReportTypeMapping;

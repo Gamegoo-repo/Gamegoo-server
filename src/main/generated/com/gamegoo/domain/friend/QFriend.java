@@ -27,13 +27,13 @@ public class QFriend extends EntityPathBase<Friend> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final com.gamegoo.domain.Member.QMember fromMember;
+    public final com.gamegoo.domain.member.QMember fromMember;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final BooleanPath isLiked = createBoolean("isLiked");
 
-    public final com.gamegoo.domain.Member.QMember toMember;
+    public final com.gamegoo.domain.member.QMember toMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -56,8 +56,8 @@ public class QFriend extends EntityPathBase<Friend> {
 
     public QFriend(Class<? extends Friend> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.Member.QMember(forProperty("fromMember")) : null;
-        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.Member.QMember(forProperty("toMember")) : null;
+        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.member.QMember(forProperty("fromMember")) : null;
+        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.member.QMember(forProperty("toMember")) : null;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.gamegoo.domain.Member;
+package com.gamegoo.domain.member;
 
 public enum LoginType {
     KAKAO, // 카카오

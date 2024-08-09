@@ -3,7 +3,7 @@ package com.gamegoo.service.manner;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MannerHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.manner.MannerKeyword;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.manner.MannerRatingKeyword;

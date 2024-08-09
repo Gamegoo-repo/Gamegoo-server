@@ -1,7 +1,7 @@
 package com.gamegoo.controller.board;
 
 import com.gamegoo.apiPayload.ApiResponse;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;

@@ -1,8 +1,8 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.matchingrecord;
 
-import com.gamegoo.domain.Member.Member;
-import com.gamegoo.domain.Member.Tier;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import lombok.*;
 
 import javax.persistence.*;
@@ -44,13 +44,13 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "winrate")
     private Double winRate;
 
-    // FAIL, QUIT, SUCCESS
+    // FAIL, SUCCESS
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10)")
-    private String status;
+    private MatchingStatus status;
 
     // BASIC : 겜구 매칭, PRECISE : 정밀 매칭
     @Column(name = "matching_type", nullable = false, columnDefinition = "VARCHAR(20)")
-    private String matchingType;
+    private MatchingType matchingType;
 
     @Column(name = "manner_level")
     private Integer mannerLevel;
@@ -60,7 +60,7 @@ public class MatchingRecord extends BaseDateTimeEntity {
     private Member member;
 
     // status 변경
-    public void updateStatus(String status) {
+    public void updateStatus(MatchingStatus status) {
         this.status = status;
     }
 }

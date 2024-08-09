@@ -3,8 +3,10 @@ package com.gamegoo.service.matching;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MatchingHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.MatchingRecord;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.matchingrecord.MatchingRecord;
+import com.gamegoo.domain.matchingrecord.MatchingStatus;
+import com.gamegoo.domain.matchingrecord.MatchingType;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -32,13 +34,18 @@ public class MatchingService {
         // 회원 정보 불러오기
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        try {
+            MatchingType matchingType = MatchingType.valueOf(request.getMatchingType().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new MatchingHandler(ErrorStatus.MATHCING_TYPE_BAD_REQUEST);
+        }
         // 매칭 기록 저장
         MatchingRecord matchingRecord = MatchingRecord.builder()
                 .mike(request.getMike())
                 .tier(member.getTier())
                 .rank(member.getRank())
-                .matchingType(request.getMatchingType())
-                .status("FAIL")
+                .matchingType(MatchingType.valueOf(request.getMatchingType()))
+                .status(MatchingStatus.FAIL)
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())
                 .wantPosition(request.getWantP())
@@ -71,14 +78,12 @@ public class MatchingService {
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(member)
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
 
-        String status = request.getStatus();
-
-        // 매칭 status 값 확인
-        if (status.equals("QUIT") || status.equals("SUCCESS")) {
+        try {
+            MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
             // status 값 변경
-            matchingRecord.updateStatus(request.getStatus());
+            matchingRecord.updateStatus(status);
             matchingRecordRepository.save(matchingRecord);
-        } else {
+        } catch (IllegalArgumentException e) {
             // status 값이 이상할 경우 에러처리
             throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
         }

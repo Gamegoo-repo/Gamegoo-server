@@ -2,7 +2,7 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
-import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.BlockService;
 import com.gamegoo.util.JWTUtil;
