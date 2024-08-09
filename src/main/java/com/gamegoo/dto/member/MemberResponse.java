@@ -42,6 +42,7 @@ public class MemberResponse {
         String accessToken;
         String refreshToken;
         String name;
+        Integer profileImage;
 
     }
 
