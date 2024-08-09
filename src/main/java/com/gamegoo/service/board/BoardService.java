@@ -65,8 +65,8 @@ public class BoardService {
         }
 
         // 마이크 설정 (default=false)
-        if (request.getVoice() == null) {
-            request.setVoice(false);
+        if (request.getMike() == null) {
+            request.setMike(false);
         }
 
         // 게임 스타일 길이 검증.
@@ -94,7 +94,7 @@ public class BoardService {
                 .mainPosition(request.getMainPosition())
                 .subPosition(request.getSubPosition())
                 .wantPosition(request.getWantPosition())
-                .voice(request.getVoice())
+                .mike(request.getMike())
                 .boardGameStyles(new ArrayList<>())
                 .content(request.getContents())
                 .boardProfileImage(boardProfileImage)
@@ -168,8 +168,8 @@ public class BoardService {
         }
 
         // 마이크 설정 (null인 경우 기본값 false)
-        if (request.getVoice() == null) {
-            request.setVoice(false);
+        if (request.getMike() == null) {
+            request.setMike(false);
         }
 
         // 게시판 글 데이터 수정
@@ -178,7 +178,7 @@ public class BoardService {
                 request.getMainPosition(),
                 request.getSubPosition(),
                 request.getWantPosition(),
-                request.getVoice(),
+                request.getMike(),
                 request.getContents(),
                 boardProfileImage
         );
@@ -238,7 +238,7 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean voice, int pageIdx){
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean mike, int pageIdx){
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
@@ -247,7 +247,7 @@ public class BoardService {
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
         Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, voice, pageable).getContent();
+        List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, mike, pageable).getContent();
 
         return boards.stream().map(board -> {
 
@@ -267,7 +267,7 @@ public class BoardService {
                     .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
                     .winRate(member.getWinRate())
                     .createdAt(board.getCreatedAt())
-                    .voice(board.getVoice())
+                    .mike(board.getMike())
                     .build();
 
         }).collect(Collectors.toList());
@@ -291,7 +291,7 @@ public class BoardService {
                 .mannerLevel(member.getMannerLevel())
                 .tier(member.getTier())
                 .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
-                .voice(board.getVoice())
+                .mike(board.getMike())
                 .gameMode(board.getMode())
                 .mainPosition(board.getMainPosition())
                 .subPosition(board.getSubPosition())
