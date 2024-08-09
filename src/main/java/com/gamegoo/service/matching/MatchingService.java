@@ -52,7 +52,7 @@ public class MatchingService {
         profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
 
         matchingRecordRepository.save(matchingRecord);
-
+        memberRepository.save(member);
     }
 
     /**
