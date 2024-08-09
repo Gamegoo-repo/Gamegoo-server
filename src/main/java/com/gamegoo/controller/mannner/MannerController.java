@@ -7,6 +7,7 @@ import com.gamegoo.dto.manner.MannerResponse;
 import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +71,8 @@ public class MannerController {
     }
 
     @PutMapping("/{mannerId}")
+    @Operation(summary = "매너 평가 수정 API",  description = "매너 평가를 수정하는 API 입니다.")
+    @Parameter(name = "mannerId", description = "수정할 매너평가 id 입니다.")
     public ApiResponse<MannerResponse.mannerUpdateResponseDTO> mannerUpdate(
             @PathVariable long mannerId,
             @RequestBody MannerRequest.mannerUpdateDTO request
