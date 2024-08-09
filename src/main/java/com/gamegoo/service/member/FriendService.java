@@ -112,4 +112,17 @@ public class FriendService {
             .ifPresent(
                 friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
     }
+
+    /**
+     * 두 회원이 서로 친구 관계인지 여부 리턴
+     *
+     * @param member1
+     * @param member2
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean isFriend(Member member1, Member member2) {
+        List<Friend> friendList = friendRepository.findBothDirections(member1, member2);
+        return (friendList.size() == 2);
+    }
 }

@@ -45,6 +45,7 @@ public class ChatResponse {
         "memberId",
         "gameName",
         "memberProfileImg",
+        "friend",
         "blocked",
         "chatMessageList"
     })
@@ -54,6 +55,7 @@ public class ChatResponse {
         Long memberId;
         String gameName;
         Integer memberProfileImg;
+        boolean friend;
         boolean blocked;
         ChatMessageListDTO chatMessageList;
 
