@@ -5,7 +5,6 @@ import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 
 @Getter
 @Entity
@@ -34,7 +33,7 @@ public class MemberChampion extends BaseDateTimeEntity {
         }
         this.member = member;
         if (this.member.getMemberChampionList() == null) {
-            this.member.setMemberChampionList(new ArrayList<>());
+            this.member.initializeMemberChampionList();
         }
         this.member.getMemberChampionList().add(this);
     }
