@@ -39,14 +39,14 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final com.gamegoo.domain.QMember member;
 
+    public final BooleanPath mike = createBoolean("mike");
+
     public final NumberPath<Integer> mode = createNumber("mode", Integer.class);
 
     public final NumberPath<Integer> subPosition = createNumber("subPosition", Integer.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
-
-    public final BooleanPath voice = createBoolean("voice");
 
     public final NumberPath<Integer> wantPosition = createNumber("wantPosition", Integer.class);
 
