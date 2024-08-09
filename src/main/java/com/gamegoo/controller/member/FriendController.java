@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -84,7 +85,7 @@ public class FriendController {
     }
 
     @Operation(summary = "친구 즐겨찾기 설정 API", description = "대상 친구 회원을 즐겨찾기 설정하는 API 입니다.")
-    @Parameter(name = "memberId", description = "친구 회원의 id 입니다.")
+    @Parameter(name = "memberId", description = "즐겨찾기 설정할 친구 회원의 id 입니다.")
     @GetMapping("/{memberId}/star")
     public ApiResponse<MemberResponse.starFriendResultDTO> starFriend(
         @PathVariable(name = "memberId") Long friendMemberId
@@ -95,7 +96,25 @@ public class FriendController {
 
         starFriendResultDTO result = starFriendResultDTO.builder()
             .friendMemberId(friend.getToMember().getId())
-            .result("친구 즐겨찾기 성공")
+            .result("친구 즐겨찾기 설정 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @Operation(summary = "친구 즐겨찾기 해제 API", description = "대상 친구 회원을 즐겨찾기 해제하는 API 입니다.")
+    @Parameter(name = "memberId", description = "즐겨찾기 해제할 친구 회원의 id 입니다.")
+    @DeleteMapping("/{memberId}/star")
+    public ApiResponse<MemberResponse.starFriendResultDTO> unstarFriend(
+        @PathVariable(name = "memberId") Long friendMemberId
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        Friend friend = friendService.unstarFriend(memberId, friendMemberId);
+
+        starFriendResultDTO result = starFriendResultDTO.builder()
+            .friendMemberId(friend.getToMember().getId())
+            .result("친구 즐겨찾기 해제 성공")
             .build();
 
         return ApiResponse.onSuccess(result);

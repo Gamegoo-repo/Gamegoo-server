@@ -92,7 +92,7 @@ public class FriendService {
             .toMember(targetMember)
             .build();
 
-        FriendRequests savedFriendRequests = friendRequestsRepository.save(friendRequests);
+        friendRequestsRepository.save(friendRequests);
 
         // 친구 요청 알림 생성
         // member -> targetMember
@@ -218,6 +218,40 @@ public class FriendService {
         }
 
         friend.get().updateIsLiked(true);
+
+        return friend.get();
+    }
+
+    /**
+     * 해당 친구 회원을 즐겨찾기 해제
+     *
+     * @param memberId
+     * @param friendMemberId
+     * @return
+     */
+    public Friend unstarFriend(Long memberId, Long friendMemberId) {
+        Member member = profileService.findMember(memberId);
+        Member friendMember = profileService.findMember(friendMemberId);
+
+        // 본인의 id를 입력한 경우
+        if (member.equals(friendMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+
+        Optional<Friend> friend = friendRepository.findByFromMemberAndToMember(member,
+            friendMember);
+
+        // 두 회원이 친구 관계가 맞는지 검증
+        if (friend.isEmpty()) {
+            throw new FriendHandler(ErrorStatus.MEMBERS_NOT_FRIEND);
+        }
+
+        // 해당 회원이 즐겨찾기 되어있는지 검증
+        if (!friend.get().getIsLiked()) {
+            throw new FriendHandler(ErrorStatus.NOT_STAR_FRIEND);
+        }
+
+        friend.get().updateIsLiked(false);
 
         return friend.get();
     }
