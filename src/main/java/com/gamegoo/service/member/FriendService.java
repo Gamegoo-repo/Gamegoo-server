@@ -257,6 +257,23 @@ public class FriendService {
     }
 
     /**
+     * 두 회원 간 친구 관계 삭제
+     *
+     * @param memberId
+     * @param friendMemberId
+     */
+    public void deleteFriend(Long memberId, Long friendMemberId) {
+        Member member = profileService.findMember(memberId);
+        Member friendMember = profileService.findMember(friendMemberId);
+
+        if (member.equals(friendMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+        
+        removeFriendshipIfPresent(member, friendMember);
+    }
+
+    /**
      * fromMember와 toMember가 서로 친구 관계이면, 친구 관계 끊기
      *
      * @param fromMember

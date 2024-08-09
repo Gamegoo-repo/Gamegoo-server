@@ -119,4 +119,16 @@ public class FriendController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @Operation(summary = "친구 삭제 API", description = "친구 회원과의 친구 관계를 끊는 API 입니다.")
+    @Parameter(name = "memberId", description = "삭제 처리할 친구 회원의 id 입니다.")
+    @DeleteMapping("/{memberId}")
+    public ApiResponse<String> deleteFriend(
+        @PathVariable(name = "memberId") Long friendMemberId
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        friendService.deleteFriend(memberId, friendMemberId);
+        return ApiResponse.onSuccess("친구 삭제 성공");
+    }
 }
