@@ -3,9 +3,9 @@ package com.gamegoo.service.matching;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MatchingHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.matchingrecord.MatchingRecord;
-import com.gamegoo.domain.matchingrecord.MatchingStatus;
-import com.gamegoo.domain.matchingrecord.MatchingType;
+import com.gamegoo.domain.matching.MatchingRecord;
+import com.gamegoo.domain.matching.MatchingStatus;
+import com.gamegoo.domain.matching.MatchingType;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
@@ -51,7 +51,7 @@ public class MatchingService {
                 .wantPosition(request.getWantP())
                 .winRate(member.getWinRate())
                 .gameMode(request.getGameMode())
-                .mannerLevel(request.getManner())
+                .mannerLevel(member.getMannerLevel())
                 .member(member)
                 .build();
 

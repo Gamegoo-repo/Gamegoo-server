@@ -1,4 +1,4 @@
-package com.gamegoo.domain.matchingrecord;
+package com.gamegoo.domain.matching;
 
 public enum MatchingType {
     BASIC, // 겜구 매칭

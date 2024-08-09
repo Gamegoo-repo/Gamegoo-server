@@ -1,4 +1,4 @@
-package com.gamegoo.domain.matchingrecord;
+package com.gamegoo.domain.matching;
 
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import com.gamegoo.domain.member.Member;
