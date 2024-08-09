@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.dto.member.MemberResponse.starFriendResultDTO;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,5 +83,21 @@ public class FriendController {
         return ApiResponse.onSuccess("친구 요청 거절 성공");
     }
 
+    @Operation(summary = "친구 즐겨찾기 설정 API", description = "대상 친구 회원을 즐겨찾기 설정하는 API 입니다.")
+    @Parameter(name = "memberId", description = "친구 회원의 id 입니다.")
+    @GetMapping("/{memberId}/star")
+    public ApiResponse<MemberResponse.starFriendResultDTO> starFriend(
+        @PathVariable(name = "memberId") Long friendMemberId
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
 
+        Friend friend = friendService.starFriend(memberId, friendMemberId);
+
+        starFriendResultDTO result = starFriendResultDTO.builder()
+            .friendMemberId(friend.getToMember().getId())
+            .result("친구 즐겨찾기 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
+    }
 }

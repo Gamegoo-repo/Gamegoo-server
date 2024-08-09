@@ -188,6 +188,41 @@ public class FriendService {
     }
 
     /**
+     * 친구 회원을 즐겨찾기 설정
+     *
+     * @param memberId
+     * @param friendMemberId
+     * @return
+     */
+
+    public Friend starFriend(Long memberId, Long friendMemberId) {
+        Member member = profileService.findMember(memberId);
+        Member friendMember = profileService.findMember(friendMemberId);
+
+        // 본인의 id를 입력한 경우
+        if (member.equals(friendMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+
+        Optional<Friend> friend = friendRepository.findByFromMemberAndToMember(member,
+            friendMember);
+
+        // 두 회원이 친구 관계가 맞는지 검증
+        if (friend.isEmpty()) {
+            throw new FriendHandler(ErrorStatus.MEMBERS_NOT_FRIEND);
+        }
+
+        // 이미 즐겨찾기 되어있는지 검증
+        if (friend.get().getIsLiked()) {
+            throw new FriendHandler(ErrorStatus.ALREADY_STAR_FRIEND);
+        }
+
+        friend.get().updateIsLiked(true);
+
+        return friend.get();
+    }
+
+    /**
      * fromMember와 toMember가 서로 친구 관계이면, 친구 관계 끊기
      *
      * @param fromMember

@@ -127,6 +127,8 @@ public enum ErrorStatus implements BaseErrorCode {
         "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
 
     PENDING_FRIEND_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "FRIEND407", "수락/거절할 친구 요청이 존재하지 않습니다."),
+    MEMBERS_NOT_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND408", "두 회원은 친구 관계가 아닙니다."),
+    ALREADY_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND409", "이미 즐겨찾기 되어 있는 친구입니다."),
 
     // 알림 관련 에러
     NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "잘못된 알림 타입입니다."),
