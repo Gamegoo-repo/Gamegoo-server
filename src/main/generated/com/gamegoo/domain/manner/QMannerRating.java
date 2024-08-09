@@ -31,6 +31,8 @@ public class QMannerRating extends EntityPathBase<MannerRating> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isPositive = createBoolean("isPositive");
+
     public final ListPath<MannerRatingKeyword, QMannerRatingKeyword> mannerRatingKeywordList = this.<MannerRatingKeyword, QMannerRatingKeyword>createList("mannerRatingKeywordList", MannerRatingKeyword.class, QMannerRatingKeyword.class, PathInits.DIRECT2);
 
     public final com.gamegoo.domain.QMember toMember;

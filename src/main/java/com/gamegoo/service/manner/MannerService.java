@@ -21,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,5 +142,120 @@ public class MannerService {
             mannerRatingKeywordRepository.save(mannerRatingKeyword);
         });
         return saveManner;
+    }
+
+    // 매너평가 수정.
+    @Transactional
+    public MannerRating update(MannerRequest.mannerUpdateDTO request, Long memberId, Long mannerId) {
+
+        MannerRating mannerRating = mannerRatingRepository.findById(mannerId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_NOT_FOUND));
+
+        // 매너평가 작성자가 맞는지 검증.
+        if (!mannerRating.getFromMember().getId().equals(memberId)) {
+            throw new MannerHandler(ErrorStatus.MANNER_UNAUTHORIZED);
+        }
+
+        // 매너평가
+        if (mannerRating.getIsPositive()){
+
+            // mannerKeyword 의 실제 존재 여부 검증 및 매너평가 키워드인지 검증.
+            List<MannerKeyword> mannerRatingKeywordList = new ArrayList<>();
+            request.getMannerRatingKeywordList()
+                    .forEach(mannerKeywordId -> {
+                        MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
+                        if(!mannerKeyword.getIsPositive()){
+                            throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
+                        }
+                        mannerRatingKeywordList.add(mannerKeyword);
+                    });
+
+            // 기존 MannerRatingKeyword 엔티티 업데이트
+            Map<Long,MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
+                    .collect(Collectors.toMap(
+                            mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId(),
+                            mannerRatingKeyword -> mannerRatingKeyword,
+                            (existing, replacement) -> existing));
+
+            Set<Long> newMannerKeywordIds = mannerRatingKeywordList.stream()
+                    .map(MannerKeyword::getId)
+                    .collect(Collectors.toSet());
+
+            // 삭제할 엔티티를 검색
+            List<MannerRatingKeyword> toRemove = new ArrayList<>();
+            for (MannerRatingKeyword existingKeyword : mannerRating.getMannerRatingKeywordList()) {
+                if (!newMannerKeywordIds.contains(existingKeyword.getMannerKeyword().getId())) {
+                    toRemove.add(existingKeyword);
+                }
+            }
+            toRemove.forEach(mannerRating::removeMannerRatingKeyword);
+
+            // 새로 추가하거나 업데이트할 엔티티
+            for (MannerKeyword mannerKeyword : mannerRatingKeywordList) {
+                MannerRatingKeyword mannerRatingKeyword = existingMannerRatings.get(mannerKeyword.getId());
+                if (mannerRatingKeyword == null) {
+                    mannerRatingKeyword = MannerRatingKeyword.builder()
+                            .mannerKeyword(mannerKeyword)
+                            .build();
+                    // 연관 관계 설정
+                    mannerRatingKeyword.setMannerRating(mannerRating); // MannerRating 설정
+                } else {
+                    // 기존 엔티티 업데이트
+                    mannerRatingKeyword.setMannerKeyword(mannerKeyword);
+                }
+            }
+            return mannerRatingRepository.save(mannerRating);
+        }
+
+        // 비매너 평가
+        else {
+
+            // mannerKeyword 의 실제 존재 여부 검증 및 비매너평가 키워드인지 검증.
+            List<MannerKeyword> mannerRatingKeywordList = new ArrayList<>();
+            request.getMannerRatingKeywordList()
+                    .forEach(mannerKeywordId -> {
+                        MannerKeyword mannerKeyword = mannerKeywordRepository.findById(mannerKeywordId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND));
+                        if(mannerKeyword.getIsPositive()){
+                            throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
+                        }
+                        mannerRatingKeywordList.add(mannerKeyword);
+                    });
+
+            // 기존 MannerRatingKeyword 엔티티 업데이트
+            Map<Long,MannerRatingKeyword> existingMannerRatings = mannerRating.getMannerRatingKeywordList().stream()
+                    .collect(Collectors.toMap(
+                            mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId(),
+                            mannerRatingKeyword -> mannerRatingKeyword,
+                            (existing, replacement) -> existing));
+
+            Set<Long> newMannerKeywordIds = mannerRatingKeywordList.stream()
+                    .map(MannerKeyword::getId)
+                    .collect(Collectors.toSet());
+
+            // 삭제할 엔티티를 검색
+            List<MannerRatingKeyword> toRemove = new ArrayList<>();
+            for (MannerRatingKeyword existingKeyword : mannerRating.getMannerRatingKeywordList()) {
+                if (!newMannerKeywordIds.contains(existingKeyword.getMannerKeyword().getId())) {
+                    toRemove.add(existingKeyword);
+                }
+            }
+            toRemove.forEach(mannerRating::removeMannerRatingKeyword);
+
+            // 새로 추가하거나 업데이트할 엔티티
+            for (MannerKeyword mannerKeyword : mannerRatingKeywordList) {
+                MannerRatingKeyword mannerRatingKeyword = existingMannerRatings.get(mannerKeyword.getId());
+                if (mannerRatingKeyword == null) {
+                    mannerRatingKeyword = MannerRatingKeyword.builder()
+                            .mannerKeyword(mannerKeyword)
+                            .build();
+                    // 연관 관계 설정
+                    mannerRatingKeyword.setMannerRating(mannerRating); // MannerRating 설정
+                } else {
+                    // 기존 엔티티 업데이트
+                    mannerRatingKeyword.setMannerKeyword(mannerKeyword);
+                }
+            }
+            return mannerRatingRepository.save(mannerRating);
+        }
+
     }
 }
