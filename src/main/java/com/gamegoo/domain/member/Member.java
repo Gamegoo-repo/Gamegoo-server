@@ -76,6 +76,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "mike")
     private Boolean mike = false;
 
+    @Column(name = "is_agree")
+    private Boolean isAgree;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 

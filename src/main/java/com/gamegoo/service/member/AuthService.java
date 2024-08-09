@@ -3,10 +3,10 @@ package com.gamegoo.service.member;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.EmailVerifyRecord;
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.champion.Champion;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.member.LoginType;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.member.ChampionRepository;
 import com.gamegoo.repository.member.EmailVerifyRecordRepository;
@@ -52,7 +52,7 @@ public class AuthService {
      * @return
      */
     @Transactional
-    public Member joinMember(String email, String password, String gameName, String tag) {
+    public Member joinMember(String email, String password, String gameName, String tag, Boolean isAgree) {
 
         // 중복 확인하기
         if (memberRepository.existsByEmail(email)) {
@@ -81,6 +81,7 @@ public class AuthService {
                 .profileImage(randomProfileImage)
                 .blind(false)
                 .mike(false)
+                .isAgree(isAgree)
                 .build();
 
 
