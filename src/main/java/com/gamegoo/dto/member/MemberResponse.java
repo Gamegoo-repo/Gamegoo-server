@@ -111,6 +111,16 @@ public class MemberResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class friendRequestResultDTO {
+
+        Long targetMemberId;
+        String result;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class starFriendResultDTO {
 
         Long friendMemberId;
