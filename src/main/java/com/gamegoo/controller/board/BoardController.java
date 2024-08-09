@@ -52,7 +52,7 @@ public class BoardController {
                 .mainPosition(saveBoard.getMainPosition())
                 .subPosition(saveBoard.getSubPosition())
                 .wantPosition(saveBoard.getWantPosition())
-                .voice(saveBoard.getVoice())
+                .mike(saveBoard.getMike())
                 .gameStyles(gameStyles)
                 .contents(saveBoard.getContent())
                 .build();
@@ -89,7 +89,7 @@ public class BoardController {
                 .mainPosition(updateBoard.getMainPosition())
                 .subPosition(updateBoard.getSubPosition())
                 .wantPosition(updateBoard.getWantPosition())
-                .voice(updateBoard.getVoice())
+                .mike(updateBoard.getMike())
                 .gameStyles(gameStyles)
                 .contents(updateBoard.getContent())
                 .build();
@@ -116,7 +116,7 @@ public class BoardController {
                                                                            @RequestParam(required = false) Integer mode,
                                                                            @RequestParam(required = false) String tier,
                                                                            @RequestParam(required = false) Integer mainPosition,
-                                                                           @RequestParam(required = false) Boolean voice){
+                                                                           @RequestParam(required = false) Boolean mike){
 
         // <포지션 정보> 전체: 0, 탑: 1, 정글: 2, 미드: 3, 바텀:4, 서포터:5
         if (mainPosition != null && mainPosition == 0) {
@@ -124,7 +124,7 @@ public class BoardController {
             mainPosition = null;
         }
 
-        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode,tier,mainPosition,voice,pageIdx);
+        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode,tier,mainPosition,mike,pageIdx);
         return ApiResponse.onSuccess(result);
     }
 
