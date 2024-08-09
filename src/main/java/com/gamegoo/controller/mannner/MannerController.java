@@ -93,4 +93,14 @@ public class MannerController {
         return ApiResponse.onSuccess(result);
 
     }
+
+    @GetMapping("good/{memberId}")
+    public ApiResponse<MannerResponse.mannerKeywordResponseDTO> getMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.mannerKeywordResponseDTO result = mannerService.getMannerKeyword(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
