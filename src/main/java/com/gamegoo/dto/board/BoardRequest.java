@@ -27,7 +27,7 @@ public class BoardRequest {
         Integer wantPosition;
 
         @Schema(description = "마이크 사용 여부", defaultValue = "false")
-        Boolean voice = false;
+        Boolean mike = false;
         List<Long> gameStyles;
         String contents;
 
@@ -46,7 +46,7 @@ public class BoardRequest {
         Integer subPosition;
 
         Integer wantPosition;
-        Boolean voice;
+        Boolean mike;
         List<Long> gameStyles;
         String contents;
     }

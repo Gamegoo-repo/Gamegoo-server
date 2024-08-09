@@ -22,7 +22,7 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
-        Boolean voice;
+        Boolean mike;
         List<Long> gameStyles;
         String contents;
 
@@ -44,7 +44,7 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
-        Boolean voice;
+        Boolean mike;
         List<Long> gameStyles;
         String contents;
     }
@@ -68,7 +68,7 @@ public class BoardResponse {
         List<Long> championList;
         Double winRate;
         LocalDateTime createdAt;
-        Boolean voice;
+        Boolean mike;
     }
 
     @Getter
@@ -85,7 +85,7 @@ public class BoardResponse {
         String tag;
         Integer mannerLevel;
         String tier;
-        Boolean voice;
+        Boolean mike;
         List<Long> championList;
         Integer gameMode;
         Integer mainPosition;
