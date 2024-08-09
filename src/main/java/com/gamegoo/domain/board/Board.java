@@ -33,8 +33,8 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "want_position", nullable = false)
     private Integer wantPosition;
 
-    @Column(name = "voice")
-    private Boolean voice = false;
+    @Column(name = "mike")
+    private Boolean mike = false;
 
     @Column(name = "content", length = 5000)
     private String content;
@@ -60,12 +60,12 @@ public class Board extends BaseDateTimeEntity {
         }
     }
 
-    public void updateBoard(Integer mode, Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean voice, String content, Integer boardProfileImage) {
+    public void updateBoard(Integer mode, Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean mike, String content, Integer boardProfileImage) {
         this.mode = mode;
         this.mainPosition = mainPosition;
         this.subPosition = subPosition;
         this.wantPosition = wantPosition;
-        this.voice = voice;
+        this.mike = mike;
         this.content = content;
         this.boardProfileImage = boardProfileImage;
     }
