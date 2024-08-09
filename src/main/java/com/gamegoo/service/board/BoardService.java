@@ -297,7 +297,7 @@ public class BoardService {
                 .subPosition(board.getSubPosition())
                 .wantPosition(board.getWantPosition())
                 .winRate(member.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle->boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
 
