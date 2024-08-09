@@ -40,7 +40,7 @@ public class MatchingRecord extends BaseDateTimeEntity {
     private Tier tier;
 
     @Column(name = "rank", columnDefinition = "VARCHAR(10)")
-    private String rank;
+    private Integer rank;
 
     @Column(name = "winrate")
     private Double winRate;

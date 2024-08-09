@@ -59,7 +59,7 @@ public class Member extends BaseDateTimeEntity {
     private Tier tier;
 
     @Column(name = "rank")
-    private String rank;
+    private Integer rank;
 
     @Column(name = "winrate")
     private Double winRate;
@@ -126,7 +126,7 @@ public class Member extends BaseDateTimeEntity {
         this.memberChampionList = new ArrayList<>();
     }
 
-    public void updateRiotDetails(Tier tier, String rank, Double winRate) {
+    public void updateRiotDetails(Tier tier, Integer rank, Double winRate) {
         this.tier = tier;
         this.rank = rank;
         this.winRate = winRate;
