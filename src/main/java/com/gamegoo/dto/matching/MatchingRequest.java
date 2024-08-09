@@ -38,7 +38,7 @@ public class MatchingRequest {
         @Max(value = 5, message = "원하는 상대 포지션의 값은 1이상이어야합니다.")
         int wantP;
 
-        @NotNull(message = "gameMode는 비워둘 수 없습니다.")
+        @NotNull(message = "manner는 비워둘 수 없습니다.")
         int manner;
 
         @NotNull(message = "gameStyleIdList는 비워둘 수 없습니다")
