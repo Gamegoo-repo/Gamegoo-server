@@ -2,7 +2,7 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

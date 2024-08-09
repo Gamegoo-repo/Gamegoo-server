@@ -1,7 +1,7 @@
 package com.gamegoo.controller.board;
 
 import com.gamegoo.apiPayload.ApiResponse;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
@@ -11,8 +11,10 @@ import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -29,17 +31,17 @@ public class BoardController {
     @PostMapping("")
     @Operation(summary = "게시판 글 작성 API", description = "게시판에서 글을 작성하는 API 입니다.")
     public ApiResponse<BoardResponse.boardInsertResponseDTO> boardInsert(
-        @RequestBody BoardRequest.boardInsertDTO request
+            @RequestBody BoardRequest.boardInsertDTO request
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Member memberProfile = profileService.findMember(memberId);
 
-        Board saveBoard = boardService.save(request,memberId,memberProfile);
+        Board saveBoard = boardService.save(request, memberId, memberProfile);
 
         List<Long> gameStyles = saveBoard.getBoardGameStyles().stream()
-            .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
-            .collect(Collectors.toList());
+                .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
+                .collect(Collectors.toList());
 
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()
                 .boardId(saveBoard.getId())
@@ -66,7 +68,7 @@ public class BoardController {
     public ApiResponse<BoardResponse.boardUpdateResponseDTO> boardUpdate(
             @PathVariable long postId,
             @RequestBody BoardRequest.boardUpdateDTO request
-        ){
+    ) {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
@@ -78,7 +80,7 @@ public class BoardController {
                 .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
                 .collect(Collectors.toList());
 
-        BoardResponse.boardUpdateResponseDTO result= BoardResponse.boardUpdateResponseDTO.builder()
+        BoardResponse.boardUpdateResponseDTO result = BoardResponse.boardUpdateResponseDTO.builder()
                 .boardId(updateBoard.getId())
                 .memberId(memberId)
                 .profileImage(updateBoard.getBoardProfileImage())
@@ -101,7 +103,7 @@ public class BoardController {
     @Operation(summary = "게시판 글 삭제 API", description = "게시판에서 글을 삭제하는 API 입니다.")
     @Parameter(name = "postId", description = "삭제할 게시판 글 id 입니다.")
     public ApiResponse<String> delete(@PathVariable Long postId
-    ){
+    ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         boardService.delete(postId, memberId);
@@ -116,7 +118,7 @@ public class BoardController {
                                                                            @RequestParam(required = false) Integer mode,
                                                                            @RequestParam(required = false) String tier,
                                                                            @RequestParam(required = false) Integer mainPosition,
-                                                                           @RequestParam(required = false) Boolean mike){
+                                                                           @RequestParam(required = false) Boolean mike) {
 
         // <포지션 정보> 전체: 0, 탑: 1, 정글: 2, 미드: 3, 바텀:4, 서포터:5
         if (mainPosition != null && mainPosition == 0) {
@@ -124,7 +126,7 @@ public class BoardController {
             mainPosition = null;
         }
 
-        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode,tier,mainPosition,mike,pageIdx);
+        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode, tier, mainPosition, mike, pageIdx);
         return ApiResponse.onSuccess(result);
     }
 

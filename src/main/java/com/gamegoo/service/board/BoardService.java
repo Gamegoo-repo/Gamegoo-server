@@ -4,7 +4,7 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.board.BoardGameStyle;
 import com.gamegoo.domain.champion.MemberChampion;
@@ -238,7 +238,7 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean mike, int pageIdx){
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean mike, int pageIdx) {
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
@@ -297,7 +297,7 @@ public class BoardService {
                 .subPosition(board.getSubPosition())
                 .wantPosition(board.getWantPosition())
                 .winRate(member.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle->boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
 

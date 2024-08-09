@@ -1,5 +1,7 @@
 package com.gamegoo.domain;
 
+import com.gamegoo.domain.Member.Member;
+import com.gamegoo.domain.Member.Tier;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import lombok.*;
 
@@ -34,7 +36,7 @@ public class MatchingRecord extends BaseDateTimeEntity {
     private Boolean mike;
 
     @Column(name = "tier", columnDefinition = "VARCHAR(20)")
-    private String tier;
+    private Tier tier;
 
     @Column(name = "rank", columnDefinition = "VARCHAR(10)")
     private String rank;

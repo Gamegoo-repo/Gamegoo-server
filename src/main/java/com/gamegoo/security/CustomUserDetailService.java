@@ -1,7 +1,7 @@
 package com.gamegoo.security;
 
 import com.gamegoo.apiPayload.exception.handler.CustomUserException;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.repository.member.MemberRepository;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;

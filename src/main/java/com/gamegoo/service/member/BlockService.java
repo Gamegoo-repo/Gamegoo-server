@@ -5,7 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.BlockHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.Block;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.chat.ChatCommandService;
@@ -53,15 +53,15 @@ public class BlockService {
 
         // 이미 차단한 회원인지 검증
         boolean isblocked = blockRepository.existsByBlockerMemberAndBlockedMember(member,
-            targetMember);
+                targetMember);
         if (isblocked) {
             throw new BlockHandler(ErrorStatus.ALREADY_BLOCKED);
         }
 
         // block 엔티티 생성 및 연관관계 매핑
         Block block = Block.builder()
-            .blockedMember(targetMember)
-            .build();
+                .blockedMember(targetMember)
+                .build();
         block.setBlockerMember(member);
 
         blockRepository.save(block);
@@ -101,7 +101,7 @@ public class BlockService {
         PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
 
         return memberRepository.findBlockedMembersByBlockerIdAndNotBlind(member.getId(),
-            pageRequest);
+                pageRequest);
     }
 
     /**
@@ -117,7 +117,7 @@ public class BlockService {
 
         // targetMember가 차단 실제로 차단 목록에 존재하는지 검증
         Block block = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember)
-            .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
+                .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
 
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);

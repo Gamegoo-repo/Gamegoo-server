@@ -2,7 +2,7 @@ package com.gamegoo.util;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.Member.Member;
 
 public class MemberUtils {
 
@@ -16,7 +16,7 @@ public class MemberUtils {
     public static boolean isBlocked(Member member, Member targetMember) {
 
         return member.getBlockList().stream()
-            .anyMatch(block -> block.getBlockedMember().equals(targetMember));
+                .anyMatch(block -> block.getBlockedMember().equals(targetMember));
     }
 
     /**
