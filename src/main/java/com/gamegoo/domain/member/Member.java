@@ -54,6 +54,7 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "tag", length = 100)
     private String tag;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tier")
     private Tier tier;
 

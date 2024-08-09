@@ -35,6 +35,7 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "mike", nullable = false)
     private Boolean mike;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tier", columnDefinition = "VARCHAR(20)")
     private Tier tier;
 
@@ -44,11 +45,12 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "winrate")
     private Double winRate;
 
-    // FAIL, SUCCESS
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10)")
     private MatchingStatus status;
 
     // BASIC : 겜구 매칭, PRECISE : 정밀 매칭
+    @Enumerated(EnumType.STRING)
     @Column(name = "matching_type", nullable = false, columnDefinition = "VARCHAR(20)")
     private MatchingType matchingType;
 
