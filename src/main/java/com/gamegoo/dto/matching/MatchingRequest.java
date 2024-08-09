@@ -24,7 +24,7 @@ public class MatchingRequest {
 
         // BASIC, PRECISE
         @NotBlank(message = "matching_type은 비워둘 수 없습니다.")
-        String matching_type;
+        String matchingType;
 
         @Min(value = 1, message = "메인 포지션의 값은 1이상이어야 합니다.")
         @Max(value = 5, message = "메인 포지션의 값은 5이하이어야 합니다.")
