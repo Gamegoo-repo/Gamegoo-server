@@ -31,7 +31,7 @@ jobs:
           spring.datasource.password: ${{ secrets.DB_PASSWORD }}
           spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.password: ${{ secrets.GMAIL_PWD }}
-          spring.riot.api.key: $${{ secrets.RIOT_API }}
+          spring.riot.api.key: ${{ secrets.RIOT_API }}
 
       # Spring Boot 어플리케이션 Build (4)
       - name: Spring Boot Build
@@ -80,10 +80,13 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           timeout: 50s
           script: |
+            sudo timedatectl set-timezone Asia/Seoul
             sudo docker pull rimi3226/gamegoo:${{ github.sha }}
             sudo docker stop gamegoo_api
             sudo docker rm gamegoo_api
-            sudo docker run -it -d -p 8080:8080 --name gamegoo_api rimi3226/gamegoo:${{ github.sha }}
+            sudo docker run -it -d -p 8080:8080 --name gamegoo_api \
+              -e JAVA_OPTS="-Duser.timezone=Asia/Seoul" \
+              rimi3226/gamegoo:${{ github.sha }}
 
       # REMOVE Github IP FROM security group (12)
       - name: Remove IP FROM security group

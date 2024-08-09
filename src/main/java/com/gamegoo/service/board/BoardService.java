@@ -4,8 +4,8 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
-import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.Member;
+import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.board.BoardGameStyle;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
@@ -40,32 +40,32 @@ public class BoardService {
 
     // 게시판 글 작성.
     @Transactional
-    public Board save(BoardRequest.boardInsertDTO request,Long memberId){
+    public Board save(BoardRequest.boardInsertDTO request, Long memberId, Member memberProfile) {
 
-        Member member = memberRepository.findById(memberId).orElseThrow(()->new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 게임 모드 값 검증. (1 ~ 4 값만 가능)
-        if (request.getGameMode()<1 || request.getGameMode()>4){
+        if (request.getGameMode() < 1 || request.getGameMode() > 4) {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
         }
 
         // 주 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getMainPosition()<1 || request.getMainPosition()>5){
+        if (request.getMainPosition() < 1 || request.getMainPosition() > 5) {
             throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
         }
 
         // 부 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getSubPosition()<1 || request.getSubPosition()>5){
+        if (request.getSubPosition() < 1 || request.getSubPosition() > 5) {
             throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
         }
 
         // 상대 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getWantPosition()<1 || request.getWantPosition()>5){
+        if (request.getWantPosition() < 1 || request.getWantPosition() > 5) {
             throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
         }
 
         // 마이크 설정 (default=false)
-        if (request.getVoice()==null){
+        if (request.getVoice() == null) {
             request.setVoice(false);
         }
 
@@ -80,6 +80,15 @@ public class BoardService {
                         .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
                 .collect(Collectors.toList());
 
+        // 게시판 글 작성 - 프로필 이미지 수정 여부 검증.
+        Integer boardProfileImage;
+        if (request.getBoardProfileImage() != null) {
+            boardProfileImage = request.getBoardProfileImage();
+        } else {
+            // 프로필 페이지에 있는 프로필 이미지 정보 가져오기.
+            boardProfileImage = memberProfile.getProfileImage();
+        }
+
         Board board = Board.builder()
                 .mode(request.getGameMode())
                 .mainPosition(request.getMainPosition())
@@ -88,10 +97,11 @@ public class BoardService {
                 .voice(request.getVoice())
                 .boardGameStyles(new ArrayList<>())
                 .content(request.getContents())
+                .boardProfileImage(boardProfileImage)
                 .build();
 
         board.setMember(member);
-        Board saveBoard= boardRepository.save(board);
+        Board saveBoard = boardRepository.save(board);
 
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
         gameStyleList.forEach(gameStyle -> {
@@ -148,6 +158,15 @@ public class BoardService {
                         .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
                 .collect(Collectors.toList());
 
+        // 게시판 글 수정 - 프로필 이미지 수정 여부 검증.
+        Integer boardProfileImage;
+        if (request.getBoardProfileImage() != null) {
+            boardProfileImage = request.getBoardProfileImage();
+        } else {
+            // 기존 게시글에 있는 프로필 이미지 정보 가져오기.
+            boardProfileImage = board.getBoardProfileImage();
+        }
+
         // 마이크 설정 (null인 경우 기본값 false)
         if (request.getVoice() == null) {
             request.setVoice(false);
@@ -160,7 +179,8 @@ public class BoardService {
                 request.getSubPosition(),
                 request.getWantPosition(),
                 request.getVoice(),
-                request.getContents()
+                request.getContents(),
+                boardProfileImage
         );
 
         // 기존 BoardGameStyle 엔티티 업데이트
@@ -203,7 +223,7 @@ public class BoardService {
 
     // 게시판 글 삭제.
     @Transactional
-    public void delete(Long boardId, Long memberId){
+    public void delete(Long boardId, Long memberId) {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
@@ -218,17 +238,16 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(int pageIdx){
-
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean voice, int pageIdx){
         // pageIdx 값 검증.
-        if (pageIdx <= 0){
+        if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
         }
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
-        Pageable pageable = PageRequest.of(pageIdx-1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<Board> boards = boardRepository.findAll(pageable).getContent();
+        List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, voice, pageable).getContent();
 
         return boards.stream().map(board -> {
 
@@ -237,7 +256,7 @@ public class BoardService {
             return BoardResponse.boardListResponseDTO.builder()
                     .boardId(board.getId())
                     .memberId(member.getId())
-                    .profileImage(member.getProfileImage())
+                    .profileImage(board.getBoardProfileImage())
                     .gameName(member.getGameName())
                     .mannerLevel(member.getMannerLevel())
                     .tier(member.getTier())
@@ -248,6 +267,7 @@ public class BoardService {
                     .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
                     .winRate(member.getWinRate())
                     .createdAt(board.getCreatedAt())
+                    .voice(board.getVoice())
                     .build();
 
         }).collect(Collectors.toList());
@@ -255,7 +275,7 @@ public class BoardService {
 
     // 게시판 글 조회
     @Transactional(readOnly = true)
-    public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId){
+    public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId) {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
@@ -265,7 +285,7 @@ public class BoardService {
                 .boardId(board.getId())
                 .memberId(member.getId())
                 .createdAt(board.getCreatedAt())
-                .profileImage(member.getProfileImage())
+                .profileImage(board.getBoardProfileImage())
                 .gameName(member.getGameName())
                 .tag(member.getTag())
                 .mannerLevel(member.getMannerLevel())
@@ -303,7 +323,7 @@ public class BoardService {
             return BoardResponse.myBoardListResponseDTO.builder()
                     .boardId(board.getId())
                     .memberId(member.getId())
-                    .profileImage(member.getProfileImage())
+                    .profileImage(board.getBoardProfileImage())
                     .gameName(member.getGameName())
                     .tag(member.getTag())
                     .tier(member.getTier())

@@ -12,11 +12,15 @@ spring:
     url: ${DB_URL}?useUnicode=true&characterEncoding=utf8mb4
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+  jackson:
+    time-zone: Asia/Seoul
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
+        jdbc:
+          time_zone: Asia/Seoul
       show_sql: true
       format_sql: true
     database-platform: org.hibernate.dialect.MariaDB103Dialect
@@ -34,7 +38,6 @@ spring:
           auth: true
           starttls:
             enable: true
-
 
 springdoc:
   swagger-ui:

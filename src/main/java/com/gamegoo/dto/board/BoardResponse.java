@@ -11,10 +11,10 @@ public class BoardResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class boardInsertResponseDTO{
+    public static class boardInsertResponseDTO {
         Long boardId;
         Long memberId;
-        String profileImage;
+        Integer profileImage;
         String gameName;
         String tag;
         String tier;
@@ -33,10 +33,10 @@ public class BoardResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class boardUpdateResponseDTO{
+    public static class boardUpdateResponseDTO {
         Long boardId;
         Long memberId;
-        String profileImage;
+        Integer profileImage;
         String gameName;
         String tag;
         String tier;
@@ -54,10 +54,10 @@ public class BoardResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class boardListResponseDTO{
+    public static class boardListResponseDTO {
         Long boardId;
         Long memberId;
-        String profileImage;
+        Integer profileImage;
         String gameName;
         Integer mannerLevel;
         String tier;
@@ -68,6 +68,7 @@ public class BoardResponse {
         List<Long> championList;
         Double winRate;
         LocalDateTime createdAt;
+        Boolean voice;
     }
 
     @Getter
@@ -75,11 +76,11 @@ public class BoardResponse {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class boardByIdResponseDTO{
+    public static class boardByIdResponseDTO {
         Long boardId;
         Long memberId;
         LocalDateTime createdAt;
-        String profileImage;
+        Integer profileImage;
         String gameName;
         String tag;
         Integer mannerLevel;
@@ -103,7 +104,7 @@ public class BoardResponse {
     public static class myBoardListResponseDTO {
         Long boardId;
         Long memberId;
-        String profileImage;
+        Integer profileImage;
         String gameName;
         String tag;
         String tier;

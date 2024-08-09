@@ -35,7 +35,7 @@ public class BoardController {
 
         Member memberProfile = profileService.findMember(memberId);
 
-        Board saveBoard = boardService.save(request,memberId);
+        Board saveBoard = boardService.save(request,memberId,memberProfile);
 
         List<Long> gameStyles = saveBoard.getBoardGameStyles().stream()
             .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
@@ -44,7 +44,7 @@ public class BoardController {
         BoardResponse.boardInsertResponseDTO result = BoardResponse.boardInsertResponseDTO.builder()
                 .boardId(saveBoard.getId())
                 .memberId(memberId)
-                .profileImage(memberProfile.getProfileImage())
+                .profileImage(saveBoard.getBoardProfileImage())
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
@@ -81,7 +81,7 @@ public class BoardController {
         BoardResponse.boardUpdateResponseDTO result= BoardResponse.boardUpdateResponseDTO.builder()
                 .boardId(updateBoard.getId())
                 .memberId(memberId)
-                .profileImage(memberProfile.getProfileImage())
+                .profileImage(updateBoard.getBoardProfileImage())
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
@@ -111,9 +111,20 @@ public class BoardController {
 
     @GetMapping("/list")
     @Operation(summary = "게시판 글 목록 조회 API", description = "게시판에서 글 목록을 조회하는 API 입니다.")
-    @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
-    public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx){
-        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(pageIdx);
+    @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요. 페이지 당 20개의 게시물을 볼 수 있습니다.")
+    public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx,
+                                                                           @RequestParam(required = false) Integer mode,
+                                                                           @RequestParam(required = false) String tier,
+                                                                           @RequestParam(required = false) Integer mainPosition,
+                                                                           @RequestParam(required = false) Boolean voice){
+
+        // <포지션 정보> 전체: 0, 탑: 1, 정글: 2, 미드: 3, 바텀:4, 서포터:5
+        if (mainPosition != null && mainPosition == 0) {
+            // 전체 포지션 선택 시 필터링에서 제외
+            mainPosition = null;
+        }
+
+        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode,tier,mainPosition,voice,pageIdx);
         return ApiResponse.onSuccess(result);
     }
 

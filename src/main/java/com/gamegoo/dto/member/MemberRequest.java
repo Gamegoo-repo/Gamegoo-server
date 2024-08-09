@@ -47,31 +47,47 @@ public class MemberRequest {
         String email;
         @NotBlank(message = "password는 비워둘 수 없습니다.")
         String password;
+        @NotBlank(message = "gameName 값은 비워둘 수 없습니다.")
+        String gameName;
+        @NotBlank(message = "tag 값은 비워둘 수 없습니다.")
+        String tag;
 
     }
 
     @Getter
-    public static class PasswordRequestDTO {
-
+    public static class PasswordRequestJWTDTO {
         @NotBlank(message = "password는 비워둘 수 없습니다.")
         String password;
 
     }
 
     @Getter
+    public static class PasswordRequestDTO {
+        @Email(message = "Email 형식이 올바르지 않습니다.")
+        @NotBlank(message = "Email은 비워둘 수 없습니다.")
+        String email;
+        @NotBlank(message = "password는 비워둘 수 없습니다.")
+        String password;
+
+    }
+
+
+    @Getter
     public static class PositionRequestDTO {
-        @Min(value = 0, message = "메인 포지션의 값은 1이상이어야 합니다.")
+        @Min(value = 0, message = "메인 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "메인 포지션의 값은 5이하이어야 합니다.")
         int mainP;
-        @Min(value = 0, message = "서브 포지션의 값은 1이상이어야 합니다.")
-        @Max(value = 5, message = "서브 포지션의 값은 1이상이어야합니다.")
+        @Min(value = 0, message = "서브 포지션의 값은 0이상이어야 합니다.")
+        @Max(value = 5, message = "서브 포지션의 값은 5이하이어야합니다.")
         int subP;
     }
 
     @Getter
     public static class ProfileImageRequestDTO {
+        @Min(value = 1, message = "메인 포지션의 값은 1이상이어야 합니다.")
+        @Max(value = 8, message = "메인 포지션의 값은 8이하이어야 합니다.")
         @NotBlank(message = "profileImage 값은 비워둘 수 없습니다.")
-        String profileImage;
+        Integer profileImage;
     }
 
     @Getter
@@ -82,8 +98,6 @@ public class MemberRequest {
 
     @Getter
     public static class verifyRiotRequestDTO {
-        @NotBlank(message = "email 값은 비워둘 수 없습니다.")
-        String email;
         @NotBlank(message = "gameName 값은 비워둘 수 없습니다.")
         String gameName;
         @NotBlank(message = "tag 값은 비워둘 수 없습니다.")

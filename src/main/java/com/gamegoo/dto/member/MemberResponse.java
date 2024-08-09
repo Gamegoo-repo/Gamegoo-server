@@ -14,6 +14,7 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockListDTO {
+
         List<blockedMemberDTO> blockedMemberDTOList;
         Integer listSize;
         Integer totalPage;
@@ -28,8 +29,9 @@ public class MemberResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class blockedMemberDTO {
+
         Long memberId;
-        String profileImg;
+        Integer profileImg;
         String email;
         String name;
     }
@@ -55,6 +57,16 @@ public class MemberResponse {
         String gameStyleName;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChampionResponseDTO {
+
+        Long championId;
+        String championName;
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -70,7 +82,9 @@ public class MemberResponse {
     @AllArgsConstructor
     public static class myProfileMemberDTO {
 
-        String profileImg;
+        Long id;
+        Integer profileImg;
+        Boolean mike;
         String email;
         String gameName;
         String tag;
@@ -78,6 +92,7 @@ public class MemberResponse {
         String rank;
         String updatedAt;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
+        List<ChampionResponseDTO> championResponseDTOList;
     }
 
     @Builder
@@ -88,7 +103,8 @@ public class MemberResponse {
 
         Long memberId;
         String name;
-        String memberProfileImg;
+        Integer memberProfileImg;
         boolean isLiked;
     }
+
 }

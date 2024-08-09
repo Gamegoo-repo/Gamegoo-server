@@ -31,22 +31,28 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final BooleanPath isComplete = createBoolean("isComplete");
-
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
+
+    public final StringPath matchingType = createString("matchingType");
 
     public final QMember member;
 
     public final BooleanPath mike = createBoolean("mike");
 
+    public final StringPath rank = createString("rank");
+
+    public final StringPath status = createString("status");
+
     public final NumberPath<Integer> subPosition = createNumber("subPosition", Integer.class);
 
-    public final NumberPath<Integer> tier = createNumber("tier", Integer.class);
+    public final StringPath tier = createString("tier");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public final NumberPath<Integer> wantPosition = createNumber("wantPosition", Integer.class);
+
+    public final NumberPath<Double> winRate = createNumber("winRate", Double.class);
 
     public QMatchingRecord(String variable) {
         this(MatchingRecord.class, forVariable(variable), INITS);
