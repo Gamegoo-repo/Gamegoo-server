@@ -37,7 +37,7 @@ public class MatchingService {
                 .mike(request.getMike())
                 .tier(member.getTier())
                 .rank(member.getRank())
-                .matchingType(request.getMatching_type())
+                .matchingType(request.getMatchingType())
                 .status("FAIL")
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())
