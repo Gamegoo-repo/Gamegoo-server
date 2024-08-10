@@ -107,6 +107,7 @@ public class BoardResponse {
         Long boardId;
         Long memberId;
         Boolean isBlocked;
+        Boolean isFriend;
         LocalDateTime createdAt;
         Integer profileImage;
         String gameName;

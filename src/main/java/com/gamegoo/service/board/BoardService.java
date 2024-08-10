@@ -16,8 +16,10 @@ import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -33,6 +35,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+    @Autowired
+    private FriendService friendService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final GameStyleRepository gameStyleRepository;
@@ -301,7 +305,7 @@ public class BoardService {
                 .wantPosition(board.getWantPosition())
                 .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
 
@@ -321,6 +325,7 @@ public class BoardService {
                 .boardId(board.getId())
                 .memberId(poster.getId())
                 .isBlocked(MemberUtils.isBlocked(member, poster))
+                .isFriend(friendService.isFriend(member,poster))
                 .createdAt(board.getCreatedAt())
                 .profileImage(board.getBoardProfileImage())
                 .gameName(poster.getGameName())
@@ -335,7 +340,7 @@ public class BoardService {
                 .wantPosition(board.getWantPosition())
                 .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
     }
