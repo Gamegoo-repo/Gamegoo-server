@@ -67,13 +67,17 @@ public class MemberConverter {
                 .manner(member.getMannerLevel())
                 .mainP(member.getMainPosition())
                 .subP(member.getSubPosition())
+                .isAgree(member.getIsAgree())
+                .isBlind(member.getBlind())
+                .winrate(member.getWinRate())
+                .loginType(String.valueOf(member.getLoginType()))
                 .updatedAt(String.valueOf(member.getUpdatedAt()))
                 .gameStyleResponseDTOList(gameStyleResponseDTOList)
                 .championResponseDTOList(championResponseDTOList)
                 .build();
 
     }
-    
+
     public static MemberResponse.friendInfoDTO toFriendInfoDto(Friend friend) {
         return MemberResponse.friendInfoDTO.builder()
                 .memberId(friend.getToMember().getId())

@@ -81,6 +81,7 @@ public class AuthService {
                 .profileImage(randomProfileImage)
                 .blind(false)
                 .mike(false)
+                .mannerLevel(1)
                 .isAgree(isAgree)
                 .build();
 
