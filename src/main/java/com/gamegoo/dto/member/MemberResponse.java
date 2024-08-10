@@ -89,7 +89,10 @@ public class MemberResponse {
         String tag;
         Tier tier;
         String rank;
+        Integer manner;
         String updatedAt;
+        Integer mainP;
+        Integer subP;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
         List<ChampionResponseDTO> championResponseDTOList;
     }

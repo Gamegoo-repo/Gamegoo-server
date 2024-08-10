@@ -37,6 +37,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isAgree = createBoolean("isAgree");
+
     public final EnumPath<LoginType> loginType = createEnum("loginType", LoginType.class);
 
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
