@@ -27,7 +27,6 @@ public class MannerResponse {
 
     @Getter
     @Builder
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerKeywordResponseDTO{
@@ -36,7 +35,6 @@ public class MannerResponse {
 
     @Getter
     @Builder
-    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class badMannerKeywordResponseDTO{
