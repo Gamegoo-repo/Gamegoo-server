@@ -9,6 +9,7 @@ import com.gamegoo.domain.board.BoardGameStyle;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
@@ -239,7 +240,7 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean mike, int pageIdx) {
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, Tier tier, Integer mainPosition, Boolean mike, int pageIdx) {
 
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
