@@ -42,6 +42,7 @@ public class MemberResponse {
         String accessToken;
         String refreshToken;
         String name;
+        Integer profileImage;
 
     }
 
@@ -87,7 +88,7 @@ public class MemberResponse {
         String gameName;
         String tag;
         Tier tier;
-        String rank;
+        Integer rank;
         String updatedAt;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
         List<ChampionResponseDTO> championResponseDTOList;
