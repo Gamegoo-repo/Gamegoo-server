@@ -41,7 +41,8 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final BooleanPath mike = createBoolean("mike");
 
-    public final StringPath rank = createString("rank");
+    public final NumberPath<Integer> rank = createNumber("rank", Integer.class);
+
 
     public final EnumPath<MatchingStatus> status = createEnum("status", MatchingStatus.class);
 

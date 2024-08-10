@@ -78,8 +78,8 @@ public class ProfileController {
 
     }
 
-    @Operation(summary = "jwt 토큰이 필요한 회원 조회 API 입니다.", description = "API for looking up member with jwt")
-    @GetMapping("/profile/jwt")
+    @Operation(summary = "내 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member with jwt")
+    @GetMapping("/profile")
     public ApiResponse<MemberResponse.myProfileMemberDTO> getMemberJWT() {
         Long memberId = JWTUtil.getCurrentUserId();
 
@@ -88,8 +88,8 @@ public class ProfileController {
         return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
     }
 
-    @Operation(summary = "회원 조회 API 입니다.", description = "API for looking up member")
-    @GetMapping("/profile")
+    @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 X)", description = "API for looking up member")
+    @GetMapping("/profile/other")
     public ApiResponse<MemberResponse.myProfileMemberDTO> getMember(@RequestParam("id") Long memberId) {
         Member myProfile = profileService.findMember(memberId);
 
