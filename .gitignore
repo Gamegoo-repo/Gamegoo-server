@@ -21,6 +21,7 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+!**/src/main/generated/
 
 ### IntelliJ IDEA ###
 .idea
@@ -43,3 +44,4 @@ out/
 
 ### SSH ###
 gamegookey.pem
+
