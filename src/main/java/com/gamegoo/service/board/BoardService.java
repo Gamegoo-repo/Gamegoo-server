@@ -11,6 +11,7 @@ import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
+import com.gamegoo.dto.member.RiotResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
@@ -298,6 +299,7 @@ public class BoardService {
                 .mainPosition(board.getMainPosition())
                 .subPosition(board.getSubPosition())
                 .wantPosition(board.getWantPosition())
+                .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
                 .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
                 .contents(board.getContent())
@@ -331,6 +333,7 @@ public class BoardService {
                 .mainPosition(board.getMainPosition())
                 .subPosition(board.getSubPosition())
                 .wantPosition(board.getWantPosition())
+                .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
                 .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
                 .contents(board.getContent())
