@@ -32,6 +32,7 @@ public class MannerService {
     private final MannerRatingKeywordRepository mannerRatingKeywordRepository;
     private final MannerKeywordRepository mannerKeywordRepository;
 
+    // 매너평가 등록
     public MannerRating insertManner(MannerRequest.mannerInsertDTO request, Long memberId) {
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -84,9 +85,23 @@ public class MannerService {
             mannerRatingKeyword.setMannerRating(saveManner);
             mannerRatingKeywordRepository.save(mannerRatingKeyword);
         });
+
+        // 매너점수 산정.
+        int mannerScore = updateMannerScore(targetMember);
+
+        // 매너레벨 결정.
+        int mannerLevel = mannerLevel(mannerScore);
+
+        // 매너레벨 반영.
+        targetMember.setMannerLevel(mannerLevel);
+
+        // db 저장.
+        memberRepository.save(targetMember);
+
         return saveManner;
     }
 
+    // 비매너평가 등록
     public MannerRating insertBadManner(MannerRequest.mannerInsertDTO request, Long memberId) {
 
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -139,6 +154,19 @@ public class MannerService {
             mannerRatingKeyword.setMannerRating(saveManner);
             mannerRatingKeywordRepository.save(mannerRatingKeyword);
         });
+
+        // 매너점수 산정.
+        int mannerScore = updateMannerScore(targetMember);
+
+        // 매너레벨 결정.
+        int mannerLevel = mannerLevel(mannerScore);
+
+        // 매너레벨 반영.
+        targetMember.setMannerLevel(mannerLevel);
+
+        // db 저장.
+        memberRepository.save(targetMember);
+
         return saveManner;
     }
 
@@ -147,6 +175,8 @@ public class MannerService {
     public MannerRating update(MannerRequest.mannerUpdateDTO request, Long memberId, Long mannerId) {
 
         MannerRating mannerRating = mannerRatingRepository.findById(mannerId).orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_NOT_FOUND));
+
+        Member targetMember = memberRepository.findById(mannerRating.getToMember().getId()).orElseThrow(() -> new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
 
         // 매너평가 작성자가 맞는지 검증.
         if (!mannerRating.getFromMember().getId().equals(memberId)) {
@@ -201,6 +231,19 @@ public class MannerService {
                     mannerRatingKeyword.setMannerKeyword(mannerKeyword);
                 }
             }
+
+            // 매너점수 산정.
+            int mannerScore = updateMannerScore(targetMember);
+
+            // 매너레벨 결정.
+            int mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 반영.
+            targetMember.setMannerLevel(mannerLevel);
+
+            // db 저장.
+            memberRepository.save(targetMember);
+
             return mannerRatingRepository.save(mannerRating);
         }
 
@@ -252,9 +295,78 @@ public class MannerService {
                     mannerRatingKeyword.setMannerKeyword(mannerKeyword);
                 }
             }
+
+            // 매너점수 산정.
+            int mannerScore = updateMannerScore(targetMember);
+
+            // 매너레벨 결정.
+            int mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 반영.
+            targetMember.setMannerLevel(mannerLevel);
+
+            // db 저장.
+            memberRepository.save(targetMember);
+
             return mannerRatingRepository.save(mannerRating);
         }
+    }
 
+    // 매너점수를 산정하고 업데이트.
+    public int updateMannerScore(Member targetMember){
+
+        // 매너평가 ID 조회
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
+
+        int totalCount;
+
+        // 매너 평가 + 비매너 평가를 처음 받은 회원
+        if (mannerRatings.size()==1){
+            if (mannerRatings.get(0).getIsPositive()) {
+                totalCount = mannerRatings.get(0).getMannerRatingKeywordList().stream()
+                        .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                        .collect(Collectors.toList()).size();
+            } else {
+                totalCount = (mannerRatings.get(0).getMannerRatingKeywordList().stream()
+                        .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                        .collect(Collectors.toList()).size())*-2;
+            }
+        } else {
+            List<Long> positiveMannerKeywordIds = mannerRatings.stream()
+                    .filter(MannerRating::getIsPositive)
+                    .flatMap(mannerRating -> mannerRating.getMannerRatingKeywordList().stream())
+                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                    .collect(Collectors.toList());
+
+            int positiveCount = positiveMannerKeywordIds.size();
+
+            List<Long> negativeMannerKeywordIds = mannerRatings.stream()
+                    .filter(mannerRating -> !mannerRating.getIsPositive())
+                    .flatMap(mannerRating -> mannerRating.getMannerRatingKeywordList().stream())
+                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                    .collect(Collectors.toList());
+
+            int negativeCount = negativeMannerKeywordIds.size();
+
+            totalCount = positiveCount + (negativeCount*-2);
+        }
+
+        return totalCount;
+    }
+
+    // 매너레벨 결정
+    public int mannerLevel(int mannerCount){
+        if (mannerCount < 10) {
+            return 1;
+        } else if (mannerCount < 20) {
+            return 2;
+        } else if (mannerCount < 30) {
+            return 3;
+        } else if (mannerCount < 40) {
+            return 4;
+        } else {
+            return 5;
+        }
     }
 
     // 매너평가 조회
