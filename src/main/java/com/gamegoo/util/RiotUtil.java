@@ -168,13 +168,14 @@ public class RiotUtil {
             if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
                 int wins = entry.getWins();
                 int losses = entry.getLosses();
+                int gameCount = wins + losses;
                 double winrate = (double) wins / (wins + losses);
                 winrate = Math.round(winrate * 1000) / 10.0;
                 Tier tier = Tier.valueOf(entry.getTier().toUpperCase());
                 Integer rank = romanToIntMap.get(entry.getRank());
 
                 // DB에 저장
-                member.updateRiotDetails(tier, rank, winrate);
+                member.updateRiotDetails(tier, rank, winrate, gameCount);
                 break;
             }
         }

@@ -76,6 +76,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "mike")
     private Boolean mike = false;
 
+    @Column(name = "game_count")
+    private Integer gameCount;
+
     @Column(name = "is_agree")
     private Boolean isAgree;
 
@@ -126,10 +129,12 @@ public class Member extends BaseDateTimeEntity {
         this.memberChampionList = new ArrayList<>();
     }
 
-    public void updateRiotDetails(Tier tier, Integer rank, Double winRate) {
+    public void updateRiotDetails(Tier tier, Integer rank, Double winRate, Integer gameCount) {
+
         this.tier = tier;
         this.rank = rank;
         this.winRate = winRate;
+        this.gameCount = gameCount;
     }
 
     public void updateRiotBasic(String gameName, String tag) {
