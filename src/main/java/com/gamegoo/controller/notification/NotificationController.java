@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,5 +48,20 @@ public class NotificationController {
             NotificationConverter.toCursorNotificationListDTO(notifications));
     }
 
+    @Operation(summary = "알림 전체 목록 조회 API", description = "알림 전체보기 화면에서 알림 목록을 조회하는 API 입니다.")
+    @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
+    @GetMapping("/total")
+    public ApiResponse<NotificationResponse.pageNotificationListDTO> getTotalNotificationList(
+        @RequestParam(name = "page") Integer page
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        Page<Notification> notifications = notificationService.getNotificationListByPage(
+            memberId, page - 1);
+
+        return ApiResponse.onSuccess(
+            NotificationConverter.toPageNotificationListDTO(notifications)
+        );
+    }
 
 }
