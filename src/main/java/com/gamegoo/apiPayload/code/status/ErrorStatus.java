@@ -139,6 +139,7 @@ public enum ErrorStatus implements BaseErrorCode {
     NOTIFICATION_METHOD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "NOTI402", "알림 생성 메소드 호출이 잘못되었습니다."),
     INVALID_NOTIFICATION_TYPE(HttpStatus.BAD_REQUEST, "NOTI403",
         "잘못된 알림 조회 타입입니다. general과 friend 중 하나를 입력하세요."),
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI404", "해당 알림 내역을 찾을 수 없습니다."),
 
     // SOCKET 서버 API 호출 에러
     SOCKET_API_RESPONSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SOCKET501",

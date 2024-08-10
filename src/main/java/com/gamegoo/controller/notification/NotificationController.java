@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.NotificationConverter;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.dto.notification.NotificationResponse;
+import com.gamegoo.dto.notification.NotificationResponse.notificationReadDTO;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +65,24 @@ public class NotificationController {
         return ApiResponse.onSuccess(
             NotificationConverter.toPageNotificationListDTO(notifications)
         );
+    }
+
+    @Operation(summary = "알림 읽음 처리 API", description = "특정 알림을 읽음 처리하는 API 입니다.")
+    @Parameter(name = "notificationId", description = "읽음 처리할 알림의 id 입니다.")
+    @PatchMapping("/{notificationId}")
+    public ApiResponse<NotificationResponse.notificationReadDTO> getTotalNotificationList(
+        @PathVariable(name = "notificationId") Long notificationId
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        Notification notification = notificationService.readNotification(memberId, notificationId);
+        
+        NotificationResponse.notificationReadDTO result = notificationReadDTO.builder()
+            .notificationId(notification.getId())
+            .message("알림 읽음 처리 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
     }
 
 }

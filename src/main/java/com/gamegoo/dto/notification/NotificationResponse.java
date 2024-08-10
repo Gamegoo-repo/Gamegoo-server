@@ -49,4 +49,14 @@ public class NotificationResponse {
         LocalDateTime createdAt;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class notificationReadDTO {
+
+        Long notificationId;
+        String message;
+    }
+
 }
