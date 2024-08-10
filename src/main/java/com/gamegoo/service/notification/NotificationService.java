@@ -9,10 +9,10 @@ import com.gamegoo.domain.notification.NotificationType;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.repository.notification.NotificationRepository;
 import com.gamegoo.repository.notification.NotificationTypeRepository;
-
+import com.gamegoo.service.member.ProfileService;
 import java.util.Random;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +23,7 @@ public class NotificationService {
 
     private final NotificationTypeRepository notificationTypeRepository;
     private final NotificationRepository notificationRepository;
+    private final ProfileService profileService;
 
     /**
      * 새로운 알림 생성 및 저장 메소드
@@ -34,11 +35,11 @@ public class NotificationService {
      * @return
      */
     public Notification createNotification(NotificationTypeTitle notificationTypeTitle,
-                                           String content, Long sourceId, Member member) {
+        String content, Long sourceId, Member member) {
 
         NotificationType notificationType = notificationTypeRepository.findNotificationTypeByTitle(
-                        notificationTypeTitle)
-                .orElseThrow(() -> new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND));
+                notificationTypeTitle)
+            .orElseThrow(() -> new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND));
 
         switch (notificationTypeTitle) {
             case FRIEND_REQUEST_SEND:
@@ -48,11 +49,11 @@ public class NotificationService {
                     throw new NotificationHandler(ErrorStatus.NOTIFICATION_METHOD_BAD_REQUEST);
                 }
                 return createFriendRequestReceivedNotification(notificationType, content, sourceId,
-                        member);
+                    member);
             case FRIEND_REQUEST_ACCEPTED:
             case FRIEND_REQUEST_REJECTED:
                 return createFriendRequestAcceptedAndRejectedNotification(notificationType, content,
-                        member);
+                    member);
             case MANNER_LEVEL_UP:
             case MANNER_LEVEL_DOWN:
                 return createMannerLevelUpDownNotification(notificationType, content, member);
@@ -71,6 +72,26 @@ public class NotificationService {
     }
 
     /**
+     * 알림 목록 조회, 커서 기반 페이징
+     *
+     * @param memberId
+     * @param type
+     * @param cursor
+     * @return
+     */
+    public Slice<Notification> getNotificationListByCursor(Long memberId,
+        String type, Long cursor) {
+        Member member = profileService.findMember(memberId);
+
+        if (!"general".equals(type) && !"friend".equals(type)) {
+            throw new NotificationHandler(ErrorStatus.INVALID_NOTIFICATION_TYPE);
+        }
+
+        return notificationRepository.findNotificationsByCursorAndType(member.getId(), type,
+            cursor);
+    }
+
+    /**
      * 친구 요청 전송됨 알림 생성
      *
      * @param notificationType
@@ -79,13 +100,13 @@ public class NotificationService {
      * @return
      */
     private Notification createFriendRequestSendNotification(
-            NotificationType notificationType,
-            String content, Member member) {
+        NotificationType notificationType,
+        String content, Member member) {
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(content + notificationType.getContent())
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(content + notificationType.getContent())
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
@@ -101,15 +122,15 @@ public class NotificationService {
      * @return
      */
     private Notification createFriendRequestReceivedNotification(
-            NotificationType notificationType,
-            String content, Long sourceId, Member member
+        NotificationType notificationType,
+        String content, Long sourceId, Member member
     ) {
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(content + notificationType.getContent())
-                .sourceId(sourceId)
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(content + notificationType.getContent())
+            .sourceId(sourceId)
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
@@ -124,14 +145,14 @@ public class NotificationService {
      * @return
      */
     private Notification createFriendRequestAcceptedAndRejectedNotification(
-            NotificationType notificationType,
-            String content, Member member
+        NotificationType notificationType,
+        String content, Member member
     ) {
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(content + notificationType.getContent())
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(content + notificationType.getContent())
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
@@ -146,13 +167,13 @@ public class NotificationService {
      * @return
      */
     private Notification createMannerLevelUpDownNotification(NotificationType notificationType,
-                                                             String content, Member member) {
+        String content, Member member) {
         String notificationContent = notificationType.getContent().replace("n", content);
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(notificationContent)
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(notificationContent)
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
@@ -167,13 +188,13 @@ public class NotificationService {
      * @return
      */
     private Notification createMannerKeywordRatedNotification(NotificationType notificationType,
-                                                              String content, Member member) {
+        String content, Member member) {
         String notificationContent = notificationType.getContent().replace("n", content);
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(notificationContent)
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(notificationContent)
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
@@ -188,12 +209,12 @@ public class NotificationService {
      * @return
      */
     private Notification createTestNotification(NotificationType notificationType, String content,
-                                                Member member) {
+        Member member) {
         Notification notification = Notification.builder()
-                .notificationType(notificationType)
-                .content(notificationType.getContent() + content)
-                .isRead(false)
-                .build();
+            .notificationType(notificationType)
+            .content(notificationType.getContent() + content)
+            .isRead(false)
+            .build();
         notification.setMember(member);
 
         return notificationRepository.save(notification);
