@@ -88,7 +88,7 @@ public class MemberResponse {
         String gameName;
         String tag;
         Tier tier;
-        String rank;
+        Integer rank;
         Integer manner;
         String updatedAt;
         Integer mainP;
