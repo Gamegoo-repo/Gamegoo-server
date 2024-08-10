@@ -143,6 +143,20 @@ public class NotificationService {
     }
 
     /**
+     * 안읽은 알림 개수 count
+     *
+     * @param memberId
+     * @return
+     */
+    public long countUnreadNotification(Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        return member.getNotificationList().stream()
+            .filter(notification -> !notification.isRead())
+            .count();
+    }
+
+    /**
      * 친구 요청 전송됨 알림 생성
      *
      * @param notificationType
