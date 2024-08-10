@@ -301,7 +301,7 @@ public class BoardService {
                 .wantPosition(board.getWantPosition())
                 .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
 
@@ -335,7 +335,7 @@ public class BoardService {
                 .wantPosition(board.getWantPosition())
                 .recentGameCount(poster.getGameCount())
                 .winRate(poster.getWinRate())
-                .gameStyles(board.getBoardGameStyles().stream().map(BoardGameStyle::getId).collect(Collectors.toList()))
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
     }
