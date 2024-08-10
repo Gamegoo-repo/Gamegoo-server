@@ -25,6 +25,20 @@ public class NotificationResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class pageNotificationListDTO {
+
+        List<notificationDTO> notificationDTOList;
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class notificationDTO {
 
         Long notificationId;

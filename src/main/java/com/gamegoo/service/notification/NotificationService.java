@@ -3,6 +3,7 @@ package com.gamegoo.service.notification;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.NotificationHandler;
+import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.notification.NotificationType;
@@ -12,7 +13,10 @@ import com.gamegoo.repository.notification.NotificationTypeRepository;
 import com.gamegoo.service.member.ProfileService;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,8 @@ public class NotificationService {
     private final NotificationTypeRepository notificationTypeRepository;
     private final NotificationRepository notificationRepository;
     private final ProfileService profileService;
+
+    private static final int PAGE_SIZE = 5;
 
     /**
      * 새로운 알림 생성 및 저장 메소드
@@ -89,6 +95,27 @@ public class NotificationService {
 
         return notificationRepository.findNotificationsByCursorAndType(member.getId(), type,
             cursor);
+    }
+
+    /**
+     * 알림 목록 조회, 페이지 번호 기반 페이징
+     *
+     * @param memberId
+     * @param pageIdx
+     * @return
+     */
+    public Page<Notification> getNotificationListByPage(Long memberId,
+        Integer pageIdx) {
+        Member member = profileService.findMember(memberId);
+
+        if (pageIdx < 0) {
+            throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
+
+        PageRequest pageRequest = PageRequest.of(pageIdx, PAGE_SIZE,
+            Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return notificationRepository.findNotificationsByMember(member, pageRequest);
     }
 
     /**

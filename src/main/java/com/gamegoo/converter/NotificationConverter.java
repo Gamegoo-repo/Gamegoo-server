@@ -5,6 +5,7 @@ import com.gamegoo.dto.notification.NotificationResponse;
 import com.gamegoo.dto.notification.NotificationResponse.notificationDTO;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 
 public class NotificationConverter {
@@ -23,6 +24,21 @@ public class NotificationConverter {
             .build();
     }
 
+    public static NotificationResponse.pageNotificationListDTO toPageNotificationListDTO(
+        Page<Notification> notifications) {
+        List<notificationDTO> notificationDTOList = notifications.stream()
+            .map(NotificationConverter::toNotificationDTO).collect(Collectors.toList());
+
+        return NotificationResponse.pageNotificationListDTO.builder()
+            .notificationDTOList(notificationDTOList)
+            .listSize(notificationDTOList.size())
+            .totalPage(notifications.getTotalPages())
+            .totalElements(notifications.getTotalElements())
+            .isFirst(notifications.isFirst())
+            .isLast(notifications.isLast())
+            .build();
+    }
+
     public static NotificationResponse.notificationDTO toNotificationDTO(
         Notification notification) {
 
@@ -38,7 +54,7 @@ public class NotificationConverter {
 
             pageUrl = urlBuilder.toString();
         }
-        
+
         return NotificationResponse.notificationDTO.builder()
             .notificationId(notification.getId())
             .notificationType(notification.getNotificationType().getId().intValue())
