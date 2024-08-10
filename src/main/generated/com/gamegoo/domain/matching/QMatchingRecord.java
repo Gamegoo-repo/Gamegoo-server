@@ -43,6 +43,7 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final NumberPath<Integer> rank = createNumber("rank", Integer.class);
 
+
     public final EnumPath<MatchingStatus> status = createEnum("status", MatchingStatus.class);
 
     public final NumberPath<Integer> subPosition = createNumber("subPosition", Integer.class);
