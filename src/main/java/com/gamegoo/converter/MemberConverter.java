@@ -1,13 +1,12 @@
 package com.gamegoo.converter;
 
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.friend.Friend;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
 
 public class MemberConverter {
 
@@ -65,6 +64,13 @@ public class MemberConverter {
                 .tier(member.getTier())
                 .rank(member.getRank())
                 .profileImg(member.getProfileImage())
+                .manner(member.getMannerLevel())
+                .mainP(member.getMainPosition())
+                .subP(member.getSubPosition())
+                .isAgree(member.getIsAgree())
+                .isBlind(member.getBlind())
+                .winrate(member.getWinRate())
+                .loginType(String.valueOf(member.getLoginType()))
                 .updatedAt(String.valueOf(member.getUpdatedAt()))
                 .gameStyleResponseDTOList(gameStyleResponseDTOList)
                 .championResponseDTOList(championResponseDTOList)
