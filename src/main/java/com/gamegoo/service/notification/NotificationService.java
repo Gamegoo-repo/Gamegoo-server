@@ -119,6 +119,30 @@ public class NotificationService {
     }
 
     /**
+     * 특정 알림 읽음 상태로 변경
+     *
+     * @param memberId
+     * @param notificationId
+     * @return
+     */
+    public Notification readNotification(Long memberId, Long notificationId) {
+        Member member = profileService.findMember(memberId);
+
+        // 알림 엔티티 조회 및 검증
+        Notification notification = notificationRepository.findById(notificationId)
+            .orElseThrow(() -> new NotificationHandler(ErrorStatus.NOTIFICATION_NOT_FOUND));
+
+        // 해당 알림이 회원의 것이 아닌 경우
+        if (!notification.getMember().equals(member)) {
+            throw new NotificationHandler(ErrorStatus.NOTIFICATION_NOT_FOUND);
+        }
+
+        notification.updateIsRead(true);
+
+        return notification;
+    }
+
+    /**
      * 친구 요청 전송됨 알림 생성
      *
      * @param notificationType
