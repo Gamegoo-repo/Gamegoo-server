@@ -2,9 +2,9 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -35,7 +35,13 @@ public class ProfileService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-
+        /*
+        1. 전화 시간 안지킴. 11시에 보는거였는데 20분 30분에 만남. 나는 11시부터 너랑 통화할거 생각해서 일 끝내고 루틴 마무리해서 기다리고있음.
+        2. 원래는 본인이 뭐 하면 뭐한다고 얘기하는데 요즘 그런거 없어짐
+        3. 난 평소에 너 뭐하는지 궁금한데 너는 나만큼 내 삶에 대해서 궁금해주지 않는 것 같음.
+        4. 나를 만나는 날이 아니면 너의 일상에서 나에게 할당된 시간이 짧다고 느껴짐
+        5. 일하는건 이해되는데 배드민턴 칠 때 뭐하느라 그렇게 연락 많이 못보는지 궁금함. 일할 때 자주 연락해주는건 고마움. 근데 도대체 일끝났는데 왜 연락이 그렇게 안되는건지 살짝 설명이 필요함. 3시간동안 배드민턴한다고 연락을 안보는게 이해가 안됨. 중간중간 내 생각이 안나는지 궁금함.
+         */
         // 요청으로 온 gamestyleId로 GameStyle 엔티티 리스트를 생성 및 gamestyleId에 해당하는 gamestyle이 db에 존재하는지 검증
         List<GameStyle> requestGameStyleList = gameStyleIdList.stream()
                 .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
