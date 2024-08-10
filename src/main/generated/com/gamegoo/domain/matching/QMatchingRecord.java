@@ -1,4 +1,4 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.matching;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
-    private static final long serialVersionUID = 75682738L;
+    private static final long serialVersionUID = 1978268795L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
@@ -33,19 +33,21 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
 
-    public final StringPath matchingType = createString("matchingType");
+    public final NumberPath<Integer> mannerLevel = createNumber("mannerLevel", Integer.class);
 
-    public final QMember member;
+    public final EnumPath<MatchingType> matchingType = createEnum("matchingType", MatchingType.class);
+
+    public final com.gamegoo.domain.member.QMember member;
 
     public final BooleanPath mike = createBoolean("mike");
 
     public final StringPath rank = createString("rank");
 
-    public final StringPath status = createString("status");
+    public final EnumPath<MatchingStatus> status = createEnum("status", MatchingStatus.class);
 
     public final NumberPath<Integer> subPosition = createNumber("subPosition", Integer.class);
 
-    public final StringPath tier = createString("tier");
+    public final EnumPath<com.gamegoo.domain.member.Tier> tier = createEnum("tier", com.gamegoo.domain.member.Tier.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -72,7 +74,7 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public QMatchingRecord(Class<? extends MatchingRecord> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
     }
 
 }

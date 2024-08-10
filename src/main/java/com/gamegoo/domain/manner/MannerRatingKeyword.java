@@ -30,7 +30,18 @@ public class MannerRatingKeyword extends BaseDateTimeEntity {
             this.mannerRating.getMannerRatingKeywordList().remove(this);
         }
         this.mannerRating = mannerRating;
-        this.mannerRating.getMannerRatingKeywordList().add(this);
+        if(mannerRating!=null) {
+            this.mannerRating.getMannerRatingKeywordList().add(this);
+        }
+    }
+
+    public MannerRatingKeyword(MannerRating mannerRating, MannerKeyword mannerKeyword){
+        this.mannerRating = mannerRating;
+        this.mannerKeyword = mannerKeyword;
+    }
+
+    public void setMannerKeyword(MannerKeyword mannerKeyword) {
+        this.mannerKeyword = mannerKeyword;
     }
 
 }

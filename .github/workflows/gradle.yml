@@ -32,6 +32,7 @@ jobs:
           spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.password: ${{ secrets.GMAIL_PWD }}
           spring.riot.api.key: ${{ secrets.RIOT_API }}
+          socket.server.url: https://socket.gamegoo.co.kr
 
       # Spring Boot 어플리케이션 Build (4)
       - name: Spring Boot Build
@@ -84,6 +85,8 @@ jobs:
             sudo docker pull rimi3226/gamegoo:${{ github.sha }}
             sudo docker stop gamegoo_api
             sudo docker rm gamegoo_api
+            sudo docker rm $(docker ps -a -q -f status=exited)
+            sudo docker image prune -a
             sudo docker run -it -d -p 8080:8080 --name gamegoo_api \
               -e JAVA_OPTS="-Duser.timezone=Asia/Seoul" \
               rimi3226/gamegoo:${{ github.sha }}

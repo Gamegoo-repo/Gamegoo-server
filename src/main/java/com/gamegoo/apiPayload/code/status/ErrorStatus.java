@@ -48,7 +48,9 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 매칭 관련 에러
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
-        "status는 SUCCESS, QUIT 둘 중 하나로만 변경이 가능합니다."),
+        "status는 SUCCESS, FAIL 둘 중 하나로만 변경이 가능합니다."),
+    MATHCING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
+        "matchingType은 BASIC, PRECISE 둘 중 하나로만 변경이 가능합니다"),
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "해당 사용자의 매칭 정보가 없습니다."),
 
 
@@ -92,10 +94,14 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 매너평가 관련 에러
     MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
+    BAD_MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "비매너 평가 대상 회원을 찾을 수 없습니다."),
+    MANNER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "MANNER401", "매너평가 작성자만 수정 가능합니다."),
     MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401", "매너 키워드 유형은 1~6만 가능합니다."),
     BAD_MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401",
         "비매너 키워드 유형은 7~12만 가능합니다."),
     MANNER_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너 키워드를 찾을 수 없습니다."),
+    MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너평가를 찾을 수 없습니다."),
+    BAD_MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 비매너평가를 찾을 수 없습니다."),
     MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
 
@@ -119,12 +125,24 @@ public enum ErrorStatus implements BaseErrorCode {
         "내가 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
     BLOCKED_BY_FRIEND_TARGET(HttpStatus.BAD_REQUEST, "FRIEND403",
         "나를 차단한 회원입니다. 친구 요청을 보낼 수 없습니다."),
+    MY_PENDING_FRIEND_REQUEST_EXIST(HttpStatus.BAD_REQUEST, "FRIEND404",
+        "해당 회원에게 보낸 수락 대기 중인 친구 요청이 존재합니다. 친구 요청을 보낼 수 없습니다."),
+    TARGET_PENDING_FRIEND_REQUEST_EXIST(HttpStatus.BAD_REQUEST, "FRIEND405",
+        "해당 회원이 나에게 보낸 친구 요청이 수락 대기 중 입니다. 해당 요청을 수락 해주세요."),
+    ALREADY_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND406",
+        "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
+    PENDING_FRIEND_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "FRIEND407", "수락/거절할 친구 요청이 존재하지 않습니다."),
+    MEMBERS_NOT_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND408", "두 회원은 친구 관계가 아닙니다."),
+    ALREADY_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND409", "이미 즐겨찾기 되어 있는 친구입니다."),
+    NOT_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND410", "즐겨찾기 되어 있는 친구가 아닙니다."),
 
     // 알림 관련 에러
     NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "잘못된 알림 타입입니다."),
     NOTIFICATION_METHOD_BAD_REQUEST(HttpStatus.BAD_REQUEST, "NOTI402", "알림 생성 메소드 호출이 잘못되었습니다."),
 
-    ;
+    // SOCKET 서버 API 호출 에러
+    SOCKET_API_RESPONSE_ERR(HttpStatus.INTERNAL_SERVER_ERROR, "SOCKET501",
+        "socket서버 api 요청에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

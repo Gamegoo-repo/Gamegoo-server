@@ -2,8 +2,8 @@ package com.gamegoo.controller.member;
 
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
-import com.gamegoo.domain.Member;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.ProfileService;
@@ -78,11 +78,19 @@ public class ProfileController {
 
     }
 
-    @Operation(summary = "회원 조회하는 API 입니다.", description = "API for looking up member")
-    @GetMapping("/profile")
-    public ApiResponse<MemberResponse.myProfileMemberDTO> getBlockList() {
+    @Operation(summary = "jwt 토큰이 필요한 회원 조회 API 입니다.", description = "API for looking up member with jwt")
+    @GetMapping("/profile/jwt")
+    public ApiResponse<MemberResponse.myProfileMemberDTO> getMemberJWT() {
         Long memberId = JWTUtil.getCurrentUserId();
 
+        Member myProfile = profileService.findMember(memberId);
+
+        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
+    }
+
+    @Operation(summary = "회원 조회 API 입니다.", description = "API for looking up member")
+    @GetMapping("/profile")
+    public ApiResponse<MemberResponse.myProfileMemberDTO> getMember(@RequestParam("id") Long memberId) {
         Member myProfile = profileService.findMember(memberId);
 
         return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));

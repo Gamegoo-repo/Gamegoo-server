@@ -31,13 +31,13 @@ public class QChat extends EntityPathBase<Chat> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final com.gamegoo.domain.QMember fromMember;
+    public final com.gamegoo.domain.member.QMember fromMember;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final NumberPath<Long> timestamp = createNumber("timestamp", Long.class);
 
-    public final com.gamegoo.domain.QMember toMember;
+    public final com.gamegoo.domain.member.QMember toMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -61,8 +61,8 @@ public class QChat extends EntityPathBase<Chat> {
     public QChat(Class<? extends Chat> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.chatroom = inits.isInitialized("chatroom") ? new QChatroom(forProperty("chatroom"), inits.get("chatroom")) : null;
-        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.QMember(forProperty("fromMember")) : null;
-        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.QMember(forProperty("toMember")) : null;
+        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.member.QMember(forProperty("fromMember")) : null;
+        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.member.QMember(forProperty("toMember")) : null;
     }
 
 }

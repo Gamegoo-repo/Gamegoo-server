@@ -2,7 +2,8 @@ package com.gamegoo.util;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.member.RiotResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +29,14 @@ public class RiotUtil {
     private static final String RIOT_LEAGUE_API_URL_TEMPLATE = "https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/%s?api_key=%s";
     private static final String RIOT_MATCH_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/%s/ids?start=0&count=%s&api_key=%s";
     private static final String RIOT_MATCH_INFO_API_URL_TEMPLATE = "https://asia.api.riotgames.com/lol/match/v5/matches/%s?api_key=%s";
+    private static final Map<String, Integer> romanToIntMap = new HashMap<>();
+
+    static {
+        romanToIntMap.put("I", 1);
+        romanToIntMap.put("II", 2);
+        romanToIntMap.put("III", 3);
+        romanToIntMap.put("IV", 4);
+    }
 
     @Autowired
     public RiotUtil(RestTemplate restTemplate) {
@@ -158,12 +168,14 @@ public class RiotUtil {
             if ("RANKED_SOLO_5x5".equals(entry.getQueueType())) {
                 int wins = entry.getWins();
                 int losses = entry.getLosses();
-                int gameCount = wins+losses;
+                int gameCount = wins + losses;
                 double winrate = (double) wins / (wins + losses);
                 winrate = Math.round(winrate * 1000) / 10.0;
+                Tier tier = Tier.valueOf(entry.getTier().toUpperCase());
+                Integer rank = romanToIntMap.get(entry.getRank());
 
                 // DB에 저장
-                member.updateRiotDetails(entry.getTier(), entry.getRank(), winrate, gameCount);
+                member.updateRiotDetails(tier, rank, winrate, gameCount);
                 break;
             }
         }

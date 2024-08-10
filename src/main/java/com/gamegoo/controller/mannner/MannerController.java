@@ -7,13 +7,11 @@ import com.gamegoo.dto.manner.MannerResponse;
 import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -68,6 +66,54 @@ public class MannerController {
                 .toMemberId(mannerrating.getToMember().getId())
                 .mannerRatingKeywordList(mannerRatingKeywordList)
                 .build();
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @PutMapping("/{mannerId}")
+    @Operation(summary = "매너 평가 수정 API",  description = "매너 평가를 수정하는 API 입니다.")
+    @Parameter(name = "mannerId", description = "수정할 매너평가 id 입니다.")
+    public ApiResponse<MannerResponse.mannerUpdateResponseDTO> mannerUpdate(
+            @PathVariable long mannerId,
+            @RequestBody MannerRequest.mannerUpdateDTO request
+    ){
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerRating updateMannerrating =  mannerService.update(request, memberId, mannerId);
+
+        List<Long> mannerRatingKeywords = updateMannerrating.getMannerRatingKeywordList().stream()
+                .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                .collect(Collectors.toList());
+
+        MannerResponse.mannerUpdateResponseDTO result = MannerResponse.mannerUpdateResponseDTO.builder()
+                .mannerId(updateMannerrating.getId())
+                .mannerRatingKeywordList(mannerRatingKeywords)
+                .build();
+
+        return ApiResponse.onSuccess(result);
+
+    }
+
+    @GetMapping("good/{memberId}")
+    @Operation(summary = "매너 평가 조회 API", description = "회원이 실시한 매너 평가를 조회하는 API 입니다.")
+    @Parameter(name = "memberId", description = "회원이 실시한 매너평가 대상의 id 입니다.")
+    public ApiResponse<MannerResponse.mannerKeywordResponseDTO> getMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.mannerKeywordResponseDTO result = mannerService.getMannerKeyword(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("bad/{memberId}")
+    @Operation(summary = "비매너 평가 조회 API", description = "회원이 실시한 비매너 평가를 조회하는 API 입니다.")
+    @Parameter(name = "memberId", description = "회원이 실시한 비매너평가 대상의 id 입니다.")
+    public ApiResponse<MannerResponse.badMannerKeywordResponseDTO> getBadMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.badMannerKeywordResponseDTO result = mannerService.getBadMannerKeyword(memberId, targetMemberId);
 
         return ApiResponse.onSuccess(result);
     }

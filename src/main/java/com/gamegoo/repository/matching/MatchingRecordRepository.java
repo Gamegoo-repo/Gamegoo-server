@@ -1,7 +1,7 @@
 package com.gamegoo.repository.matching;
 
-import com.gamegoo.domain.MatchingRecord;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.matching.MatchingRecord;
+import com.gamegoo.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
