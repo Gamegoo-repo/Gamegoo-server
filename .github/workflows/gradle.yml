@@ -32,6 +32,7 @@ jobs:
           spring.jwt.secret: ${{ secrets.JWT_SECRET }}
           spring.mail.password: ${{ secrets.GMAIL_PWD }}
           spring.riot.api.key: ${{ secrets.RIOT_API }}
+          socket.server.url: https://socket.gamegoo.co.kr
 
       # Spring Boot 어플리케이션 Build (4)
       - name: Spring Boot Build
