@@ -3,6 +3,7 @@ package com.gamegoo.controller.board;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.board.Board;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.service.board.BoardService;
@@ -116,7 +117,7 @@ public class BoardController {
     @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요. 페이지 당 20개의 게시물을 볼 수 있습니다.")
     public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx,
                                                                            @RequestParam(required = false) Integer mode,
-                                                                           @RequestParam(required = false) String tier,
+                                                                           @RequestParam(required = false) Tier tier,
                                                                            @RequestParam(required = false) Integer mainPosition,
                                                                            @RequestParam(required = false) Boolean mike) {
 

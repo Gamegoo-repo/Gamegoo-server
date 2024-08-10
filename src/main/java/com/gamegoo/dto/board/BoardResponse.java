@@ -112,7 +112,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Integer mannerLevel;
-        String tier;
+        Tier tier;
         Boolean mike;
         List<Long> championList;
         Integer gameMode;

@@ -1,6 +1,7 @@
 package com.gamegoo.repository.board;
 
 import com.gamegoo.domain.board.Board;
+import com.gamegoo.domain.member.Tier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
             "(:mike IS NULL OR b.mike = :mike)")
 
     Page<Board> findByFilters(@Param("mode") Integer mode,
-                              @Param("tier") String tier,
+                              @Param("tier") Tier tier,
                               @Param("mainPosition") Integer mainPosition,
                               @Param("mike") Boolean mike,
                               Pageable pageable);
