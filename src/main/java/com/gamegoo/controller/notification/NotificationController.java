@@ -76,7 +76,7 @@ public class NotificationController {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Notification notification = notificationService.readNotification(memberId, notificationId);
-        
+
         NotificationResponse.notificationReadDTO result = notificationReadDTO.builder()
             .notificationId(notification.getId())
             .message("알림 읽음 처리 성공")
@@ -84,5 +84,15 @@ public class NotificationController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @Operation(summary = "안읽은 알림 개수 조회 API", description = "해당 회원의 안읽은 알림의 개수를 조회하는 API 입니다.")
+    @GetMapping("/unread/count")
+    public ApiResponse<Long> getUnreadNotificationCount(
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(notificationService.countUnreadNotification(memberId));
+    }
+
 
 }
