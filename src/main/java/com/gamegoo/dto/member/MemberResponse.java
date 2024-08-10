@@ -93,6 +93,10 @@ public class MemberResponse {
         String updatedAt;
         Integer mainP;
         Integer subP;
+        Boolean isAgree;
+        Boolean isBlind;
+        String loginType;
+        Double winrate;
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
         List<ChampionResponseDTO> championResponseDTOList;
     }
