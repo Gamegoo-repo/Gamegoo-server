@@ -3,10 +3,7 @@ package com.gamegoo.dto.member;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.*;
 import java.util.List;
 
 public class MemberRequest {
@@ -51,6 +48,8 @@ public class MemberRequest {
         String gameName;
         @NotBlank(message = "tag 값은 비워둘 수 없습니다.")
         String tag;
+        @NotNull(message = "isAgree 값은 비워둘 수 없습니다. true/false 둘 중 하나를 반드시 포함해야합니다.")
+        Boolean isAgree;
 
     }
 

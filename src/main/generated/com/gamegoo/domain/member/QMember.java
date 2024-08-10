@@ -1,4 +1,4 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.member;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -16,7 +16,7 @@ import com.querydsl.core.types.dsl.PathInits;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QMember extends EntityPathBase<Member> {
 
-    private static final long serialVersionUID = -573681762L;
+    private static final long serialVersionUID = 321613610L;
 
     public static final QMember member = new QMember("member1");
 
@@ -24,7 +24,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final BooleanPath blind = createBoolean("blind");
 
-    public final ListPath<Block, QBlock> blockList = this.<Block, QBlock>createList("blockList", Block.class, QBlock.class, PathInits.DIRECT2);
+    public final ListPath<com.gamegoo.domain.Block, com.gamegoo.domain.QBlock> blockList = this.<com.gamegoo.domain.Block, com.gamegoo.domain.QBlock>createList("blockList", com.gamegoo.domain.Block.class, com.gamegoo.domain.QBlock.class, PathInits.DIRECT2);
 
     public final ListPath<com.gamegoo.domain.board.Board, com.gamegoo.domain.board.QBoard> boardList = this.<com.gamegoo.domain.board.Board, com.gamegoo.domain.board.QBoard>createList("boardList", com.gamegoo.domain.board.Board.class, com.gamegoo.domain.board.QBoard.class, PathInits.DIRECT2);
 
@@ -39,7 +39,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final EnumPath<com.gamegoo.domain.enums.LoginType> loginType = createEnum("loginType", com.gamegoo.domain.enums.LoginType.class);
+    public final EnumPath<LoginType> loginType = createEnum("loginType", LoginType.class);
 
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
 
@@ -71,7 +71,7 @@ public class QMember extends EntityPathBase<Member> {
 
     public final StringPath tag = createString("tag");
 
-    public final StringPath tier = createString("tier");
+    public final EnumPath<Tier> tier = createEnum("tier", Tier.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

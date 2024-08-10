@@ -1,6 +1,6 @@
 package com.gamegoo.security;
 
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

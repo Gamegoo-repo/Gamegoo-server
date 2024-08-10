@@ -2,7 +2,7 @@ package com.gamegoo.service.chat;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
@@ -12,9 +12,11 @@ import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.DatetimeUtil;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -54,37 +56,37 @@ public class ChatQueryService {
 
         // 현재 참여중인 memberChatroom을 각 memberChatroom에 속한 chat의 마지막 createdAt 기준 desc 정렬해 조회
         List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomOrderByLastChat(
-            member.getId());
+                member.getId());
 
         List<ChatResponse.ChatroomViewDTO> chatroomViewDtoList = activeMemberChatroom.stream()
-            .map(memberChatroom -> {
-                // 채팅 상대 회원 조회
-                Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
-                    memberChatroom.getChatroom().getId(), member.getId());
-                Chatroom chatroom = memberChatroom.getChatroom();
+                .map(memberChatroom -> {
+                    // 채팅 상대 회원 조회
+                    Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+                            memberChatroom.getChatroom().getId(), member.getId());
+                    Chatroom chatroom = memberChatroom.getChatroom();
 
-                // 가장 마지막 대화 조회
-                Optional<Chat> lastChat = chatRepository.findFirstByChatroomIdOrderByCreatedAtDesc(
-                    chatroom.getId());
+                    // 가장 마지막 대화 조회
+                    Optional<Chat> lastChat = chatRepository.findFirstByChatroomIdOrderByCreatedAtDesc(
+                            chatroom.getId());
 
-                // 내가 읽지 않은 메시지 개수 조회
-                Integer unReadCnt = chatRepository.countUnreadChats(
-                    chatroom.getId(), memberChatroom.getId());
+                    // 내가 읽지 않은 메시지 개수 조회
+                    Integer unReadCnt = chatRepository.countUnreadChats(
+                            chatroom.getId(), memberChatroom.getId());
 
-                return ChatResponse.ChatroomViewDTO.builder()
-                    .chatroomId(chatroom.getId())
-                    .uuid(chatroom.getUuid())
-                    .targetMemberImg(targetMember.getProfileImage())
-                    .targetMemberName(targetMember.getGameName())
-                    .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)
-                    .lastMsgAt(lastChat.isPresent() ? DatetimeUtil.toKSTString(
-                        lastChat.get().getCreatedAt())
-                        : DatetimeUtil.toKSTString(memberChatroom.getLastJoinDate()))
-                    .notReadMsgCnt(unReadCnt)
-                    .build();
+                    return ChatResponse.ChatroomViewDTO.builder()
+                            .chatroomId(chatroom.getId())
+                            .uuid(chatroom.getUuid())
+                            .targetMemberImg(targetMember.getProfileImage())
+                            .targetMemberName(targetMember.getGameName())
+                            .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)
+                            .lastMsgAt(lastChat.isPresent() ? DatetimeUtil.toKSTString(
+                                    lastChat.get().getCreatedAt())
+                                    : DatetimeUtil.toKSTString(memberChatroom.getLastJoinDate()))
+                            .notReadMsgCnt(unReadCnt)
+                            .build();
 
-            })
-            .collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
 
         return chatroomViewDtoList;
 
@@ -103,11 +105,11 @@ public class ChatQueryService {
 
         // chatroom 엔티티 조회 및 해당 회원의 채팅방이 맞는지 검증
         Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-                member.getId(), chatroom.getId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+                        member.getId(), chatroom.getId())
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
         // 해당 회원이 퇴장한 채팅방은 아닌지도 나중에 검증 추가하기
 
@@ -116,7 +118,7 @@ public class ChatQueryService {
         // requestParam으로 cursor가 넘어온 경우
         if (cursor != null) {
             return chatRepository.findChatsByCursor(cursor, chatroom.getId(),
-                memberChatroom.getId(), pageRequest);
+                    memberChatroom.getId(), pageRequest);
         } else { // cursor가 넘어오지 않은 경우 = 해당 chatroom의 가장 최근 chat을 조회하는 요청
             return chatRepository.findRecentChats(chatroom.getId(), memberChatroom.getId());
         }

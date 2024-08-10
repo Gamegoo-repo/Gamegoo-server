@@ -3,7 +3,7 @@ package com.gamegoo.controller;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.TempHandler;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.service.notification.NotificationService;
@@ -40,14 +40,14 @@ public class TestController {
     @GetMapping("/test/send/notifications/{times}")
     @Operation(summary = "테스트용 알림 생성 API 입니다.", description = "서버 테스트용 입니다!!")
     public ApiResponse<String> sendTestNotifications(
-        @PathVariable(name = "times") int times
+            @PathVariable(name = "times") int times
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
         Member member = profileService.findMember(memberId);
 
         for (int i = 0; i < times; i++) {
             notificationService.createNotification(NotificationTypeTitle.TEST_ALARM, null, null,
-                member);
+                    member);
         }
         return ApiResponse.onSuccess("테스트 알림 생성 성공");
     }

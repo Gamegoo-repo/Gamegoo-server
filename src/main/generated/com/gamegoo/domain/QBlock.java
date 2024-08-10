@@ -24,9 +24,9 @@ public class QBlock extends EntityPathBase<Block> {
 
     public final com.gamegoo.domain.common.QBaseDateTimeEntity _super = new com.gamegoo.domain.common.QBaseDateTimeEntity(this);
 
-    public final QMember blockedMember;
+    public final com.gamegoo.domain.member.QMember blockedMember;
 
-    public final QMember blockerMember;
+    public final com.gamegoo.domain.member.QMember blockerMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -54,8 +54,8 @@ public class QBlock extends EntityPathBase<Block> {
 
     public QBlock(Class<? extends Block> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.blockedMember = inits.isInitialized("blockedMember") ? new QMember(forProperty("blockedMember")) : null;
-        this.blockerMember = inits.isInitialized("blockerMember") ? new QMember(forProperty("blockerMember")) : null;
+        this.blockedMember = inits.isInitialized("blockedMember") ? new com.gamegoo.domain.member.QMember(forProperty("blockedMember")) : null;
+        this.blockerMember = inits.isInitialized("blockerMember") ? new com.gamegoo.domain.member.QMember(forProperty("blockerMember")) : null;
     }
 
 }

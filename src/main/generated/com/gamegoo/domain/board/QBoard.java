@@ -37,7 +37,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Integer> mainPosition = createNumber("mainPosition", Integer.class);
 
-    public final com.gamegoo.domain.QMember member;
+    public final com.gamegoo.domain.member.QMember member;
 
     public final BooleanPath mike = createBoolean("mike");
 
@@ -68,7 +68,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
     }
 
 }

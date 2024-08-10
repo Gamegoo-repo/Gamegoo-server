@@ -31,7 +31,7 @@ public class QMemberGameStyle extends EntityPathBase<MemberGameStyle> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final com.gamegoo.domain.QMember member;
+    public final com.gamegoo.domain.member.QMember member;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -55,7 +55,7 @@ public class QMemberGameStyle extends EntityPathBase<MemberGameStyle> {
     public QMemberGameStyle(Class<? extends MemberGameStyle> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.gameStyle = inits.isInitialized("gameStyle") ? new QGameStyle(forProperty("gameStyle")) : null;
-        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.QMember(forProperty("member")) : null;
+        this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
     }
 
 }

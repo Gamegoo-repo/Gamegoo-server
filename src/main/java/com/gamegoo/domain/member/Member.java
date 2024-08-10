@@ -1,10 +1,10 @@
-package com.gamegoo.domain;
+package com.gamegoo.domain.member;
 
+import com.gamegoo.domain.Block;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-import com.gamegoo.domain.enums.LoginType;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.manner.MannerRating;
 import com.gamegoo.domain.notification.Notification;
@@ -54,11 +54,12 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "tag", length = 100)
     private String tag;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tier")
-    private String tier;
+    private Tier tier;
 
     @Column(name = "rank")
-    private String rank;
+    private Integer rank;
 
     @Column(name = "winrate")
     private Double winRate;
@@ -77,6 +78,9 @@ public class Member extends BaseDateTimeEntity {
 
     @Column(name = "game_count")
     private Integer gameCount;
+
+    @Column(name = "is_agree")
+    private Boolean isAgree;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
@@ -125,7 +129,8 @@ public class Member extends BaseDateTimeEntity {
         this.memberChampionList = new ArrayList<>();
     }
 
-    public void updateRiotDetails(String tier, String rank, Double winRate, Integer gameCount) {
+    public void updateRiotDetails(Tier tier, Integer rank, Double winRate, Integer gameCount) {
+
         this.tier = tier;
         this.rank = rank;
         this.winRate = winRate;

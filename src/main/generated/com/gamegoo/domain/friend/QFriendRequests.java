@@ -27,13 +27,13 @@ public class QFriendRequests extends EntityPathBase<FriendRequests> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
 
-    public final com.gamegoo.domain.QMember fromMember;
+    public final com.gamegoo.domain.member.QMember fromMember;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final EnumPath<FriendRequestStatus> status = createEnum("status", FriendRequestStatus.class);
 
-    public final com.gamegoo.domain.QMember toMember;
+    public final com.gamegoo.domain.member.QMember toMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -56,8 +56,8 @@ public class QFriendRequests extends EntityPathBase<FriendRequests> {
 
     public QFriendRequests(Class<? extends FriendRequests> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.QMember(forProperty("fromMember")) : null;
-        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.QMember(forProperty("toMember")) : null;
+        this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.member.QMember(forProperty("fromMember")) : null;
+        this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.member.QMember(forProperty("toMember")) : null;
     }
 
 }

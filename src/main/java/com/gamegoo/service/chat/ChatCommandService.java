@@ -3,10 +3,10 @@ package com.gamegoo.service.chat;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
 import com.gamegoo.converter.ChatConverter;
-import com.gamegoo.domain.Member;
 import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.chat.ChatRequest;
 import com.gamegoo.dto.chat.ChatResponse;
 import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
@@ -14,7 +14,9 @@ import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.member.FriendService;
 import com.gamegoo.service.member.ProfileService;
+import com.gamegoo.service.socket.SocketService;
 import com.gamegoo.util.MemberUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -30,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ChatCommandService {
 
     private final ProfileService profileService;
+    private final FriendService friendService;
+    private final SocketService socketService;
     private final MemberRepository memberRepository;
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatroomRepository chatroomRepository;
@@ -88,7 +92,8 @@ public class ChatCommandService {
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(MemberUtils.isBlocked(targetMember, member))
+                .friend(friendService.isFriend(member, targetMember))
+                .blocked(MemberUtils.isBlocked(targetMember, member))
                 .chatMessageList(chatMessageListDTO)
                 .build();
         } else {
@@ -127,11 +132,13 @@ public class ChatCommandService {
             memberChatroomRepository.save(targetMemberChatroom);
 
             return ChatroomEnterDTO.builder()
+
                 .uuid(savedChatroom.getUuid())
                 .memberId(targetMember.getId())
                 .gameName(targetMember.getGameName())
                 .memberProfileImg(targetMember.getProfileImage())
-                .isBlocked(false)
+                .friend(friendService.isFriend(member, targetMember))
+                .blocked(false)
                 .chatMessageList(null)
                 .build();
         }
@@ -279,7 +286,8 @@ public class ChatCommandService {
             .memberId(targetMember.getId())
             .gameName(targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
-            .isBlocked(MemberUtils.isBlocked(targetMember, member))
+            .friend(friendService.isFriend(member, targetMember))
+            .blocked(MemberUtils.isBlocked(targetMember, member))
             .chatMessageList(chatMessageListDTO)
             .build();
     }
@@ -396,6 +404,10 @@ public class ChatCommandService {
             // lastJoinDate 업데이트
             memberChatroom.updateLastJoinDate(lastViewDate);
 
+            // lastJoinDate 업데이트로 인해 socket room join API 요청
+            socketService.joinSocketToChatroom(memberChatroom.getMember().getId(),
+                memberChatroom.getChatroom().getUuid());
+
         } else {
             // lastViewDate 업데이트
             memberChatroom.updateLastViewDate(lastViewDate);
@@ -411,6 +423,10 @@ public class ChatCommandService {
             targetMember.getId(), chatroom.getId()).get();
         if (targetMemberChatroom.getLastJoinDate() == null) {
             targetMemberChatroom.updateLastJoinDate(lastViewDate);
+
+            // lastJoinDate 업데이트로 인해 socket room join API 요청
+            socketService.joinSocketToChatroom(targetMember.getId(),
+                targetMemberChatroom.getChatroom().getUuid());
         }
     }
 

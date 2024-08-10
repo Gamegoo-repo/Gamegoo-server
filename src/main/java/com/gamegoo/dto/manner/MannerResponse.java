@@ -14,4 +14,32 @@ public class MannerResponse {
         Long toMemberId;
         List<Long> mannerRatingKeywordList;
     }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class mannerUpdateResponseDTO{
+        Long mannerId;
+        List<Long> mannerRatingKeywordList;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class mannerKeywordResponseDTO{
+        List<Long> mannerRatingKeywordList;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class badMannerKeywordResponseDTO{
+        List<Long> mannerRatingKeywordList;
+    }
 }

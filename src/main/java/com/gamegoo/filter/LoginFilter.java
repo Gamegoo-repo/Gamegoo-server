@@ -3,7 +3,7 @@ package com.gamegoo.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
-import com.gamegoo.domain.Member;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetails;
@@ -79,10 +79,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 해당 유저 이름 불러오기
         String gameuserName = member.getGameName();
+        Integer profileImage = member.getProfileImage();
 
         // Response body에 넣기
         MemberResponse.LoginResponseDTO loginResponseDTO = new MemberResponse.LoginResponseDTO(
-                access_token, refresh_token, gameuserName);
+                access_token, refresh_token, gameuserName, profileImage);
 
         // 헤더에 추가
         response.addHeader("Authorization", "Bearer " + access_token);
