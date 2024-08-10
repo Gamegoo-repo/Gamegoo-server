@@ -91,6 +91,7 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
+        Integer recentGameCount;
         Double winRate;
         List<Long> gameStyles;
         String contents;
@@ -117,6 +118,7 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
+        Integer recentGameCount;
         Double winRate;
         List<Long> gameStyles;
         String contents;

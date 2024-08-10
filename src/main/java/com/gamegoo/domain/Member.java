@@ -75,6 +75,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "mike")
     private Boolean mike = false;
 
+    @Column(name = "game_count")
+    private Integer gameCount;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<Board> boardList = new ArrayList<>();
 
@@ -122,10 +125,11 @@ public class Member extends BaseDateTimeEntity {
         this.memberChampionList = new ArrayList<>();
     }
 
-    public void updateRiotDetails(String tier, String rank, Double winRate) {
+    public void updateRiotDetails(String tier, String rank, Double winRate, Integer gameCount) {
         this.tier = tier;
         this.rank = rank;
         this.winRate = winRate;
+        this.gameCount = gameCount;
     }
 
     public void updateRiotBasic(String gameName, String tag) {
