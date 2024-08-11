@@ -40,4 +40,23 @@ public class MannerResponse {
     public static class badMannerKeywordResponseDTO{
         List<Long> mannerRatingKeywordList;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myMannerResponseDTO{
+        Integer mannerLevel;
+        List<mannerKeywordDTO> mannerKeywords;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class mannerKeywordDTO{
+       Boolean isPositive;
+       Integer mannerKeywordId;
+       Integer count;
+    }
 }

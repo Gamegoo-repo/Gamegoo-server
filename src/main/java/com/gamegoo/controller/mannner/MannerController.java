@@ -117,4 +117,15 @@ public class MannerController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping()
+    @Operation(summary = "내가 받은 매너 평가 조회 API", description = "회원의 매너레벨과 회원이 받은 매너 평가를 조회하는 API 입니다.")
+    public ApiResponse<MannerResponse.myMannerResponseDTO> getMyManner(){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.myMannerResponseDTO result = mannerService.getMyManner(memberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
