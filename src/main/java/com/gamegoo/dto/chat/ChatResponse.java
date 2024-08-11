@@ -14,18 +14,6 @@ public class ChatResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ChatroomCreateResultDTO {
-
-        Long chatroomId;
-        String uuid;
-        String postUrl;
-        Long targetMemberId;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ChatroomViewDTO {
 
         Long chatroomId;

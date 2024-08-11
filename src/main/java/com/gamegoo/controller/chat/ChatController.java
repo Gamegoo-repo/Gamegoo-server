@@ -3,7 +3,6 @@ package com.gamegoo.controller.chat;
 import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.ChatConverter;
 import com.gamegoo.domain.chat.Chat;
-import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.dto.chat.ChatRequest;
 import com.gamegoo.dto.chat.ChatResponse;
 import com.gamegoo.service.chat.ChatCommandService;
@@ -11,6 +10,7 @@ import com.gamegoo.service.chat.ChatQueryService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.validation.Valid;
@@ -141,25 +141,23 @@ public class ChatController {
         return ApiResponse.onSuccess("채팅방 나가기 성공");
     }
 
-    @Operation(summary = "채팅방 생성 API (서버 테스트용)", description = "채팅방을 생성하는 API 입니다. 서버 테스트용!!")
-    @PostMapping("/test/chatroom/create")
-    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroom(
-        @RequestBody @Valid ChatRequest.ChatroomCreateRequest request
+    @Operation(summary = "매칭을 통한 채팅방 시작 메소드 테스트용 API", description =
+        "매칭을 통한 채팅방 시작 메소드를 테스트하기 위한 API 입니다.\n\n" +
+            "대상 회원과의 채팅방이 이미 존재하는 경우, 해당 채팅방 uuid를 리턴합니다.\n\n" +
+            "대상 회원과의 채팅방이 존재하지 않는 경우, 채팅방을 새로 생성해 해당 채팅방의 uuid를 리턴합니다.")
+    @Parameters({
+        @Parameter(name = "memberId1", description = "매칭 시켜줄 회원 id 입니다."),
+        @Parameter(name = "memberId2", description = "매칭 시켜줄 회원 id 입니다.")
+    })
+
+    @GetMapping("/chat/start/matching/{memberId1}/{memberId2}")
+    public ApiResponse<String> startChatroomByMatching(
+        @PathVariable(name = "memberId1") Long memberId1,
+        @PathVariable(name = "memberId2") Long memberId2
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
-        Chatroom chatroom = chatCommandService.createChatroom(request, memberId);
         return ApiResponse.onSuccess(
-            ChatConverter.toChatroomCreateResultDTO(chatroom, request.getTargetMemberId()));
+            chatCommandService.startChatroomByMatching(memberId1, memberId2));
     }
 
-    @Operation(summary = "채팅방 생성 by Matching API (서버 테스트용)", description = "매칭을 통한 채팅방을 생성하는 API 입니다. 서버 테스트용!!")
-    @PostMapping("/test/chatroom/create/matched")
-    public ApiResponse<ChatResponse.ChatroomCreateResultDTO> createChatroomByMatching(
-        @RequestBody @Valid ChatRequest.ChatroomCreateByMatchRequest request
-    ) {
-        Chatroom chatroomByMatch = chatCommandService.createChatroomByMatch(request);
-        return ApiResponse.onSuccess(
-            ChatConverter.toChatroomCreateResultDTO(chatroomByMatch, null));
-
-    }
 }

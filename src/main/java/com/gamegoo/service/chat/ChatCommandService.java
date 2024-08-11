@@ -301,94 +301,104 @@ public class ChatCommandService {
     }
 
     /**
-     * 대상 회원과의 채팅방 생성 (게시글 및 친구 목록을 통해 생성)
-     *
-     * @param request
-     * @param memberId
-     * @return
-     */
-    public Chatroom createChatroom(ChatRequest.ChatroomCreateRequest request, Long memberId) {
-        Member member = profileService.findMember(memberId);
-
-        // 채팅 대상 회원의 존재 여부 검증
-        Member targetMember = memberRepository.findById(request.getTargetMemberId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
-
-        // chatroom 엔티티 생성
-        String uuid = UUID.randomUUID().toString();
-        Chatroom chatroom = Chatroom.builder()
-            .uuid(uuid)
-            .startMember(member)
-            .build();
-
-        Chatroom savedChatroom = chatroomRepository.save(chatroom);
-
-        // MemberChatroom 엔티티 생성 및 연관관계 매핑
-        // 나의 MemberChatroom 엔티티
-        MemberChatroom memberChatroom = MemberChatroom.builder()
-            .lastViewDate(null)
-            .lastJoinDate(null)
-            .chatroom(chatroom)
-            .build();
-        memberChatroom.setMember(member);
-        memberChatroomRepository.save(memberChatroom);
-
-        // 상대방의 MemberChatroom 엔티티
-        MemberChatroom targetMemberChatroom = MemberChatroom.builder()
-            .lastViewDate(null)
-            .lastJoinDate(null)
-            .chatroom(chatroom)
-            .build();
-        targetMemberChatroom.setMember(targetMember);
-        memberChatroomRepository.save(targetMemberChatroom);
-
-        return savedChatroom;
-    }
-
-    /**
-     * 매칭을 통해 새 채팅방을 생성
+     * 매칭 성공 시 채팅방 시작
      *
      * @param request
      * @return
      */
-    public Chatroom createChatroomByMatch(ChatRequest.ChatroomCreateByMatchRequest request) {
-        if (request.getMemberList().size() != 2) {
-            throw new ChatHandler(ErrorStatus._BAD_REQUEST);
+    public String startChatroomByMatching(Long memberId1, Long memberId2) {
+
+        Member member1 = profileService.findMember(memberId1);
+        Member member2 = profileService.findMember(memberId2);
+
+        // 채팅 대상 회원과의 chatroom 존재 여부 조회
+        Optional<Chatroom> chatroom = chatroomRepository.findChatroomByMemberIds(
+            member1.getId(), member2.getId());
+
+        Chatroom finalChatroom = null;
+
+        // 채팅방이 기존에 존재하는 경우
+        if (chatroom.isPresent()) {
+
+            // 각 회원의 lastJoinDate가 null 인 경우, 현재 시각으로 업데이트
+            MemberChatroom memberChatroom1 = memberChatroomRepository.findByMemberIdAndChatroomId(
+                    member1.getId(), chatroom.get().getId())
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+            LocalDateTime lastJoinDate = LocalDateTime.now();
+
+            if (memberChatroom1.getLastJoinDate() == null) {
+                memberChatroom1.updateLastJoinDate(lastJoinDate);
+            }
+
+            MemberChatroom memberChatroom2 = memberChatroomRepository.findByMemberIdAndChatroomId(
+                    member2.getId(), chatroom.get().getId())
+                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+
+            if (memberChatroom2.getLastJoinDate() == null) {
+                memberChatroom2.updateLastJoinDate(lastJoinDate);
+            }
+
+            finalChatroom = chatroom.get();
+
+        } else { // 채팅방이 기존에 존재하지 않는 경우
+            // chatroom 엔티티 생성
+            String uuid = UUID.randomUUID().toString();
+            Chatroom newChatroom = Chatroom.builder()
+                .uuid(uuid)
+                .startMember(null)
+                .build();
+
+            Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+            finalChatroom = savedChatroom;
+
+            LocalDateTime now = LocalDateTime.now();
+
+            // MemberChatroom 엔티티 생성 및 연관관계 매핑
+            // member1의 MemberChatroom 엔티티
+            MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                .lastViewDate(null)
+                .lastJoinDate(now)
+                .chatroom(newChatroom)
+                .build();
+            memberChatroom1.setMember(member1);
+            memberChatroomRepository.save(memberChatroom1);
+
+            // member2의 MemberChatroom 엔티티
+            MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                .lastViewDate(null)
+                .lastJoinDate(now)
+                .chatroom(newChatroom)
+                .build();
+            memberChatroom2.setMember(member2);
+            memberChatroomRepository.save(memberChatroom2);
         }
-        Member member1 = profileService.findMember(request.getMemberList().get(0));
-        Member member2 = profileService.findMember(request.getMemberList().get(1));
 
-        // chatroom 엔티티 생성
-        String uuid = UUID.randomUUID().toString();
-        Chatroom chatroom = Chatroom.builder()
-            .uuid(uuid)
-            .startMember(null)
+        // 매칭 시스템 메시지 생성 및 저장
+        // 시스템 메시지 전송자 member 엔티티 조회
+        Member systemMember = profileService.findMember(0L);
+
+        Chat matchingSystemChat1 = Chat.builder()
+            .contents(MATCHING_SYSTEM_MESSAGE)
+            .chatroom(finalChatroom)
+            .fromMember(systemMember)
+            .toMember(member1)
+            .sourceBoard(null)
             .build();
 
-        Chatroom savedChatroom = chatroomRepository.save(chatroom);
-
-        LocalDateTime now = LocalDateTime.now();
-
-        // MemberChatroom 엔티티 생성 및 연관관계 매핑
-        // member1의 MemberChatroom 엔티티
-        MemberChatroom memberChatroom1 = MemberChatroom.builder()
-            .lastViewDate(null)
-            .lastJoinDate(now)
-            .chatroom(chatroom)
+        Chat matchingSystemChat2 = Chat.builder()
+            .contents(MATCHING_SYSTEM_MESSAGE)
+            .chatroom(finalChatroom)
+            .fromMember(systemMember)
+            .toMember(member2)
+            .sourceBoard(null)
             .build();
-        memberChatroom1.setMember(member1);
-        memberChatroomRepository.save(memberChatroom1);
 
-        // member2의 MemberChatroom 엔티티
-        MemberChatroom memberChatroom2 = MemberChatroom.builder()
-            .lastViewDate(null)
-            .lastJoinDate(now)
-            .chatroom(chatroom)
-            .build();
-        memberChatroom2.setMember(member2);
-        memberChatroomRepository.save(memberChatroom2);
+        chatRepository.save(matchingSystemChat1);
+        chatRepository.save(matchingSystemChat2);
 
-        return savedChatroom;
+        return finalChatroom.getUuid();
     }
 
     /**
