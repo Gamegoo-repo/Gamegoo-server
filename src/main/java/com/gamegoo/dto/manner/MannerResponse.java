@@ -49,14 +49,13 @@ public class MannerResponse {
         Integer mannerLevel;
         List<mannerKeywordDTO> mannerKeywords;
     }
-
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerKeywordDTO{
-       Boolean isPositive;
-       Integer mannerKeywordId;
-       Integer count;
+        Boolean isPositive;
+        Integer mannerKeywordId;
+        Integer count;
     }
 }
