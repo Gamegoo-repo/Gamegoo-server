@@ -367,6 +367,8 @@ public class MannerService {
         // 매너평가를 받은 회원 존재 여부 검증.
         Member targetMember = memberRepository.findById(targetMemberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MANNER_TARGET_MEMBER_NOT_FOUND));
 
+        Boolean isExist;
+
         // 매너평가를 받은 회원 탈퇴 여부 검증.
         if (targetMember.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
@@ -379,18 +381,31 @@ public class MannerService {
                 .collect(Collectors.toList());
 
         if (positiveMannerRatings.isEmpty()) {
-            throw new MannerHandler(ErrorStatus.MANNER_NOT_FOUND);
+            isExist = false;
+
+            List<Long> mannerKeywordIds = Collections.emptyList();
+
+            return MannerResponse.mannerKeywordResponseDTO.builder()
+                    .isPositive(true)
+                    .isExist(isExist)
+                    .mannerRatingKeywordList(mannerKeywordIds)
+                    .build();
+
+        } else {
+            isExist = true;
+
+            MannerRating positiveMannerRating = positiveMannerRatings.get(0);
+
+            List<Long> mannerKeywordIds = positiveMannerRating.getMannerRatingKeywordList().stream()
+                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                    .collect(Collectors.toList());
+
+            return MannerResponse.mannerKeywordResponseDTO.builder()
+                    .isPositive(true)
+                    .isExist(isExist)
+                    .mannerRatingKeywordList(mannerKeywordIds)
+                    .build();
         }
-
-        MannerRating positiveMannerRating = positiveMannerRatings.get(0);
-
-        List<Long> mannerKeywordIds = positiveMannerRating.getMannerRatingKeywordList().stream()
-                .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                .collect(Collectors.toList());
-
-        return MannerResponse.mannerKeywordResponseDTO.builder()
-                .mannerRatingKeywordList(mannerKeywordIds)
-                .build();
     }
 
     // 비매너평가 조회
