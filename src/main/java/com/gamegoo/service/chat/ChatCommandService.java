@@ -522,7 +522,7 @@ public class ChatCommandService {
             Chat targetMemberSystemChat = chatRepository.save(systemChatToTargetMember);
             chatRepository.flush();
 
-            updateLastViewDateBySystemChat(memberChatroom, memberSystemChat.getCreatedAt(),
+            updateLastJoinDateBySystemChat(memberChatroom, memberSystemChat.getCreatedAt(),
                 targetMemberSystemChat.getCreatedAt());
 
         }
@@ -538,6 +538,8 @@ public class ChatCommandService {
         Chat savedChat = chatRepository.save(chat);
         if (request.getSystem() == null) {
             updateLastViewDateByAddChat(memberChatroom, savedChat.getCreatedAt());
+        } else {
+            updateOnlyLastViewDate(memberChatroom, savedChat.getCreatedAt());
         }
 
         return savedChat;
@@ -637,29 +639,23 @@ public class ChatCommandService {
     }
 
     /**
-     * 시스템 메시지 등록 시 나와 상대방의 lastViewDate 업데이트
+     * 시스템 메시지 등록 시 나와 상대방의 lastJoinDate 업데이트
      *
      * @param memberChatroom
      * @param memberSystemChatCreatedAt
      * @param targetSystemChatCreatedAt
      */
-    private void updateLastViewDateBySystemChat(MemberChatroom memberChatroom,
-        LocalDateTime memberSystemChatCreatedAt, LocalDateTime targetSystemChatCreatedAt) {
+    private void updateLastJoinDateBySystemChat(MemberChatroom memberChatroom,
+        LocalDateTime memberSystemChatCreatedAt, LocalDateTime targetSystemChatCreatedAt
+    ) {
         // lastJoinDate가 null인 경우
         if (memberChatroom.getLastJoinDate() == null) {
-            // lastViewDate 업데이트
-            memberChatroom.updateLastViewDate(memberSystemChatCreatedAt);
-
             // lastJoinDate 업데이트
             memberChatroom.updateLastJoinDate(memberSystemChatCreatedAt);
 
             // lastJoinDate 업데이트로 인해 socket room join API 요청
             socketService.joinSocketToChatroom(memberChatroom.getMember().getId(),
                 memberChatroom.getChatroom().getUuid());
-
-        } else {
-            // lastViewDate 업데이트
-            memberChatroom.updateLastViewDate(memberSystemChatCreatedAt);
 
         }
 
@@ -677,6 +673,17 @@ public class ChatCommandService {
             socketService.joinSocketToChatroom(targetMember.getId(),
                 targetMemberChatroom.getChatroom().getUuid());
         }
+    }
+
+    /**
+     * 해당 memberChatroom의 lastViewDate만 업데이트
+     *
+     * @param memberChatroom
+     * @param lastViewDate
+     */
+    private void updateOnlyLastViewDate(MemberChatroom memberChatroom,
+        LocalDateTime lastViewDate) {
+        memberChatroom.updateLastViewDate(lastViewDate);
     }
 
 }
