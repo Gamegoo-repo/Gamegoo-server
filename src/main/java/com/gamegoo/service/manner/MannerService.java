@@ -17,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -432,5 +429,77 @@ public class MannerService {
         return MannerResponse.badMannerKeywordResponseDTO.builder()
                 .mannerRatingKeywordList(badMannerKeywordIds)
                 .build();
+    }
+
+    // 내가 받은 매너 평가 조회
+    @Transactional(readOnly = true)
+    public MannerResponse.myMannerResponseDTO getMyManner(Long memberId){
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        // 매너평가 ID 조회
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(member.getId());
+
+        // 매너키워드 조회
+        List<MannerRating> positiveMannerRatings = mannerRatings.stream()
+                .filter(MannerRating::getIsPositive)
+                .collect(Collectors.toList());
+
+        // 각 매너키워드(1~6) 별 count 집계
+        List<Long> mannerKeywordIds = new ArrayList<>();
+
+        for (MannerRating positiveRating : positiveMannerRatings) {
+            List<MannerRatingKeyword> mannerRatingKeywords = positiveRating.getMannerRatingKeywordList();
+            for (MannerRatingKeyword mannerRatingKeyword : mannerRatingKeywords) {
+                mannerKeywordIds.add(mannerRatingKeyword.getMannerKeyword().getId());
+            }
+        }
+
+        Map<Integer, Integer> mannerKeywordCountMap = new HashMap<>();
+        for (long i = 1; i <= 6; i++) {
+            mannerKeywordCountMap.put((int) i, 0); // 초기화
+        }
+        for (Long keywordId : mannerKeywordIds) {
+            mannerKeywordCountMap.put(keywordId.intValue(), mannerKeywordCountMap.getOrDefault(keywordId.intValue(), 0) + 1);
+        }
+
+        // 비매너키워드 조회
+        List<MannerRating> negativeMannerRatings = mannerRatings.stream()
+                .filter(mannerRating -> !mannerRating.getIsPositive())
+                .collect(Collectors.toList());
+
+        // 각 비매너키워드(7~12) 별 count 집계
+        List<Long> badMannerKeywordIds = new ArrayList<>();
+
+        for (MannerRating negativeRating : negativeMannerRatings) {
+            List<MannerRatingKeyword> badMannerRatingKeywords = negativeRating.getMannerRatingKeywordList();
+            for (MannerRatingKeyword badMannerRatingKeyword : badMannerRatingKeywords) {
+                badMannerKeywordIds.add(badMannerRatingKeyword.getMannerKeyword().getId());
+            }
+        }
+
+        Map<Integer, Integer> badMannerKeywordCountMap = new HashMap<>();
+        for (long i = 7; i <= 12; i++) {
+            badMannerKeywordCountMap.put((int) i, 0); // 초기화
+        }
+        for (Long keywordId : badMannerKeywordIds) {
+            badMannerKeywordCountMap.put(keywordId.intValue(), badMannerKeywordCountMap.getOrDefault(keywordId.intValue(), 0) + 1);
+        }
+
+        // 매너 키워드 DTO 생성
+        List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = new ArrayList<>();
+        for (int i = 1; i <= 6; i++) {
+            int count = mannerKeywordCountMap.getOrDefault(i, 0);
+            mannerKeywordDTOs.add(new MannerResponse.mannerKeywordDTO(true, i, count));
+        }
+
+        // 비매너 키워드 DTO 생성
+        for (int i = 7; i <= 12; i++) {
+            int count = badMannerKeywordCountMap.getOrDefault(i, 0);
+            mannerKeywordDTOs.add(new MannerResponse.mannerKeywordDTO(false, i, count));
+        }
+
+        Integer mannerLevel = member.getMannerLevel();
+        return new MannerResponse.myMannerResponseDTO(mannerLevel, mannerKeywordDTOs);
     }
 }
