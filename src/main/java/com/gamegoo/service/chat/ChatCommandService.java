@@ -518,9 +518,13 @@ public class ChatCommandService {
                 .sourceBoard(board.orElse(null))
                 .build();
 
-            chatRepository.save(systemChatToMember);
-            chatRepository.save(systemChatToTargetMember);
+            Chat memberSystemChat = chatRepository.save(systemChatToMember);
+            Chat targetMemberSystemChat = chatRepository.save(systemChatToTargetMember);
             chatRepository.flush();
+
+            updateLastViewDateBySystemChat(memberChatroom, memberSystemChat.getCreatedAt(),
+                targetMemberSystemChat.getCreatedAt());
+
         }
 
         // chat 엔티티 생성
@@ -532,7 +536,9 @@ public class ChatCommandService {
 
         // MemberChatroom의 lastViewDate 업데이트
         Chat savedChat = chatRepository.save(chat);
-        updateLastViewDateByAddChat(memberChatroom, savedChat.getCreatedAt());
+        if (request.getSystem() == null) {
+            updateLastViewDateByAddChat(memberChatroom, savedChat.getCreatedAt());
+        }
 
         return savedChat;
     }
@@ -623,6 +629,49 @@ public class ChatCommandService {
             targetMember.getId(), chatroom.getId()).get();
         if (targetMemberChatroom.getLastJoinDate() == null) {
             targetMemberChatroom.updateLastJoinDate(lastViewDate);
+
+            // lastJoinDate 업데이트로 인해 socket room join API 요청
+            socketService.joinSocketToChatroom(targetMember.getId(),
+                targetMemberChatroom.getChatroom().getUuid());
+        }
+    }
+
+    /**
+     * 시스템 메시지 등록 시 나와 상대방의 lastViewDate 업데이트
+     *
+     * @param memberChatroom
+     * @param memberSystemChatCreatedAt
+     * @param targetSystemChatCreatedAt
+     */
+    private void updateLastViewDateBySystemChat(MemberChatroom memberChatroom,
+        LocalDateTime memberSystemChatCreatedAt, LocalDateTime targetSystemChatCreatedAt) {
+        // lastJoinDate가 null인 경우
+        if (memberChatroom.getLastJoinDate() == null) {
+            // lastViewDate 업데이트
+            memberChatroom.updateLastViewDate(memberSystemChatCreatedAt);
+
+            // lastJoinDate 업데이트
+            memberChatroom.updateLastJoinDate(memberSystemChatCreatedAt);
+
+            // lastJoinDate 업데이트로 인해 socket room join API 요청
+            socketService.joinSocketToChatroom(memberChatroom.getMember().getId(),
+                memberChatroom.getChatroom().getUuid());
+
+        } else {
+            // lastViewDate 업데이트
+            memberChatroom.updateLastViewDate(memberSystemChatCreatedAt);
+
+        }
+
+        // 상대 회원의 memberChatroom의 latJoinDate가 null인 경우, 상대 회원의 lastJoinDate 업데이트
+        Chatroom chatroom = memberChatroom.getChatroom();
+
+        Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
+            chatroom.getId(), memberChatroom.getMember().getId());
+        MemberChatroom targetMemberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+            targetMember.getId(), chatroom.getId()).get();
+        if (targetMemberChatroom.getLastJoinDate() == null) {
+            targetMemberChatroom.updateLastJoinDate(targetSystemChatCreatedAt);
 
             // lastJoinDate 업데이트로 인해 socket room join API 요청
             socketService.joinSocketToChatroom(targetMember.getId(),
