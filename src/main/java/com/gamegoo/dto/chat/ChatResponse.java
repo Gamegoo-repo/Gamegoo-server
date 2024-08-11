@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 public class ChatResponse {
 
@@ -63,7 +64,7 @@ public class ChatResponse {
 
     }
 
-    @Builder
+    @SuperBuilder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -75,7 +76,7 @@ public class ChatResponse {
         Long next_cursor;
     }
 
-    @Builder
+    @SuperBuilder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -87,6 +88,15 @@ public class ChatResponse {
         String message;
         String createdAt;
         Long timestamp;
+    }
+
+    @SuperBuilder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SystemMessageDTO extends ChatMessageDTO {
+
+        Long boardId;
     }
 
     @Builder
