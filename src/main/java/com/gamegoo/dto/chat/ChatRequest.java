@@ -1,6 +1,9 @@
 package com.gamegoo.dto.chat;
 
 import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.Getter;
@@ -37,6 +40,20 @@ public class ChatRequest {
 
         @NotEmpty
         String message;
+        @Valid
+        SystemFlagRequest system;
+    }
+
+    @Getter
+    public static class SystemFlagRequest {
+
+        @Min(1)
+        @Max(2)
+        @NotNull
+        Integer flag;
+
+        @NotNull
+        Long boardId;
     }
 
 }
