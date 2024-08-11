@@ -48,7 +48,7 @@ public class SecurityConfig {
         List<String> excludedPaths = Arrays.asList("/swagger-ui/", "/v3/api-docs",
                 "/v1/member/join", "/v1/member/login", "/v1/member/email", "/v1/member/refresh",
                 "/v1/member/riot", "/v1/posts/list", "/v1/posts/list/{boardId}",
-                "/v1/test/chatroom/create/matched", "/v1/member/password/reset");
+                "/v1/test/chatroom/create/matched", "/v1/member/password/reset", "/v1/member/profile/other");
         return new JWTFilter(jwtUtil, excludedPaths, customUserDetailService);
 
     }
@@ -69,7 +69,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .antMatchers("/", "/v1/member/join", "/v1/member/login", "/v1/member/email/**",
                                 "/v1/member/refresh", "/v1/member/riot", "/v1/posts/list/**",
-                                "/v1/test/chatroom/create/matched", "/v1/member/password/reset").permitAll()
+                                "/v1/test/chatroom/create/matched", "/v1/member/password/reset", "/v1/member/profile/other").permitAll()
                         .antMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JWTExceptionHandlerFilter(),

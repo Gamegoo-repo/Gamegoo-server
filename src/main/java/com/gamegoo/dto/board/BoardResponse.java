@@ -92,6 +92,35 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
+        Integer recentGameCount;
+        Double winRate;
+        List<Long> gameStyles;
+        String contents;
+    }
+
+    @Getter
+    @Builder
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class boardByIdResponseForMemberDTO {
+        Long boardId;
+        Long memberId;
+        Boolean isBlocked;
+        Boolean isFriend;
+        LocalDateTime createdAt;
+        Integer profileImage;
+        String gameName;
+        String tag;
+        Integer mannerLevel;
+        Tier tier;
+        Boolean mike;
+        List<Long> championList;
+        Integer gameMode;
+        Integer mainPosition;
+        Integer subPosition;
+        Integer wantPosition;
+        Integer recentGameCount;
         Double winRate;
         List<Long> gameStyles;
         String contents;
