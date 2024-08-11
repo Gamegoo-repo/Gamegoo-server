@@ -1,7 +1,6 @@
 package com.gamegoo.converter;
 
 import com.gamegoo.domain.chat.Chat;
-import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.dto.chat.ChatResponse;
 import com.gamegoo.util.DatetimeUtil;
 import java.util.List;
@@ -9,16 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Slice;
 
 public class ChatConverter {
-
-    public static ChatResponse.ChatroomCreateResultDTO toChatroomCreateResultDTO(Chatroom chatroom,
-        Long targetMemberId) {
-
-        return ChatResponse.ChatroomCreateResultDTO.builder()
-            .chatroomId(chatroom.getId())
-            .uuid(chatroom.getUuid())
-            .targetMemberId(targetMemberId)
-            .build();
-    }
 
     public static ChatResponse.ChatCreateResultDTO toChatCreateResultDTO(Chat chat) {
 
