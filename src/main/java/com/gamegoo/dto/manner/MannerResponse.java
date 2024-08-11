@@ -30,6 +30,8 @@ public class MannerResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerKeywordResponseDTO{
+        Boolean isPositive;
+        Boolean isExist;
         List<Long> mannerRatingKeywordList;
     }
 
@@ -38,6 +40,8 @@ public class MannerResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class badMannerKeywordResponseDTO{
+        Boolean isPositive;
+        Boolean isExist;
         List<Long> mannerRatingKeywordList;
     }
 
@@ -49,14 +53,13 @@ public class MannerResponse {
         Integer mannerLevel;
         List<mannerKeywordDTO> mannerKeywords;
     }
-
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerKeywordDTO{
-       Boolean isPositive;
-       Integer mannerKeywordId;
-       Integer count;
+        Boolean isPositive;
+        Integer mannerKeywordId;
+        Integer count;
     }
 }
