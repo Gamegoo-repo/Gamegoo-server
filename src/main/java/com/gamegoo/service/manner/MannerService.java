@@ -310,40 +310,32 @@ public class MannerService {
     }
 
     // 매너점수를 산정하고 업데이트.
-    public int updateMannerScore(Member targetMember){
+    private int updateMannerScore(Member targetMember){
 
         // 매너평가 ID 조회
-        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
+        List<MannerRating> mannerRatings = targetMember.getMannerRatingList();
 
         int totalCount;
 
         // 매너 평가 + 비매너 평가를 처음 받은 회원
         if (mannerRatings.size()==1){
             if (mannerRatings.get(0).getIsPositive()) {
-                totalCount = mannerRatings.get(0).getMannerRatingKeywordList().stream()
-                        .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                        .collect(Collectors.toList()).size();
+                totalCount = mannerRatings.get(0).getMannerRatingKeywordList().size();
             } else {
-                totalCount = (mannerRatings.get(0).getMannerRatingKeywordList().stream()
-                        .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                        .collect(Collectors.toList()).size())*-2;
+                totalCount = (mannerRatings.get(0).getMannerRatingKeywordList().size())*-2;
             }
         } else {
-            List<Long> positiveMannerKeywordIds = mannerRatings.stream()
+            int positiveCount = mannerRatings.stream()
                     .filter(MannerRating::getIsPositive)
                     .flatMap(mannerRating -> mannerRating.getMannerRatingKeywordList().stream())
-                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toList())
+                    .size();
 
-            int positiveCount = positiveMannerKeywordIds.size();
-
-            List<Long> negativeMannerKeywordIds = mannerRatings.stream()
+            int negativeCount =  mannerRatings.stream()
                     .filter(mannerRating -> !mannerRating.getIsPositive())
                     .flatMap(mannerRating -> mannerRating.getMannerRatingKeywordList().stream())
-                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                    .collect(Collectors.toList());
-
-            int negativeCount = negativeMannerKeywordIds.size();
+                    .collect(Collectors.toList())
+                    .size();
 
             totalCount = positiveCount + (negativeCount*-2);
         }
@@ -352,7 +344,7 @@ public class MannerService {
     }
 
     // 매너레벨 결정
-    public int mannerLevel(int mannerCount){
+    private int mannerLevel(int mannerCount){
         if (mannerCount < 10) {
             return 1;
         } else if (mannerCount < 20) {
@@ -438,7 +430,7 @@ public class MannerService {
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 매너평가 ID 조회
-        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(member.getId());
+        List<MannerRating> mannerRatings = member.getMannerRatingList();
 
         // 매너키워드 조회
         List<MannerRating> positiveMannerRatings = mannerRatings.stream()
@@ -500,6 +492,9 @@ public class MannerService {
         }
 
         Integer mannerLevel = member.getMannerLevel();
-        return new MannerResponse.myMannerResponseDTO(mannerLevel, mannerKeywordDTOs);
+        return MannerResponse.myMannerResponseDTO.builder()
+                .mannerLevel(mannerLevel)
+                .mannerKeywords(mannerKeywordDTOs)
+                .build();
     }
 }
