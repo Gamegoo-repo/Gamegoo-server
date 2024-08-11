@@ -149,5 +149,9 @@ public class Member extends BaseDateTimeEntity {
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+    public void setMannerLevel(int mannerLevel) {
+        this.mannerLevel = mannerLevel;
+    }
 }
 
