@@ -4,18 +4,22 @@ import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.BoardHandler;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.board.BoardGameStyle;
 import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
+import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.member.FriendService;
+import com.gamegoo.util.MemberUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,6 +35,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BoardService {
+    @Autowired
+    private FriendService friendService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final GameStyleRepository gameStyleRepository;
@@ -238,7 +244,8 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, String tier, Integer mainPosition, Boolean mike, int pageIdx) {
+    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, Tier tier, Integer mainPosition, Boolean mike, int pageIdx) {
+
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
@@ -273,34 +280,69 @@ public class BoardService {
         }).collect(Collectors.toList());
     }
 
-    // 게시판 글 조회
+    // 비회원 게시판 글 조회
     @Transactional(readOnly = true)
     public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId) {
 
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
-        Member member = board.getMember();
+        Member poster = board.getMember();
 
         return BoardResponse.boardByIdResponseDTO.builder()
                 .boardId(board.getId())
-                .memberId(member.getId())
+                .memberId(poster.getId())
                 .createdAt(board.getCreatedAt())
                 .profileImage(board.getBoardProfileImage())
-                .gameName(member.getGameName())
-                .tag(member.getTag())
-                .mannerLevel(member.getMannerLevel())
-                .tier(member.getTier())
-                .championList(member.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
+                .gameName(poster.getGameName())
+                .tag(poster.getTag())
+                .mannerLevel(poster.getMannerLevel())
+                .tier(poster.getTier())
+                .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
                 .mike(board.getMike())
                 .gameMode(board.getMode())
                 .mainPosition(board.getMainPosition())
                 .subPosition(board.getSubPosition())
                 .wantPosition(board.getWantPosition())
-                .winRate(member.getWinRate())
+                .recentGameCount(poster.getGameCount())
+                .winRate(poster.getWinRate())
                 .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
                 .contents(board.getContent())
                 .build();
 
+    }
+
+    // 회원 게시판 글 조회
+    @Transactional(readOnly = true)
+    public BoardResponse.boardByIdResponseForMemberDTO getBoardByIdForMember(Long boardId, Long memberId) {
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        Member poster = board.getMember();
+
+        return BoardResponse.boardByIdResponseForMemberDTO.builder()
+                .boardId(board.getId())
+                .memberId(poster.getId())
+                .isBlocked(MemberUtils.isBlocked(member, poster))
+                .isFriend(friendService.isFriend(member,poster))
+                .createdAt(board.getCreatedAt())
+                .profileImage(board.getBoardProfileImage())
+                .gameName(poster.getGameName())
+                .tag(poster.getTag())
+                .mannerLevel(poster.getMannerLevel())
+                .tier(poster.getTier())
+                .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId).collect(Collectors.toList()))
+                .mike(board.getMike())
+                .gameMode(board.getMode())
+                .mainPosition(board.getMainPosition())
+                .subPosition(board.getSubPosition())
+                .wantPosition(board.getWantPosition())
+                .recentGameCount(poster.getGameCount())
+                .winRate(poster.getWinRate())
+                .gameStyles(board.getBoardGameStyles().stream().map(boardGameStyle -> boardGameStyle.getGameStyle().getId()).collect(Collectors.toList()))
+                .contents(board.getContent())
+                .build();
     }
 
     // 내가 작성한 게시판 글 목록 조회

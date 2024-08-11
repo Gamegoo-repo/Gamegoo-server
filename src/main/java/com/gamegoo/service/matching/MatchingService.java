@@ -33,9 +33,9 @@ public class MatchingService {
     public void save(MatchingRequest.SaveMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        MatchingType matchingType;
         try {
-            MatchingType matchingType = MatchingType.valueOf(request.getMatchingType().toUpperCase());
+            matchingType = MatchingType.valueOf(request.getMatchingType().toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new MatchingHandler(ErrorStatus.MATHCING_TYPE_BAD_REQUEST);
         }
@@ -44,7 +44,7 @@ public class MatchingService {
                 .mike(request.getMike())
                 .tier(member.getTier())
                 .rank(member.getRank())
-                .matchingType(MatchingType.valueOf(request.getMatchingType()))
+                .matchingType(matchingType)
                 .status(MatchingStatus.FAIL)
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())

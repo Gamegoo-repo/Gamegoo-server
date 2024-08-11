@@ -93,4 +93,28 @@ public class MannerController {
         return ApiResponse.onSuccess(result);
 
     }
+
+    @GetMapping("good/{memberId}")
+    @Operation(summary = "매너 평가 조회 API", description = "회원이 실시한 매너 평가를 조회하는 API 입니다.")
+    @Parameter(name = "memberId", description = "회원이 실시한 매너평가 대상의 id 입니다.")
+    public ApiResponse<MannerResponse.mannerKeywordResponseDTO> getMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.mannerKeywordResponseDTO result = mannerService.getMannerKeyword(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
+
+    @GetMapping("bad/{memberId}")
+    @Operation(summary = "비매너 평가 조회 API", description = "회원이 실시한 비매너 평가를 조회하는 API 입니다.")
+    @Parameter(name = "memberId", description = "회원이 실시한 비매너평가 대상의 id 입니다.")
+    public ApiResponse<MannerResponse.badMannerKeywordResponseDTO> getBadMannerKeyword(@PathVariable(name = "memberId") Long targetMemberId){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.badMannerKeywordResponseDTO result = mannerService.getBadMannerKeyword(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
