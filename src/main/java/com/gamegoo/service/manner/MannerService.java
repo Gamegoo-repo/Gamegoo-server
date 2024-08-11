@@ -381,6 +381,7 @@ public class MannerService {
                 .collect(Collectors.toList());
 
         if (positiveMannerRatings.isEmpty()) {
+
             isExist = false;
 
             List<Long> mannerKeywordIds = Collections.emptyList();
@@ -392,6 +393,7 @@ public class MannerService {
                     .build();
 
         } else {
+
             isExist = true;
 
             MannerRating positiveMannerRating = positiveMannerRatings.get(0);
@@ -417,6 +419,8 @@ public class MannerService {
         // 비매너평가를 받은 회원 존재 여부 검증.
         Member targetMember = memberRepository.findById(targetMemberId).orElseThrow(() -> new MemberHandler(ErrorStatus.BAD_MANNER_TARGET_MEMBER_NOT_FOUND));
 
+        Boolean isExist;
+
         // 비매너평가 ID 조회
         List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberIdAndToMemberId(member.getId(), targetMember.getId());
         List<MannerRating> negativeMannerRatings = mannerRatings.stream()
@@ -424,18 +428,32 @@ public class MannerService {
                 .collect(Collectors.toList());
 
         if (negativeMannerRatings.isEmpty()) {
-            throw new MannerHandler(ErrorStatus.BAD_MANNER_NOT_FOUND);
+
+            isExist = false;
+
+            List<Long> badMannerKeywordIds = Collections.emptyList();
+
+            return MannerResponse.badMannerKeywordResponseDTO.builder()
+                    .isPositive(false)
+                    .isExist(isExist)
+                    .mannerRatingKeywordList(badMannerKeywordIds)
+                    .build();
+        } else {
+
+            isExist = true;
+
+            MannerRating negativeMannerRating = negativeMannerRatings.get(0);
+
+            List<Long> badMannerKeywordIds = negativeMannerRating.getMannerRatingKeywordList().stream()
+                    .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
+                    .collect(Collectors.toList());
+
+            return MannerResponse.badMannerKeywordResponseDTO.builder()
+                    .isPositive(false)
+                    .isExist(isExist)
+                    .mannerRatingKeywordList(badMannerKeywordIds)
+                    .build();
         }
-
-        MannerRating negativeMannerRating = negativeMannerRatings.get(0);
-
-        List<Long> badMannerKeywordIds = negativeMannerRating.getMannerRatingKeywordList().stream()
-                .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
-                .collect(Collectors.toList());
-
-        return MannerResponse.badMannerKeywordResponseDTO.builder()
-                .mannerRatingKeywordList(badMannerKeywordIds)
-                .build();
     }
 
     // 내가 받은 매너 평가 조회
