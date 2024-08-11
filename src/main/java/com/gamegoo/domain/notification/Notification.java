@@ -1,8 +1,7 @@
 package com.gamegoo.domain.notification;
 
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-
+import com.gamegoo.domain.member.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,6 +51,10 @@ public class Notification extends BaseDateTimeEntity {
         }
         this.member = member;
         this.member.getNotificationList().add(this);
+    }
+
+    public void updateIsRead(boolean isRead) {
+        this.isRead = isRead;
     }
 
 }

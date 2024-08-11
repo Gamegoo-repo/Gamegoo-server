@@ -1,18 +1,23 @@
 package com.gamegoo.dto.board;
 
 import com.gamegoo.domain.member.Tier;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class BoardResponse {
+
     @Getter
     @Builder
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardInsertResponseDTO {
+
         Long boardId;
         Long memberId;
         Integer profileImage;
@@ -35,6 +40,7 @@ public class BoardResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardUpdateResponseDTO {
+
         Long boardId;
         Long memberId;
         Integer profileImage;
@@ -56,6 +62,7 @@ public class BoardResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardListResponseDTO {
+
         Long boardId;
         Long memberId;
         Integer profileImage;
@@ -78,6 +85,7 @@ public class BoardResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardByIdResponseDTO {
+
         Long boardId;
         Long memberId;
         LocalDateTime createdAt;
@@ -104,10 +112,12 @@ public class BoardResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class boardByIdResponseForMemberDTO {
+
         Long boardId;
         Long memberId;
         Boolean isBlocked;
         Boolean isFriend;
+        Long friendRequestMemberId;
         LocalDateTime createdAt;
         Integer profileImage;
         String gameName;
@@ -132,6 +142,7 @@ public class BoardResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class myBoardListResponseDTO {
+
         Long boardId;
         Long memberId;
         Integer profileImage;
