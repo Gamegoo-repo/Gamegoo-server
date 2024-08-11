@@ -30,6 +30,8 @@ public class MannerResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class mannerKeywordResponseDTO{
+        Boolean isPositive;
+        Boolean isExist;
         List<Long> mannerRatingKeywordList;
     }
 
