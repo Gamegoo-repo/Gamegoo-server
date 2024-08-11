@@ -2,16 +2,15 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.FriendHandler;
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
-
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -88,17 +87,17 @@ public class FriendService {
             });
 
         FriendRequests friendRequests = FriendRequests.builder()
-                .status(FriendRequestStatus.PENDING)
-                .fromMember(member)
-                .toMember(targetMember)
-                .build();
+            .status(FriendRequestStatus.PENDING)
+            .fromMember(member)
+            .toMember(targetMember)
+            .build();
 
         friendRequestsRepository.save(friendRequests);
 
         // 친구 요청 알림 생성
         // member -> targetMember
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_SEND,
-                targetMember.getGameName(), null, member);
+            targetMember.getGameName(), null, member);
 
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
@@ -270,7 +269,7 @@ public class FriendService {
         if (member.equals(friendMember)) {
             throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
         }
-        
+
         removeFriendshipIfPresent(member, friendMember);
     }
 
@@ -282,11 +281,11 @@ public class FriendService {
      */
     public void removeFriendshipIfPresent(Member fromMember, Member toMember) {
         friendRepository.findByFromMemberAndToMember(fromMember, toMember)
-                .ifPresent(friend -> {
-                    friendRepository.deleteById(friend.getId());
-                    friendRepository.findByFromMemberAndToMember(toMember, fromMember)
-                            .ifPresent(reverseFriend -> friendRepository.deleteById(reverseFriend.getId()));
-                });
+            .ifPresent(friend -> {
+                friendRepository.deleteById(friend.getId());
+                friendRepository.findByFromMemberAndToMember(toMember, fromMember)
+                    .ifPresent(reverseFriend -> friendRepository.deleteById(reverseFriend.getId()));
+            });
     }
 
     /**
@@ -297,9 +296,9 @@ public class FriendService {
      */
     public void cancelPendingFriendRequests(Member fromMember, Member toMember) {
         friendRequestsRepository.findByFromMemberAndToMemberAndStatus(fromMember, toMember,
-                        FriendRequestStatus.PENDING)
-                .ifPresent(
-                        friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+                FriendRequestStatus.PENDING)
+            .ifPresent(
+                friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
     }
 
     /**
@@ -313,5 +312,22 @@ public class FriendService {
     public boolean isFriend(Member member1, Member member2) {
         List<Friend> friendList = friendRepository.findBothDirections(member1, member2);
         return (friendList.size() == 2);
+    }
+
+    /**
+     * 두 회원 사이 친구 요청이 존재하는 경우, 친구 요청을 보낸 회원의 id를 리턴
+     *
+     * @param member1
+     * @param member2
+     * @return
+     */
+    public Long getFriendRequestMemberId(Member member1, Member member2) {
+        return friendRequestsRepository.findByFromMemberAndToMemberAndStatus(member1, member2,
+                FriendRequestStatus.PENDING)
+            .map(friendRequests -> member1.getId())
+            .or(() -> friendRequestsRepository.findByFromMemberAndToMemberAndStatus(member2,
+                    member1, FriendRequestStatus.PENDING)
+                .map(friendRequests -> member2.getId()))
+            .orElse(null); // 친구 요청이 없는 경우 null을 리턴
     }
 }

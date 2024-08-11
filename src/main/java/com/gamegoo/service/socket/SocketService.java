@@ -44,13 +44,13 @@ public class SocketService {
             log.info("response of joinSocketToChatroom: {}", response.getStatusCode().toString());
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 log.error("joinSocketToChatroom API call FAIL: {}", response.getBody());
-                throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERR);
+                throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERROR);
             } else {
                 log.info("joinSocketToChatroom API call SUCCESS: {}", response.getBody());
             }
         } catch (Exception e) {
             log.error("Error occurred while notifyChatroomEntered method", e);
-            throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERR);
+            throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERROR);
         }
     }
 }
