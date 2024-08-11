@@ -117,4 +117,14 @@ public class MannerController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping()
+    public ApiResponse<MannerResponse.myMannerResponseDTO> getMyManner(){
+
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        MannerResponse.myMannerResponseDTO result = mannerService.getMyManner(memberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
