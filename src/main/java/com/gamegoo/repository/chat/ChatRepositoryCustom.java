@@ -6,12 +6,12 @@ import org.springframework.data.domain.Slice;
 
 public interface ChatRepositoryCustom {
 
-    Integer countUnreadChats(Long chatroomId, Long memberChatroomId);
+    Integer countUnreadChats(Long chatroomId, Long memberChatroomId, Long memberId);
 
-    Slice<Chat> findRecentChats(Long chatroomId, Long memberChatroomId);
+    Slice<Chat> findRecentChats(Long chatroomId, Long memberChatroomId, Long memberId);
 
     Slice<Chat> findChatsByCursor(Long cursor, Long chatroomId, Long memberChatroomId,
-        Pageable pageable);
+        Long memberId, Pageable pageable);
 
 
 }

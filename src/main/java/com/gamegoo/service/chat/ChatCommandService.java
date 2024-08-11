@@ -96,7 +96,7 @@ public class ChatCommandService {
 
             // 최근 메시지 내역 조회
             Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.get().getId(),
-                memberChatroom.getId());
+                memberChatroom.getId(), member.getId());
 
             // 해당 채팅방의 lastViewDate 업데이트
             memberChatroom.updateLastViewDate(LocalDateTime.now());
@@ -209,7 +209,7 @@ public class ChatCommandService {
 
             // 최근 메시지 내역 조회
             Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.get().getId(),
-                memberChatroom.getId());
+                memberChatroom.getId(), member.getId());
 
             // 해당 채팅방의 lastViewDate 업데이트
             memberChatroom.updateLastViewDate(LocalDateTime.now());
@@ -437,7 +437,7 @@ public class ChatCommandService {
 
         // 최근 메시지 내역 조회
         Slice<Chat> recentChats = chatRepository.findRecentChats(chatroom.getId(),
-            memberChatroom.getId());
+            memberChatroom.getId(), member.getId());
 
         // 해당 채팅방의 lastViewDate 업데이트
         memberChatroom.updateLastViewDate(LocalDateTime.now());

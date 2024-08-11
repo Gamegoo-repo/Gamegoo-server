@@ -25,14 +25,15 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Integer countUnreadChats(Long chatroomId, Long memberChatroomId) {
+    public Integer countUnreadChats(Long chatroomId, Long memberChatroomId, Long memberId) {
 
         Long countResult = queryFactory.select(chat.count())
             .from(chat)
             .where(
                 chat.chatroom.id.eq(chatroomId),
                 createdAtGreaterThanLastViewDateSubQuery(memberChatroomId),
-                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId),
+                isMySystemMessageOrNoToMember(memberId)
             )
             .fetchOne();
 
@@ -40,7 +41,7 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
     }
 
     @Override
-    public Slice<Chat> findRecentChats(Long chatroomId, Long memberChatroomId) {
+    public Slice<Chat> findRecentChats(Long chatroomId, Long memberChatroomId, Long memberId) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
         // 안읽은 메시지 모두 조회
@@ -48,7 +49,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
             .where(
                 chat.chatroom.id.eq(chatroomId),
                 createdAtGreaterThanLastViewDateSubQuery(memberChatroomId),
-                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId),
+                isMySystemMessageOrNoToMember(memberId)
             )
             .orderBy(chat.createdAt.desc())
             .fetch();
@@ -61,7 +63,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
                 .where(
                     chat.chatroom.id.eq(oldestUnreadChat.getChatroom().getId()),
                     createdBefore(oldestUnreadChat.getTimestamp()),
-                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
+                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId),
+                    isMySystemMessageOrNoToMember(memberId)
                 )
                 .orderBy(chat.createdAt.desc())
                 .limit(1) // 하나의 추가 메시지만 확인하면 충분
@@ -77,7 +80,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
             List<Chat> chats = queryFactory.selectFrom(chat)
                 .where(
                     chat.chatroom.id.eq(chatroomId),
-                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
+                    createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId),
+                    isMySystemMessageOrNoToMember(memberId)
                 )
                 .orderBy(chat.createdAt.desc())
                 .limit(pageable.getPageSize() + 1) // 다음 페이지가 있는지 확인하기 위해 +1
@@ -98,13 +102,15 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
 
     @Override
     public Slice<Chat> findChatsByCursor(Long cursor, Long chatroomId, Long memberChatroomId,
+        Long memberId,
         Pageable pageable) {
 
         List<Chat> result = queryFactory.selectFrom(chat)
             .where(
                 chat.chatroom.id.eq(chatroomId),
                 createdBefore(cursor),
-                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId)
+                createdAtGreaterOrEqualThanLastJoinDateSubQuery(memberChatroomId),
+                isMySystemMessageOrNoToMember(memberId)
             )
             .orderBy(chat.createdAt.desc())
             .limit(pageable.getPageSize() + 1) // 다음 페이지가 있는지 확인하기 위해 +1
@@ -142,5 +148,9 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
 
     private BooleanExpression createdBefore(Long cursorTimestamp) {
         return cursorTimestamp != null ? chat.timestamp.lt(cursorTimestamp) : null;
+    }
+
+    private BooleanExpression isMySystemMessageOrNoToMember(Long memberId) {
+        return chat.toMember.isNull().or(chat.toMember.id.eq(memberId));
     }
 }
