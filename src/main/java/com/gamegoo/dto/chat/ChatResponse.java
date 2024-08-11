@@ -6,20 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 public class ChatResponse {
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ChatroomCreateResultDTO {
-
-        Long chatroomId;
-        String uuid;
-        String postUrl;
-        Long targetMemberId;
-    }
 
     @Builder
     @Getter
@@ -47,6 +36,7 @@ public class ChatResponse {
         "memberProfileImg",
         "friend",
         "blocked",
+        "system",
         "chatMessageList"
     })
     public static class ChatroomEnterDTO {
@@ -57,11 +47,12 @@ public class ChatResponse {
         Integer memberProfileImg;
         boolean friend;
         boolean blocked;
+        SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
 
     }
 
-    @Builder
+    @SuperBuilder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -73,7 +64,7 @@ public class ChatResponse {
         Long next_cursor;
     }
 
-    @Builder
+    @SuperBuilder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -85,6 +76,15 @@ public class ChatResponse {
         String message;
         String createdAt;
         Long timestamp;
+    }
+
+    @SuperBuilder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SystemMessageDTO extends ChatMessageDTO {
+
+        Long boardId;
     }
 
     @Builder
@@ -99,5 +99,15 @@ public class ChatResponse {
         String message;
         String createdAt;
         Long timestamp;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SystemFlagDTO {
+
+        Integer flag;
+        Long boardId;
     }
 }

@@ -1,9 +1,9 @@
 package com.gamegoo.domain.chat;
 
-import com.gamegoo.domain.member.Member;
+import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
+import com.gamegoo.domain.member.Member;
 import com.gamegoo.util.TimestampUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -49,6 +48,10 @@ public class Chat extends BaseDateTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_member_id")
     private Member toMember;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_board_id")
+    private Board sourceBoard;
 
     // repository에 저장되기 전에 해당 timestamp를 자동으로 설정
     @PrePersist

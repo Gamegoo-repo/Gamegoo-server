@@ -94,7 +94,8 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 매너평가 관련 에러
     MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
-    BAD_MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "비매너 평가 대상 회원을 찾을 수 없습니다."),
+    BAD_MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401",
+        "비매너 평가 대상 회원을 찾을 수 없습니다."),
     MANNER_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "MANNER401", "매너평가 작성자만 수정 가능합니다."),
     MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401", "매너 키워드 유형은 1~6만 가능합니다."),
     BAD_MANNER_KEYWORD_TYPE_INVALID(HttpStatus.BAD_REQUEST, "MANNER401",
@@ -118,6 +119,7 @@ public enum ErrorStatus implements BaseErrorCode {
         "채팅 상대 회원을 차단한 상태입니다. 채팅 메시지 전송이 불가능합니다."),
     BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED(HttpStatus.FORBIDDEN, "CHAT408",
         "채팅 상대 회원이 나를 차단했습니다. 채팅 메시지 전송이 불가능합니다."),
+    CHAT_TARGET_MEMBER_ID_INVALID(HttpStatus.BAD_REQUEST, "CHAT409", "채팅방 시작 대상 회원 id 값이 잘못되었습니다."),
 
     // 친구 관련 에러
     FRIEND_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND401", "잘못된 친구 요청입니다."),
