@@ -10,6 +10,7 @@ import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.chat.ChatRequest;
+import com.gamegoo.dto.chat.ChatRequest.SystemFlagRequest;
 import com.gamegoo.dto.chat.ChatResponse;
 import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
 import com.gamegoo.repository.board.BoardRepository;
@@ -42,6 +43,11 @@ public class ChatCommandService {
     private final ChatroomRepository chatroomRepository;
     private final ChatRepository chatRepository;
     private final BoardRepository boardRepository;
+
+    private static final String POST_SYSTEM_MESSAGE_TO_MEMBER_INIT = "상대방이 게시한 글을 보고 말을 걸었어요. 대화를 시작해보세요~";
+    private static final String POST_SYSTEM_MESSAGE_TO_MEMBER = "상대방이 게시한 글을 보고 말을 걸었어요.";
+    private static final String POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER = "내가 게시한 글을 보고 말을 걸어왔어요.";
+    private static final String MATCHING_SYSTEM_MESSAGE = "상대방과 매칭이 이루어졌어요!";
 
 
     /**
@@ -482,6 +488,41 @@ public class ChatCommandService {
             throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED);
         }
 
+        // 등록해야 할 시스템 메시지가 있는 경우
+        if (request.getSystemFlag() != null) {
+            SystemFlagRequest systemFlag = request.getSystemFlag();
+            Optional<Board> board = boardRepository.findById(systemFlag.getPostId());
+
+            // 시스템 메시지 전송자 member 엔티티 조회
+            Member systemMember = profileService.findMember(0L);
+
+            // member 대상 시스템 메시지 생성
+            String messageContent =
+                systemFlag.getFlag().equals(1) ? POST_SYSTEM_MESSAGE_TO_MEMBER_INIT
+                    : POST_SYSTEM_MESSAGE_TO_MEMBER;
+
+            Chat systemChatToMember = Chat.builder()
+                .contents(messageContent)
+                .chatroom(chatroom)
+                .fromMember(systemMember)
+                .toMember(member)
+                .sourceBoard(board.orElse(null))
+                .build();
+
+            // targetMember 대상 시스템 메시지 생성
+            Chat systemChatToTargetMember = Chat.builder()
+                .contents(POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER)
+                .chatroom(chatroom)
+                .fromMember(systemMember)
+                .toMember(targetMember)
+                .sourceBoard(board.orElse(null))
+                .build();
+
+            chatRepository.save(systemChatToMember);
+            chatRepository.save(systemChatToTargetMember);
+            chatRepository.flush();
+        }
+
         // chat 엔티티 생성
         Chat chat = Chat.builder()
             .contents(request.getMessage())
@@ -512,7 +553,7 @@ public class ChatCommandService {
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-                memberId, chatroom.getId())
+                member.getId(), chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
         if (timestamp == null) { // timestamp 파라미터가 넘어오지 않은 경우, lastViewDate를 현재 시각으로 업데이트
@@ -540,7 +581,7 @@ public class ChatCommandService {
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-                memberId, chatroom.getId())
+                member.getId(), chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
         memberChatroom.updateLastJoinDate(null);

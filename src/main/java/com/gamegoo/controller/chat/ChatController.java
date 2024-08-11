@@ -93,7 +93,7 @@ public class ChatController {
     @PostMapping("/chat/{chatroomUuid}")
     public ApiResponse<ChatResponse.ChatCreateResultDTO> addChat(
         @PathVariable(name = "chatroomUuid") String chatroomUuid,
-        @RequestBody ChatRequest.ChatCreateRequest request
+        @RequestBody @Valid ChatRequest.ChatCreateRequest request
     ) {
         Long memberId = JWTUtil.getCurrentUserId();
         Chat chat = chatCommandService.addChat(request, chatroomUuid, memberId);
