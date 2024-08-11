@@ -35,6 +35,8 @@ public class QChat extends EntityPathBase<Chat> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final com.gamegoo.domain.board.QBoard sourceBoard;
+
     public final NumberPath<Long> timestamp = createNumber("timestamp", Long.class);
 
     public final com.gamegoo.domain.member.QMember toMember;
@@ -62,6 +64,7 @@ public class QChat extends EntityPathBase<Chat> {
         super(type, metadata, inits);
         this.chatroom = inits.isInitialized("chatroom") ? new QChatroom(forProperty("chatroom"), inits.get("chatroom")) : null;
         this.fromMember = inits.isInitialized("fromMember") ? new com.gamegoo.domain.member.QMember(forProperty("fromMember")) : null;
+        this.sourceBoard = inits.isInitialized("sourceBoard") ? new com.gamegoo.domain.board.QBoard(forProperty("sourceBoard"), inits.get("sourceBoard")) : null;
         this.toMember = inits.isInitialized("toMember") ? new com.gamegoo.domain.member.QMember(forProperty("toMember")) : null;
     }
 
