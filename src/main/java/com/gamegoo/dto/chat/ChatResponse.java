@@ -47,6 +47,7 @@ public class ChatResponse {
         "memberProfileImg",
         "friend",
         "blocked",
+        "system",
         "chatMessageList"
     })
     public static class ChatroomEnterDTO {
@@ -57,6 +58,7 @@ public class ChatResponse {
         Integer memberProfileImg;
         boolean friend;
         boolean blocked;
+        SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
 
     }
@@ -99,5 +101,15 @@ public class ChatResponse {
         String message;
         String createdAt;
         Long timestamp;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SystemFlagDTO {
+
+        Integer flag;
+        Long boardId;
     }
 }
