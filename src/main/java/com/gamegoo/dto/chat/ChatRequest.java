@@ -41,7 +41,7 @@ public class ChatRequest {
         @NotEmpty
         String message;
         @Valid
-        SystemFlagRequest systemFlag;
+        SystemFlagRequest system;
     }
 
     @Getter
@@ -53,7 +53,7 @@ public class ChatRequest {
         Integer flag;
 
         @NotNull
-        Long postId;
+        Long boardId;
     }
 
 }

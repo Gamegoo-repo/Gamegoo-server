@@ -219,20 +219,15 @@ public class ChatCommandService {
                 recentChats);
 
             // 시스템 메시지 기능을 위한 SystemFlagDTO 생성
-            ChatResponse.SystemFlagDTO systemFlagDTO = null;
-
-            // 내 lastJoinDate가 null인 경우
-            if (memberChatroom.getLastJoinDate() == null) {
-                systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
-                    .flag(1)
-                    .boardId(boardId)
-                    .build();
-            } else { // 내 lastJoinDate가 null이 아닌 경우
-                systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
+            ChatResponse.SystemFlagDTO systemFlagDTO = memberChatroom.getLastJoinDate() == null
+                ? ChatResponse.SystemFlagDTO.builder()
+                .flag(1)
+                .boardId(boardId)
+                .build()
+                : ChatResponse.SystemFlagDTO.builder()
                     .flag(2)
                     .boardId(boardId)
                     .build();
-            }
 
             return ChatroomEnterDTO.builder()
                 .uuid(chatroom.get().getUuid())
@@ -281,20 +276,15 @@ public class ChatCommandService {
             memberChatroomRepository.save(targetMemberChatroom);
 
             // 시스템 메시지 기능을 위한 SystemFlagDTO 생성
-            ChatResponse.SystemFlagDTO systemFlagDTO = null;
-
-            // 내 lastJoinDate가 null인 경우
-            if (memberChatroom.getLastJoinDate() == null) {
-                systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
-                    .flag(1)
-                    .boardId(boardId)
-                    .build();
-            } else { // 내 lastJoinDate가 null이 아닌 경우
-                systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
+            ChatResponse.SystemFlagDTO systemFlagDTO = memberChatroom.getLastJoinDate() == null
+                ? ChatResponse.SystemFlagDTO.builder()
+                .flag(1)
+                .boardId(boardId)
+                .build()
+                : ChatResponse.SystemFlagDTO.builder()
                     .flag(2)
                     .boardId(boardId)
                     .build();
-            }
 
             return ChatroomEnterDTO.builder()
                 .uuid(savedChatroom.getUuid())
@@ -489,9 +479,9 @@ public class ChatCommandService {
         }
 
         // 등록해야 할 시스템 메시지가 있는 경우
-        if (request.getSystemFlag() != null) {
-            SystemFlagRequest systemFlag = request.getSystemFlag();
-            Optional<Board> board = boardRepository.findById(systemFlag.getPostId());
+        if (request.getSystem() != null) {
+            SystemFlagRequest systemFlag = request.getSystem();
+            Optional<Board> board = boardRepository.findById(systemFlag.getBoardId());
 
             // 시스템 메시지 전송자 member 엔티티 조회
             Member systemMember = profileService.findMember(0L);
