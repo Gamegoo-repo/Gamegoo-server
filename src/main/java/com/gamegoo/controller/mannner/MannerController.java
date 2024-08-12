@@ -128,4 +128,12 @@ public class MannerController {
 
         return ApiResponse.onSuccess(result);
     }
+
+    @GetMapping("/{memberId}")
+    public ApiResponse<MannerResponse.mannerByIdResponseDTO> getMannerById(@PathVariable(name = "memberId") Long targetMemberId){
+
+        MannerResponse.mannerByIdResponseDTO result = mannerService.getMannerById(targetMemberId);
+
+        return ApiResponse.onSuccess(result);
+    }
 }
