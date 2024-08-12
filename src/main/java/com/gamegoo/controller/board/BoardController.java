@@ -31,7 +31,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("")
-    @Operation(summary = "게시판 글 작성 API", description = "게시판에서 글을 작성하는 API 입니다.")
+    @Operation(summary = "게시판 글 작성 API", description = "게시판에서 글을 작성하는 API 입니다. 게임 모드 1~4, 포지션 0~5를 입력하세요. 게임스타일은 최대 3개까지 입력가능합니다.")
     public ApiResponse<BoardResponse.boardInsertResponseDTO> boardInsert(
             @RequestBody BoardRequest.boardInsertDTO request
     ) {
