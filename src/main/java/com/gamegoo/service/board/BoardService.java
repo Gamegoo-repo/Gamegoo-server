@@ -338,6 +338,8 @@ public class BoardService {
 
         List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerService.mannerKeyword(poster);
 
+        List<MannerResponse.mannerKeywordDTO> mannerKeywords = mannerService.sortMannerKeywordDTOs(mannerKeywordDTOs);
+
         return BoardResponse.boardByIdResponseForMemberDTO.builder()
             .boardId(board.getId())
             .memberId(poster.getId())
@@ -349,7 +351,7 @@ public class BoardService {
             .gameName(poster.getGameName())
             .tag(poster.getTag())
             .mannerLevel(poster.getMannerLevel())
-            .mannerKeywords(mannerKeywordDTOs)
+            .mannerKeywords(mannerKeywords)
             .tier(poster.getTier())
             .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId)
                 .collect(Collectors.toList()))
