@@ -3,6 +3,8 @@ package com.gamegoo.dto.board;
 import com.gamegoo.domain.member.Tier;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.gamegoo.dto.manner.MannerResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -123,6 +125,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Integer mannerLevel;
+        List<MannerResponse.mannerKeywordDTO> mannerKeywords;
         Tier tier;
         Boolean mike;
         List<Long> championList;
