@@ -56,18 +56,18 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
         }
 
-        // 주 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getMainPosition() < 1 || request.getMainPosition() > 5) {
+        // 주 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getMainPosition() < 0 || request.getMainPosition() > 5) {
             throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
         }
 
-        // 부 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getSubPosition() < 1 || request.getSubPosition() > 5) {
+        // 부 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getSubPosition() < 0 || request.getSubPosition() > 5) {
             throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
         }
 
-        // 상대 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getWantPosition() < 1 || request.getWantPosition() > 5) {
+        // 상대 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getWantPosition() < 0 || request.getWantPosition() > 5) {
             throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
         }
 
@@ -140,18 +140,18 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
         }
 
-        // 주 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getMainPosition() < 1 || request.getMainPosition() > 5) {
+        // 주 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getMainPosition() < 0 || request.getMainPosition() > 5) {
             throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
         }
 
-        // 부 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getSubPosition() < 1 || request.getSubPosition() > 5) {
+        // 부 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getSubPosition() < 0 || request.getSubPosition() > 5) {
             throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
         }
 
-        // 상대 포지션 값 검증. (1 ~ 5값만 가능)
-        if (request.getWantPosition() < 1 || request.getWantPosition() > 5) {
+        // 상대 포지션 값 검증. (0 ~ 5값만 가능)
+        if (request.getWantPosition() < 0 || request.getWantPosition() > 5) {
             throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
         }
 
