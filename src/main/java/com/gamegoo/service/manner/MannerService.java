@@ -533,10 +533,21 @@ public class MannerService {
 
     // 대상 회원의 매너 평가 조회
     @Transactional(readOnly = true)
-    public MannerResponse.mannerByIdResponseDTO getMannerById(Long targetMemberId){
+    public MannerResponse.mannerByIdResponseDTO getMannerById(Long targetMemberId) {
 
         Member targetMember = memberRepository.findById(targetMemberId).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
+        List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerKeyword(targetMember);
+
+        Integer mannerLevel = targetMember.getMannerLevel();
+        return MannerResponse.mannerByIdResponseDTO.builder()
+                .memberId(targetMember.getId())
+                .mannerLevel(mannerLevel)
+                .mannerKeywords(mannerKeywordDTOs)
+                .build();
+    }
+
+    public List<MannerResponse.mannerKeywordDTO> mannerKeyword(Member targetMember){
         // 매너평가 ID 조회
         List<MannerRating> mannerRatings = targetMember.getMannerRatingList();
 
@@ -599,11 +610,6 @@ public class MannerService {
             mannerKeywordDTOs.add(new MannerResponse.mannerKeywordDTO(false, i, count));
         }
 
-        Integer mannerLevel = targetMember.getMannerLevel();
-        return MannerResponse.mannerByIdResponseDTO.builder()
-                .memberId(targetMember.getId())
-                .mannerLevel(mannerLevel)
-                .mannerKeywords(mannerKeywordDTOs)
-                .build();
+        return mannerKeywordDTOs;
     }
 }
