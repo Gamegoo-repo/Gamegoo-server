@@ -119,7 +119,7 @@ public class MannerController {
     }
 
     @GetMapping()
-    @Operation(summary = "내가 받은 매너 평가 조회 API", description = "회원의 매너레벨과 회원이 받은 매너 평가를 조회하는 API 입니다.")
+    @Operation(summary = "내가 받은 매너 평가 조회 API", description = "회원의 매너레벨과 회원이 받은 키워드를 조회하는 API 입니다.")
     public ApiResponse<MannerResponse.myMannerResponseDTO> getMyManner(){
 
         Long memberId = JWTUtil.getCurrentUserId();
@@ -130,6 +130,8 @@ public class MannerController {
     }
 
     @GetMapping("/{memberId}")
+    @Operation(summary = "다른 유저의 매너 평가 조회 API", description = "다른 유저의 매너레벨과 키워드를 조회하는 API 입니다.")
+    @Parameter(name = "memberId", description = "매너 평가 조회 대상의 id 입니다.")
     public ApiResponse<MannerResponse.mannerByIdResponseDTO> getMannerById(@PathVariable(name = "memberId") Long targetMemberId){
 
         MannerResponse.mannerByIdResponseDTO result = mannerService.getMannerById(targetMemberId);
