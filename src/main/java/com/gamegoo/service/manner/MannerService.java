@@ -541,11 +541,13 @@ public class MannerService {
 
         List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerKeyword(targetMember);
 
+        List<MannerResponse.mannerKeywordDTO> mannerKeywords = sortMannerKeywordDTOs(mannerKeywordDTOs);
+
         Integer mannerLevel = targetMember.getMannerLevel();
         return MannerResponse.mannerByIdResponseDTO.builder()
                 .memberId(targetMember.getId())
                 .mannerLevel(mannerLevel)
-                .mannerKeywords(mannerKeywordDTOs)
+                .mannerKeywords(mannerKeywords)
                 .build();
     }
 
