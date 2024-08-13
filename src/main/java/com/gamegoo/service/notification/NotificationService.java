@@ -90,15 +90,10 @@ public class NotificationService {
      * @param cursor
      * @return
      */
-    public Slice<Notification> getNotificationListByCursor(Long memberId,
-        String type, Long cursor) {
+    public Slice<Notification> getNotificationListByCursor(Long memberId, Long cursor) {
         Member member = profileService.findMember(memberId);
 
-        if (!"general".equals(type) && !"friend".equals(type)) {
-            throw new NotificationHandler(ErrorStatus.INVALID_NOTIFICATION_TYPE);
-        }
-
-        return notificationRepository.findNotificationsByCursorAndType(member.getId(), type,
+        return notificationRepository.findNotificationsByCursor(member.getId(),
             cursor);
     }
 
