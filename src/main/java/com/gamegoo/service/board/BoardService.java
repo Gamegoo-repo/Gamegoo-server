@@ -12,16 +12,15 @@ import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
+import com.gamegoo.dto.manner.MannerResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.MemberUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,8 @@ public class BoardService {
 
     @Autowired
     private FriendService friendService;
+    @Autowired
+    private MannerService mannerService;
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final GameStyleRepository gameStyleRepository;
@@ -335,6 +336,10 @@ public class BoardService {
 
         Member poster = board.getMember();
 
+        List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerService.mannerKeyword(poster);
+
+        List<MannerResponse.mannerKeywordDTO> mannerKeywords = mannerService.sortMannerKeywordDTOs(mannerKeywordDTOs);
+
         return BoardResponse.boardByIdResponseForMemberDTO.builder()
             .boardId(board.getId())
             .memberId(poster.getId())
@@ -346,6 +351,7 @@ public class BoardService {
             .gameName(poster.getGameName())
             .tag(poster.getTag())
             .mannerLevel(poster.getMannerLevel())
+            .mannerKeywords(mannerKeywords)
             .tier(poster.getTier())
             .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId)
                 .collect(Collectors.toList()))

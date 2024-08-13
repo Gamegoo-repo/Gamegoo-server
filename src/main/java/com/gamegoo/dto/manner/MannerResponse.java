@@ -53,6 +53,17 @@ public class MannerResponse {
         Integer mannerLevel;
         List<mannerKeywordDTO> mannerKeywords;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class mannerByIdResponseDTO{
+        Long memberId;
+        Integer mannerLevel;
+        List<mannerKeywordDTO> mannerKeywords;
+    }
+
     @Getter
     @Builder
     @NoArgsConstructor
