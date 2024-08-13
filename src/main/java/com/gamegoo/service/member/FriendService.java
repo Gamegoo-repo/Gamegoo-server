@@ -11,6 +11,7 @@ import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
+import com.gamegoo.util.SortUtil;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,14 @@ public class FriendService {
      */
     @Transactional(readOnly = true)
     public List<Friend> getFriends(Long memberId) {
-        return friendRepository.findAllByFromMemberId(memberId);
+        List<Friend> friendList = friendRepository.findAllByFromMemberId(memberId);
+
+        // 친구 회원의 gameName 기준 오름차순 정렬
+        friendList.sort(
+            (f1, f2) -> SortUtil.memberNameComparator.compare(f1.getToMember().getGameName(),
+                f2.getToMember().getGameName()));
+        
+        return friendList;
     }
 
 

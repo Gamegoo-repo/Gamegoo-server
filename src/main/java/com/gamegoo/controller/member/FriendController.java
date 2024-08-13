@@ -32,7 +32,7 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다.")
+    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다. 이름 오름차순으로 정렬해 제공합니다.")
     @GetMapping
     public ApiResponse<List<MemberResponse.friendInfoDTO>> getFriendList() {
         Long memberId = JWTUtil.getCurrentUserId();
