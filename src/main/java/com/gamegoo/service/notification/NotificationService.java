@@ -29,7 +29,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ProfileService profileService;
 
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 10;
 
     /**
      * 새로운 알림 생성 및 저장 메소드
