@@ -105,6 +105,7 @@ public enum ErrorStatus implements BaseErrorCode {
     BAD_MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 비매너평가를 찾을 수 없습니다."),
     MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
+    MANNER_INSERT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MANNER410", "잘못된 매너평가 등록 요청입니다."),
 
     // 채팅 관련 에러
     CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT401", "채팅 대상 회원을 찾을 수 없습니다."),

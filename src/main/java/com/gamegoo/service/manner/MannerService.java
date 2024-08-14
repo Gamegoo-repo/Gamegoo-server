@@ -56,6 +56,11 @@ public class MannerService {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
         }
 
+        // 본인의 id를 요청한 경우
+        if (member.equals(targetMember)) {
+            throw new MannerHandler(ErrorStatus.MANNER_INSERT_BAD_REQUEST);
+        }
+
         // 매너평가 최초 시도 여부 검증.
         List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberIdAndToMemberId(
             member.getId(), targetMember.getId());
@@ -144,6 +149,11 @@ public class MannerService {
         // 비매너평가를 받는 회원 탈퇴 여부 검증.
         if (targetMember.getBlind()) {
             throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
+        }
+
+        // 본인의 id를 요청한 경우
+        if (member.equals(targetMember)) {
+            throw new MannerHandler(ErrorStatus.MANNER_INSERT_BAD_REQUEST);
         }
 
         // 비매너평가 최초 시도 여부 검증.
