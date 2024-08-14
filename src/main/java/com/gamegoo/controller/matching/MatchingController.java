@@ -18,11 +18,14 @@ import javax.validation.Valid;
 public class MatchingController {
     private final MatchingService matchingService;
 
-    @PostMapping("")
-    @Operation(summary = "매칭 기록을 DB에 저장하는 API 입니다.", description = "API for recording matching")
-    public ApiResponse<String> saveMatching(@RequestBody @Valid MatchingRequest.SaveMatchingRequestDTO request) {
+    @PostMapping("/priority")
+    @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description = "API for calculating and recording matching")
+    public ApiResponse<String> saveMatching(@RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
+        // 우선순위 계산
 
+
+        // DB에 기록하기
         matchingService.save(request, id);
         return ApiResponse.onSuccess("매칭 기록에 성공했습니다.");
     }
