@@ -42,7 +42,7 @@ public class FriendService {
         friendList.sort(
             (f1, f2) -> SortUtil.memberNameComparator.compare(f1.getToMember().getGameName(),
                 f2.getToMember().getGameName()));
-        
+
         return friendList;
     }
 
@@ -110,6 +110,35 @@ public class FriendService {
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
             member.getGameName(), member.getId(), targetMember);
+    }
+
+    /**
+     * member -> targetMember로 요청한 FriendRequest를 CANCELLED 처리
+     *
+     * @param memberId
+     * @param targetMemberId
+     */
+    public void cancelFriendRequest(Long memberId, Long targetMemberId) {
+        Member member = profileService.findMember(memberId);
+
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // targetMember로 나 자신을 요청한 경우
+        if (member.equals(targetMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+
+        // 수락 대기 상태인 FriendRequest 엔티티 조회
+        Optional<FriendRequests> pendingFriendRequest = friendRequestsRepository.findByFromMemberAndToMemberAndStatus(
+            member, targetMember, FriendRequestStatus.PENDING);
+
+        // 수락 대기 중인 친구 요청이 존재하지 않는 경우
+        if (pendingFriendRequest.isEmpty()) {
+            throw new FriendHandler(ErrorStatus.PENDING_FRIEND_REQUEST_NOT_EXIST);
+        }
+
+        // FriendRequest 엔티티 상태 변경
+        pendingFriendRequest.get().updateStatus(FriendRequestStatus.CANCELLED);
     }
 
     /**
