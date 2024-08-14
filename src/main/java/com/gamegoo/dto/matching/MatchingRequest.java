@@ -12,7 +12,7 @@ import java.util.List;
 public class MatchingRequest {
     @Getter
     @NoArgsConstructor
-    public static class SaveMatchingRequestDTO {
+    public static class InitializingMatchingRequestDTO {
         // 1: 빠른 대전, 2: 솔로 랭크, 3: 자유 랭크, 4: 칼바람 나락
         @NotNull(message = "gameMode는 비워둘 수 없습니다.")
         @Min(value = 1, message = "gameMode 값은 1이상이어야 합니다.")
