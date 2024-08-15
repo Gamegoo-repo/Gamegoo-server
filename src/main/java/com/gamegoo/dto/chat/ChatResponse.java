@@ -45,8 +45,8 @@ public class ChatResponse {
         Long memberId;
         String gameName;
         Integer memberProfileImg;
-        boolean friend;
-        boolean blocked;
+        Boolean friend;
+        Boolean blocked;
         SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
 
