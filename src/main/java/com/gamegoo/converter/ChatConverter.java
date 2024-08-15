@@ -64,5 +64,4 @@ public class ChatConverter {
             .boardId(chat.getSourceBoard() != null ? chat.getSourceBoard().getId() : null)
             .build();
     }
-
 }
