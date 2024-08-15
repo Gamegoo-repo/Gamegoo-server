@@ -3,9 +3,6 @@ name: PR Test
 on:
   pull_request:
     branches: [ develop ] # develop branch에 PR을 보낼 때 실행
-  push:
-    branches:
-      - refactor/171
 
 jobs:
   test:
@@ -25,4 +22,4 @@ jobs:
 
       # Gradle test를 실행
       - name: Test with Gradle
-        run: ./gradlew --quiet test
+        run: ./gradlew --info test

@@ -10,7 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true  # SQL 로그 출력
+    # show-sql: true  # SQL 로그 출력
     # JWT Secret key 설정
   jwt:
     secret: secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret
