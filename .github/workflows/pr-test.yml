@@ -25,4 +25,4 @@ jobs:
 
       # Gradle test를 실행
       - name: Test with Gradle
-        run: ./gradlew --info test
+        run: ./gradlew --quiet test
