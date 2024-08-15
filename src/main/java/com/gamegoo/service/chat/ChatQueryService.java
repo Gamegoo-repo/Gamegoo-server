@@ -13,6 +13,7 @@ import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.DatetimeUtil;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -122,6 +123,31 @@ public class ChatQueryService {
                 member.getId());
         }
     }
+
+    /**
+     * 해당 회원의 안읽은 메시지가 속한 채팅방의 uuid list를 리턴
+     *
+     * @param memberId
+     * @return
+     */
+    public List<String> getUnreadChatroomUuids(Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomOrderByLastChat(
+            member.getId());
+
+        List<String> unreadChatroomUuids = activeMemberChatroom.stream().map(memberChatroom -> {
+                Integer unreadCnt = chatRepository.countUnreadChats(
+                    memberChatroom.getChatroom().getId(), memberChatroom.getId(), member.getId());
+
+                return unreadCnt > 0 ? memberChatroom.getChatroom().getUuid() : null;
+            })
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+        
+        return unreadChatroomUuids;
+    }
+
 
     /**
      * 두 회원 간의 Chatroom 엔티티 반환

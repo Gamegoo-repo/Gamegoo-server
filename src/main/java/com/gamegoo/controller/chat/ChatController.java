@@ -141,6 +141,14 @@ public class ChatController {
         return ApiResponse.onSuccess("채팅방 나가기 성공");
     }
 
+    @Operation(summary = "안읽은 채팅방 uuid 목록 조회 API", description = "안읽은 메시지가 속한 채팅방의 uuid 목록을 조회하는 API 입니다.")
+    @GetMapping("/chat/unread")
+    public ApiResponse<List<String>> getUnreadChatroomUuid() {
+        Long memberId = JWTUtil.getCurrentUserId();
+        List<String> chatroomUuids = chatQueryService.getUnreadChatroomUuids(memberId);
+        return ApiResponse.onSuccess(chatroomUuids);
+    }
+
     @Operation(summary = "매칭을 통한 채팅방 시작 메소드 테스트용 API", description =
         "매칭을 통한 채팅방 시작 메소드를 테스트하기 위한 API 입니다.\n\n" +
             "대상 회원과의 채팅방이 이미 존재하는 경우, 해당 채팅방 uuid를 리턴합니다.\n\n" +
@@ -149,7 +157,6 @@ public class ChatController {
         @Parameter(name = "memberId1", description = "매칭 시켜줄 회원 id 입니다."),
         @Parameter(name = "memberId2", description = "매칭 시켜줄 회원 id 입니다.")
     })
-
     @GetMapping("/chat/start/matching/{memberId1}/{memberId2}")
     public ApiResponse<String> startChatroomByMatching(
         @PathVariable(name = "memberId1") Long memberId1,
