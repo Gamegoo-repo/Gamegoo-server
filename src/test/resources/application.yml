@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true  # H2 콘솔 사용 가능
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true  # SQL 로그 출력
+    # JWT Secret key 설정
+  jwt:
+    secret: secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret
+    #riot API 설정
+  riot:
+    api:
+      key: test-key
+
+  # Gmail 설정
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: gamegoo0707@gmail.com
+    password: test-pwd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+socket:
+  server:
+    url: http://localhost:3000
