@@ -9,6 +9,7 @@ import com.gamegoo.domain.matching.MatchingType;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.matching.MatchingRequest;
+import com.gamegoo.dto.matching.MatchingResponse;
 import com.gamegoo.dto.matching.MemberPriority;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -29,21 +30,23 @@ public class MatchingService {
     private final ProfileService profileService;
 
     /**
-     * 매칭 입장한 사용자의 큐에 들어갈 우선순위를 계산
+     * 우선순위 계산
      *
      * @param request
      * @param id
      * @return
      * @throws MemberHandler
      */
-    public List<MemberPriority> calculateMyPriority(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
+    public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
         // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
-        List<MatchingRecord> matchingRecords = matchingRecordRepository.findByCreatedAtBeforeAndStatusAndGameMode(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
-        List<MemberPriority> otherMemberPriority = new ArrayList<>();
+        List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
+        List<MemberPriority> otherPriorityList = new ArrayList<>();
+        List<MemberPriority> myPriorityList = new ArrayList<>();
 
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Long memberId = member.getId();
 
         MatchingRecord myMatchingRecord = MatchingRecord.builder()
                 .member(member)
@@ -63,55 +66,23 @@ public class MatchingService {
         // 우선순위 계산하기
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
+            if (!memberId.equals(otherMemberId)) {
+                int otherPriority = calculatePriority(myMatchingRecord, record);
+                myPriorityList.add(new MemberPriority(otherMemberId, otherPriority));
 
-            int otherPriority = calculatePriority(myMatchingRecord, record);
-            otherMemberPriority.add(new MemberPriority(otherMemberId, otherPriority));
+                int myPriority = calculatePriority(record, myMatchingRecord);
+                otherPriorityList.add(new MemberPriority(record.getMember().getId(), myPriority));
+            }
+
+
         }
 
-        return otherMemberPriority;
-    }
-
-    /**
-     * @param request
-     * @param id
-     * @return
-     * @throws MemberHandler
-     */
-
-    public List<MemberPriority> calculateOtherPriority(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
-        // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
-        List<MatchingRecord> matchingRecords = matchingRecordRepository.findByCreatedAtBeforeAndStatusAndGameMode(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
-        List<MemberPriority> otherMemberPriority = new ArrayList<>();
-
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
-        MatchingRecord myMatchingRecord = MatchingRecord.builder()
-                .member(member)
-                .mike(request.getMike())
-                .rank(member.getRank())
-                .tier(member.getTier())
-                .winRate(member.getWinRate())
-                .status(MatchingStatus.FAIL)
-                .matchingType(MatchingType.valueOf(request.getMatchingType()))
-                .mainPosition(request.getMainP())
-                .subPosition(request.getSubP())
-                .wantPosition(request.getWantP())
-                .mannerLevel(member.getMannerLevel())
-                .gameMode(request.getGameMode())
+        return MatchingResponse.PriorityMatchingResponseDTO.builder()
+                .myPriorityList(myPriorityList)
+                .otherPriorityList(otherPriorityList)
                 .build();
-
-        // 우선순위 계산하기
-        for (MatchingRecord record : matchingRecords) {
-            Long otherMemberId = record.getMember().getId();
-
-            int otherPriority = calculatePriority(record, myMatchingRecord);
-            otherMemberPriority.add(new MemberPriority(otherMemberId, otherPriority));
-        }
-
-        return otherMemberPriority;
     }
+
 
     /**
      * 우선순위 계산
@@ -137,7 +108,6 @@ public class MatchingService {
         Tier otherTier = otherMatchingRecord.getMember().getTier();
         Integer otherMainPosition = otherMatchingRecord.getMainPosition();
         Integer otherSubPosition = otherMatchingRecord.getSubPosition();
-        Integer otherWantPosition = otherMatchingRecord.getWantPosition();
         Boolean otherMike = otherMatchingRecord.getMike();
         Integer otherManner = otherMatchingRecord.getMannerLevel();
         Integer otherGameMode = otherMatchingRecord.getGameMode();
@@ -209,8 +179,9 @@ public class MatchingService {
             }
 
             // 포지션 가중치
-            if (otherWantPosition.equals(myMainPosition) || otherWantPosition.equals(mySubPosition)) {
-                priority += 3;
+            // 내가 원하는 포지션이 상대방의 주/부 포지션이거나 랜덤일 경우
+            if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(otherSubPosition) || myWantPosition.equals(0) || otherMainPosition.equals(0) || otherSubPosition.equals(0)) {
+                priority += 2;
             }
         }
 
@@ -229,7 +200,7 @@ public class MatchingService {
      */
     private int getMannerPriority(Integer otherManner, Integer myManner) {
         int priority = 0;
-        int mannerDifference = myManner - otherManner;
+        int mannerDifference = Math.abs(myManner - otherManner);
         priority += 16 - mannerDifference * 4;
         return priority;
     }
