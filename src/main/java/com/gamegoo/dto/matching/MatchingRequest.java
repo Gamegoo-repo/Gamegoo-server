@@ -2,6 +2,7 @@ package com.gamegoo.dto.matching;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class MatchingRequest {
     @Getter
+    @Setter
     @NoArgsConstructor
     public static class InitializingMatchingRequestDTO {
         // 1: 빠른 대전, 2: 솔로 랭크, 3: 자유 랭크, 4: 칼바람 나락
