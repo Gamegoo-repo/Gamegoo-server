@@ -20,7 +20,10 @@ import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.MemberUtils;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -336,9 +339,11 @@ public class BoardService {
 
         Member poster = board.getMember();
 
-        List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerService.mannerKeyword(poster);
+        List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerService.mannerKeyword(
+            poster);
 
-        List<MannerResponse.mannerKeywordDTO> mannerKeywords = mannerService.sortMannerKeywordDTOs(mannerKeywordDTOs);
+        List<MannerResponse.mannerKeywordDTO> mannerKeywords = mannerService.sortMannerKeywordDTOs(
+            mannerKeywordDTOs);
 
         return BoardResponse.boardByIdResponseForMemberDTO.builder()
             .boardId(board.getId())
@@ -398,5 +403,16 @@ public class BoardService {
                 .createdAt(board.getCreatedAt())
                 .build();
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * boardId로 board 엔티티 조회
+     *
+     * @param boardId
+     * @return
+     */
+    public Board findBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
     }
 }
