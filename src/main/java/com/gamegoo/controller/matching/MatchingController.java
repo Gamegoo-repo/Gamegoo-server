@@ -1,7 +1,10 @@
 package com.gamegoo.controller.matching;
 
 import com.gamegoo.apiPayload.ApiResponse;
+import com.gamegoo.converter.MatchingConverter;
 import com.gamegoo.dto.matching.MatchingRequest;
+import com.gamegoo.dto.matching.MatchingResponse;
+import com.gamegoo.dto.matching.MemberPriority;
 import com.gamegoo.service.matching.MatchingService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,14 +24,15 @@ public class MatchingController {
 
     @PostMapping("/priority")
     @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description = "API for calculating and recording matching")
-    public ApiResponse<String> saveMatching(@RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
+    public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(@RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
-        // 우선순위 계산
-
+        // 우선순위 계산  
+        List<MemberPriority> myPriority = matchingService.calculateMyPriority(request, id);
+        List<MemberPriority> otherPriority = matchingService.calculateOtherPriority(request, id);
 
         // DB에 기록하기
         matchingService.save(request, id);
-        return ApiResponse.onSuccess("매칭 기록에 성공했습니다.");
+        return ApiResponse.onSuccess(MatchingConverter.toPriorityMatchingResponseDTO(myPriority, otherPriority));
     }
 
     @PutMapping("")
