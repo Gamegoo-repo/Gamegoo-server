@@ -11,6 +11,7 @@ import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
+import com.gamegoo.util.SortUtil;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,14 @@ public class FriendService {
      */
     @Transactional(readOnly = true)
     public List<Friend> getFriends(Long memberId) {
-        return friendRepository.findAllByFromMemberId(memberId);
+        List<Friend> friendList = friendRepository.findAllByFromMemberId(memberId);
+
+        // 친구 회원의 gameName 기준 오름차순 정렬
+        friendList.sort(
+            (f1, f2) -> SortUtil.memberNameComparator.compare(f1.getToMember().getGameName(),
+                f2.getToMember().getGameName()));
+
+        return friendList;
     }
 
 
@@ -102,6 +110,35 @@ public class FriendService {
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
             member.getGameName(), member.getId(), targetMember);
+    }
+
+    /**
+     * member -> targetMember로 요청한 FriendRequest를 CANCELLED 처리
+     *
+     * @param memberId
+     * @param targetMemberId
+     */
+    public void cancelFriendRequest(Long memberId, Long targetMemberId) {
+        Member member = profileService.findMember(memberId);
+
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // targetMember로 나 자신을 요청한 경우
+        if (member.equals(targetMember)) {
+            throw new FriendHandler(ErrorStatus.FRIEND_BAD_REQUEST);
+        }
+
+        // 수락 대기 상태인 FriendRequest 엔티티 조회
+        Optional<FriendRequests> pendingFriendRequest = friendRequestsRepository.findByFromMemberAndToMemberAndStatus(
+            member, targetMember, FriendRequestStatus.PENDING);
+
+        // 수락 대기 중인 친구 요청이 존재하지 않는 경우
+        if (pendingFriendRequest.isEmpty()) {
+            throw new FriendHandler(ErrorStatus.PENDING_FRIEND_REQUEST_NOT_EXIST);
+        }
+
+        // FriendRequest 엔티티 상태 변경
+        pendingFriendRequest.get().updateStatus(FriendRequestStatus.CANCELLED);
     }
 
     /**
