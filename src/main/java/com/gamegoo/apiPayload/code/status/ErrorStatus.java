@@ -105,6 +105,7 @@ public enum ErrorStatus implements BaseErrorCode {
     BAD_MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 비매너평가를 찾을 수 없습니다."),
     MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
+    MANNER_INSERT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MANNER410", "잘못된 매너평가 등록 요청입니다."),
 
     // 채팅 관련 에러
     CHAT_TARGET_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT401", "채팅 대상 회원을 찾을 수 없습니다."),
@@ -132,8 +133,9 @@ public enum ErrorStatus implements BaseErrorCode {
     TARGET_PENDING_FRIEND_REQUEST_EXIST(HttpStatus.BAD_REQUEST, "FRIEND405",
             "해당 회원이 나에게 보낸 친구 요청이 수락 대기 중 입니다. 해당 요청을 수락 해주세요."),
     ALREADY_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND406",
-            "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
-    PENDING_FRIEND_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "FRIEND407", "수락/거절할 친구 요청이 존재하지 않습니다."),
+        "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
+    PENDING_FRIEND_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "FRIEND407",
+        "취소/수락/거절할 친구 요청이 존재하지 않습니다."),
     MEMBERS_NOT_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND408", "두 회원은 친구 관계가 아닙니다."),
     ALREADY_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND409", "이미 즐겨찾기 되어 있는 친구입니다."),
     NOT_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND410", "즐겨찾기 되어 있는 친구가 아닙니다."),

@@ -34,18 +34,16 @@ public class NotificationController {
     @Operation(summary = "알림 목록 조회 API", description = "알림 팝업 화면에서 알림 목록을 조회하는 API 입니다.")
     @Parameters({
         @Parameter(name = "cursor", description = "페이징을 위한 커서, Long 타입 notificationId를 보내주세요. 보내지 않으면 가장 최근 알림 10개를 조회합니다."),
-        @Parameter(name = "type", description = "알림 타입 조회 필터, general 또는 friend를 입력해주세요.")
     })
     @GetMapping
     public ApiResponse<NotificationResponse.cursorNotificationListDTO> getNotificationList(
-        @RequestParam(name = "type") String type,
         @RequestParam(name = "cursor", required = false) Long cursor
     ) {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
         Slice<Notification> notifications = notificationService.getNotificationListByCursor(
-            memberId, type, cursor);
+            memberId, cursor);
 
         return ApiResponse.onSuccess(
             NotificationConverter.toCursorNotificationListDTO(notifications));
