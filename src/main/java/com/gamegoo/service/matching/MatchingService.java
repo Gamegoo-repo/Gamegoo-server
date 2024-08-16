@@ -38,9 +38,8 @@ public class MatchingService {
      * @throws MemberHandler
      */
     public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
-        // TODO: 60분으로 되어있는거 PR Merge할 때는 5분으로 줄이기
         // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(60);
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
         List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
         List<MemberPriority> otherPriorityList = new ArrayList<>();
         List<MemberPriority> myPriorityList = new ArrayList<>();
