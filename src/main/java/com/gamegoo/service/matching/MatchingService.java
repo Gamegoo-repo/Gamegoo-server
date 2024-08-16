@@ -38,15 +38,14 @@ public class MatchingService {
      * @throws MemberHandler
      */
     public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
+        // TODO: 60분으로 되어있는거 PR Merge할 때는 5분으로 줄이기
         // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
-        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(60);
         List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
         List<MemberPriority> otherPriorityList = new ArrayList<>();
         List<MemberPriority> myPriorityList = new ArrayList<>();
 
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        Long memberId = member.getId();
+        Member member = profileService.findMember(id);
 
         MatchingRecord myMatchingRecord = MatchingRecord.builder()
                 .member(member)
@@ -66,7 +65,7 @@ public class MatchingService {
         // 우선순위 계산하기
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
-            if (!memberId.equals(otherMemberId)) {
+            if (!id.equals(otherMemberId)) {
                 int otherPriority = calculatePriority(myMatchingRecord, record);
                 myPriorityList.add(new MemberPriority(otherMemberId, otherPriority));
 
@@ -179,6 +178,7 @@ public class MatchingService {
             }
 
             // 포지션 가중치
+            // TODO : 포지션 가중치 수정하기
             // 내가 원하는 포지션이 상대방의 주/부 포지션이거나 랜덤일 경우
             if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(otherSubPosition) || myWantPosition.equals(0) || otherMainPosition.equals(0) || otherSubPosition.equals(0)) {
                 priority += 2;
@@ -251,19 +251,14 @@ public class MatchingService {
     @Transactional
     public void save(MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        MatchingType matchingType;
-        try {
-            matchingType = MatchingType.valueOf(request.getMatchingType().toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new MatchingHandler(ErrorStatus.MATHCING_TYPE_BAD_REQUEST);
-        }
+        Member member = profileService.findMember(id);
+
         // 매칭 기록 저장
         MatchingRecord matchingRecord = MatchingRecord.builder()
                 .mike(request.getMike())
                 .tier(member.getTier())
                 .rank(member.getRank())
-                .matchingType(matchingType)
+                .matchingType(MatchingType.valueOf(request.getMatchingType()))
                 .status(MatchingStatus.FAIL)
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())
@@ -291,7 +286,7 @@ public class MatchingService {
     @Transactional
     public void modify(MatchingRequest.ModifyMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = profileService.findMember(id);
 
         // 매칭 기록 불러오기
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(member)
