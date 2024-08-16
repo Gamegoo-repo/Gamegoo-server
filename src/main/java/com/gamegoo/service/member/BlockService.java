@@ -29,7 +29,7 @@ public class BlockService {
     private final ChatCommandService chatCommandService;
     private final FriendService friendService;
 
-    Integer pageSize = 9;
+    private final static Integer PAGE_SIZE = 10;
 
     /**
      * memberId에 해당하는 회원이 targetMemberId에 해당하는 회원을 차단
@@ -53,15 +53,15 @@ public class BlockService {
 
         // 이미 차단한 회원인지 검증
         boolean isblocked = blockRepository.existsByBlockerMemberAndBlockedMember(member,
-                targetMember);
+            targetMember);
         if (isblocked) {
             throw new BlockHandler(ErrorStatus.ALREADY_BLOCKED);
         }
 
         // block 엔티티 생성 및 연관관계 매핑
         Block block = Block.builder()
-                .blockedMember(targetMember)
-                .build();
+            .blockedMember(targetMember)
+            .build();
         block.setBlockerMember(member);
 
         blockRepository.save(block);
@@ -98,10 +98,10 @@ public class BlockService {
         // member 엔티티 조회
         Member member = profileService.findMember(memberId);
 
-        PageRequest pageRequest = PageRequest.of(pageIdx, pageSize);
+        PageRequest pageRequest = PageRequest.of(pageIdx, PAGE_SIZE);
 
         return memberRepository.findBlockedMembersByBlockerIdAndNotBlind(member.getId(),
-                pageRequest);
+            pageRequest);
     }
 
     /**
@@ -117,7 +117,7 @@ public class BlockService {
 
         // targetMember가 차단 실제로 차단 목록에 존재하는지 검증
         Block block = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember)
-                .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
+            .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
 
         block.removeBlockerMember(member); // 양방향 연관관계 제거
         blockRepository.delete(block);

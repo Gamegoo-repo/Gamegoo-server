@@ -32,7 +32,7 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다.")
+    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다. 이름 오름차순으로 정렬해 제공합니다.")
     @GetMapping
     public ApiResponse<List<MemberResponse.friendInfoDTO>> getFriendList() {
         Long memberId = JWTUtil.getCurrentUserId();
@@ -59,6 +59,24 @@ public class FriendController {
         MemberResponse.friendRequestResultDTO result = friendRequestResultDTO.builder()
             .targetMemberId(targetMemberId)
             .result("친구 요청 전송 성공")
+            .build();
+
+        return ApiResponse.onSuccess(result);
+
+    }
+
+    @Operation(summary = "친구 요청 취소 API", description = "대상 회원에게 보낸 친구 요청을 취소하는 API 입니다.")
+    @Parameter(name = "memberId", description = "친구 요청을 취소할 대상 회원의 id 입니다.")
+    @DeleteMapping("/request/{memberId}")
+    public ApiResponse<MemberResponse.friendRequestResultDTO> cancelFriendRequest(
+        @PathVariable(name = "memberId") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        friendService.cancelFriendRequest(memberId, targetMemberId);
+
+        MemberResponse.friendRequestResultDTO result = friendRequestResultDTO.builder()
+            .targetMemberId(targetMemberId)
+            .result("친구 요청 취소 성공")
             .build();
 
         return ApiResponse.onSuccess(result);
