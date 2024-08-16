@@ -1,5 +1,5 @@
 package com.gamegoo.domain.matching;
 
 public enum MatchingStatus {
-    FAIL, SUCCESS
+    FAIL, SUCCESS, QUIT
 }
