@@ -29,7 +29,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final ProfileService profileService;
 
-    private static final int PAGE_SIZE = 5;
+    private static final int PAGE_SIZE = 10;
 
     /**
      * 새로운 알림 생성 및 저장 메소드
@@ -90,15 +90,10 @@ public class NotificationService {
      * @param cursor
      * @return
      */
-    public Slice<Notification> getNotificationListByCursor(Long memberId,
-        String type, Long cursor) {
+    public Slice<Notification> getNotificationListByCursor(Long memberId, Long cursor) {
         Member member = profileService.findMember(memberId);
 
-        if (!"general".equals(type) && !"friend".equals(type)) {
-            throw new NotificationHandler(ErrorStatus.INVALID_NOTIFICATION_TYPE);
-        }
-
-        return notificationRepository.findNotificationsByCursorAndType(member.getId(), type,
+        return notificationRepository.findNotificationsByCursor(member.getId(),
             cursor);
     }
 
