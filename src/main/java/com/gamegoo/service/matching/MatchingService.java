@@ -107,6 +107,7 @@ public class MatchingService {
         Tier otherTier = otherMatchingRecord.getMember().getTier();
         Integer otherMainPosition = otherMatchingRecord.getMainPosition();
         Integer otherSubPosition = otherMatchingRecord.getSubPosition();
+        Integer otherWantPosition = otherMatchingRecord.getWantPosition();
         Boolean otherMike = otherMatchingRecord.getMike();
         Integer otherManner = otherMatchingRecord.getMannerLevel();
         Integer otherGameMode = otherMatchingRecord.getGameMode();
@@ -178,10 +179,20 @@ public class MatchingService {
             }
 
             // 포지션 가중치
-            // TODO : 포지션 가중치 수정하기
-            // 내가 원하는 포지션이 상대방의 주/부 포지션이거나 랜덤일 경우
-            if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(otherSubPosition) || myWantPosition.equals(0) || otherMainPosition.equals(0) || otherSubPosition.equals(0)) {
+            if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(0) || otherMainPosition.equals(0)) {
+                priority += 3;
+            } else if (myWantPosition.equals(otherSubPosition) || otherSubPosition.equals(0)) {
                 priority += 2;
+            } else {
+                priority += 1;
+            }
+
+            if (otherWantPosition.equals(myMainPosition) || otherWantPosition.equals(0) || myMainPosition.equals(0)) {
+                priority += 3;
+            } else if (otherWantPosition.equals(mySubPosition) || mySubPosition.equals(0)) {
+                priority += 2;
+            } else {
+                priority += 1;
             }
         }
 
