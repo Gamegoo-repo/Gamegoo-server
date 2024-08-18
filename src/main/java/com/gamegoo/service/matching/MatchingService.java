@@ -40,7 +40,7 @@ public class MatchingService {
     public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
         // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
-        List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(fiveMinutesAgo, MatchingStatus.FAIL, request.getGameMode());
+        List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
         List<MemberPriority> otherPriorityList = new ArrayList<>();
         List<MemberPriority> myPriorityList = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class MatchingService {
                 .rank(member.getRank())
                 .tier(member.getTier())
                 .winRate(member.getWinRate())
-                .status(MatchingStatus.FAIL)
+                .status(MatchingStatus.PENDING)
                 .matchingType(MatchingType.valueOf(request.getMatchingType()))
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())
@@ -269,7 +269,7 @@ public class MatchingService {
                 .tier(member.getTier())
                 .rank(member.getRank())
                 .matchingType(MatchingType.valueOf(request.getMatchingType()))
-                .status(MatchingStatus.FAIL)
+                .status(MatchingStatus.PENDING)
                 .mainPosition(request.getMainP())
                 .subPosition(request.getSubP())
                 .wantPosition(request.getWantP())
