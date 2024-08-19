@@ -5,23 +5,28 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.GeneralException;
 import com.gamegoo.domain.board.Board;
+import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.domain.member.LoginType;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
 import com.gamegoo.repository.board.BoardRepository;
+import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.chat.ChatCommandService;
 import com.gamegoo.service.member.BlockService;
+import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,8 +51,14 @@ public class ChatServiceTest {
     @Autowired
     private BlockService blockService;
 
+    @SpyBean
+    private ProfileService profileService;  // 실제 ProfileService를 Spy로 감싸기
+
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private ChatRepository chatRepository;
 
     @Autowired
     private ChatroomRepository chatroomRepository;
@@ -63,7 +75,14 @@ public class ChatServiceTest {
 
     private Member blindMember;
 
+    private Member systemMember;
+
     private Board member2Board;
+
+    private static final String POST_SYSTEM_MESSAGE_TO_MEMBER_INIT = "상대방이 게시한 글을 보고 말을 걸었어요. 대화를 시작해보세요~";
+    private static final String POST_SYSTEM_MESSAGE_TO_MEMBER = "상대방이 게시한 글을 보고 말을 걸었어요.";
+    private static final String POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER = "내가 게시한 글을 보고 말을 걸어왔어요.";
+    private static final String MATCHING_SYSTEM_MESSAGE = "상대방과 매칭이 이루어졌어요!";
 
     @BeforeEach
     public void setMember() {
@@ -113,9 +132,24 @@ public class ChatServiceTest {
             .memberChatroomList(new ArrayList<>())
             .build();
 
+        systemMember = Member.builder()
+            .id(0L)
+            .email("system@mail.com")
+            .password("12345678")
+            .loginType(LoginType.GENERAL)
+            .profileImage(randomProfileImage)
+            .blind(false)
+            .mike(false)
+            .mannerLevel(1)
+            .isAgree(true)
+            .blockList(new ArrayList<>())
+            .memberChatroomList(new ArrayList<>())
+            .build();
+
         member1 = memberRepository.save(member1);
         member2 = memberRepository.save(member2);
         blindMember = memberRepository.save(blindMember);
+        systemMember = memberRepository.save(systemMember);
 
         member2Board = Board.builder()
             .mode(1)
@@ -129,6 +163,9 @@ public class ChatServiceTest {
             .build();
         member2Board.setMember(member2);
         member2Board = boardRepository.save(member2Board);
+
+        // findSystemMember 메서드만 mock 처리
+        doReturn(systemMember).when(profileService).findSystemMember();
     }
 
     @Test
@@ -636,4 +673,49 @@ public class ChatServiceTest {
         assertEquals(expectedErrorCode, exception.getCode());
 
     }
+
+    @Test
+    @Order(22)
+    @DisplayName("22.매칭을 통한 채팅 시작 - 성공 :: 기존 채팅방 없음")
+    public void startChatroomByMatchingSucceedsNoExistingChatroom() throws Exception {
+        // given
+
+        // when
+        String uuid = chatCommandService.startChatroomByMatching(member1.getId(), member2.getId());
+
+        // then
+        // 1. 데이터베이스에서 채팅방이 실제로 생성되었는지 검증
+        Optional<Chatroom> createdChatroom = chatroomRepository.findByUuid(uuid);
+        assertTrue(createdChatroom.isPresent());
+
+        // 2. MemberChatroom 엔티티가 각 회원에 대해 잘 생성되었는지 검증
+        Optional<MemberChatroom> member1Chatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+            member1.getId(), createdChatroom.get().getId());
+        Optional<MemberChatroom> member2Chatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+            member2.getId(), createdChatroom.get().getId());
+
+        assertTrue(member1Chatroom.isPresent());
+        assertTrue(member2Chatroom.isPresent());
+
+        // 3. 각 MemberChatroom의 lastJoinDate 검증
+        assertNotNull(member1Chatroom.get().getLastJoinDate());
+        assertNotNull(member2Chatroom.get().getLastJoinDate());
+
+        // 4. systemChat 전송 검증
+        assertEquals(chatRepository.count(), 2);
+
+        List<Chat> chats = chatRepository.findAll();
+        assertEquals(chats.get(0).getFromMember(), systemMember);
+        assertEquals(chats.get(1).getFromMember(), systemMember);
+
+        assertEquals(chats.get(0).getToMember(), member1);
+        assertEquals(chats.get(1).getToMember(), member2);
+
+        assertEquals(chats.get(0).getContents(), MATCHING_SYSTEM_MESSAGE);
+        assertEquals(chats.get(1).getContents(), MATCHING_SYSTEM_MESSAGE);
+
+
+    }
+
+
 }
