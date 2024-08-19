@@ -9,11 +9,16 @@ import com.gamegoo.dto.matching.MatchingResponse;
 import com.gamegoo.service.matching.MatchingService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,12 +47,13 @@ public class MatchingController {
         return ApiResponse.onSuccess(priorityMatchingResponseDTO);
     }
 
-    @PutMapping("")
-    @Operation(summary = "매칭 상태(status)를 수정하는 API입니다.", description = "API for matching status modification")
-    public ApiResponse<String> modifyMatching(@RequestBody @Valid MatchingRequest.ModifyMatchingRequestDTO request) {
+    @PatchMapping("/status")
+    @Operation(summary = "나의 매칭 기록 상태(status)를 수정하는 API입니다.", description = "API for matching status modification")
+    public ApiResponse<String> modifyMatching(
+        @RequestBody @Valid MatchingRequest.ModifyMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
 
-        matchingService.modify(request, id);
+        matchingService.updateMyStatus(request, id);
         return ApiResponse.onSuccess("매칭 상태 변경에 성공했습니다.");
     }
 }

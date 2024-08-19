@@ -14,13 +14,12 @@ import com.gamegoo.dto.matching.MemberPriority;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -294,13 +293,14 @@ public class MatchingService {
      * @param id
      */
     @Transactional
-    public void modify(MatchingRequest.ModifyMatchingRequestDTO request, Long id) {
+    public void updateMyStatus(MatchingRequest.ModifyMatchingRequestDTO request, Long id) {
         // 회원 정보 불러오기
         Member member = profileService.findMember(id);
 
         // 매칭 기록 불러오기
-        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(member)
-                .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
+                member)
+            .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
 
         try {
             MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
