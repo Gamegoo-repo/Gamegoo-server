@@ -47,6 +47,7 @@ public class ChatResponse {
         Integer memberProfileImg;
         boolean friend;
         boolean blocked;
+        Long friendRequestMemberId;
         SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
 
