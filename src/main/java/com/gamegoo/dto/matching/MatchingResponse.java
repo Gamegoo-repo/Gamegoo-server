@@ -18,6 +18,7 @@ public class MatchingResponse {
 
         List<MemberPriority> myPriorityList;
         List<MemberPriority> otherPriorityList;
+        matchingRequestResponseDTO myMatchingInfo;
     }
 
     @Builder
