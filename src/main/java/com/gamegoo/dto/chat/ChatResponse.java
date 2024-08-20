@@ -20,6 +20,9 @@ public class ChatResponse {
         String uuid;
         Integer targetMemberImg;
         String targetMemberName;
+        boolean friend;
+        boolean blocked;
+        Long friendRequestMemberId;
         String lastMsg;
         String lastMsgAt;
         Integer notReadMsgCnt;
