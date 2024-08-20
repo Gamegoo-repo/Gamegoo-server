@@ -10,6 +10,7 @@ import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.dto.matching.MatchingResponse;
+import com.gamegoo.dto.matching.MatchingResponse.matchingRequestResponseDTO;
 import com.gamegoo.dto.matching.MemberPriority;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.repository.member.MemberRepository;
@@ -353,6 +354,70 @@ public class MatchingService {
                 targetMember)
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         targetMatchingRecord.updateStatus(status);
+    }
+
+    /**
+     * @param request
+     * @param memberId
+     * @param targetMemberId
+     * @return
+     */
+    @Transactional
+    public MatchingResponse.matchingFoundResponseDTO foundMatching(Long memberId,
+        Long targetMemberId) {
+
+        // member 엔티티 조회
+        Member member = profileService.findMember(memberId);
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // member의 매칭 기록 상태 변경
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
+                member)
+            .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+        matchingRecord.updateStatus(MatchingStatus.FOUND);
+
+        // targetMember의 매칭 기록 상태 변경
+        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
+                targetMember)
+            .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+        targetMatchingRecord.updateStatus(MatchingStatus.FOUND);
+
+        // response dto 생성
+        MatchingResponse.matchingRequestResponseDTO myMatchingInfo = matchingRequestResponseDTO.builder()
+            .memberId(member.getId())
+            .gameName(member.getGameName())
+            .tag(member.getTag())
+            .tier(member.getTier())
+            .rank(matchingRecord.getRank())
+            .mannerLevel(matchingRecord.getMannerLevel())
+            .profileImg(member.getProfileImage())
+            .mainPosition(matchingRecord.getMainPosition())
+            .subPosition(matchingRecord.getSubPosition())
+            .wantPosition(matchingRecord.getWantPosition())
+            .mike(matchingRecord.getMike())
+            .gameStyleList(profileService.getGameStyleList(member))
+            .build();
+
+        MatchingResponse.matchingRequestResponseDTO targetMatchingInfo = matchingRequestResponseDTO.builder()
+            .memberId(targetMember.getId())
+            .gameName(targetMember.getGameName())
+            .tag(targetMember.getTag())
+            .tier(targetMember.getTier())
+            .rank(targetMatchingRecord.getRank())
+            .mannerLevel(targetMatchingRecord.getMannerLevel())
+            .profileImg(targetMember.getProfileImage())
+            .mainPosition(targetMatchingRecord.getMainPosition())
+            .subPosition(targetMatchingRecord.getSubPosition())
+            .wantPosition(targetMatchingRecord.getWantPosition())
+            .mike(targetMatchingRecord.getMike())
+            .gameStyleList(profileService.getGameStyleList(targetMember))
+            .build();
+
+        return MatchingResponse.matchingFoundResponseDTO.builder()
+            .myMatchingInfo(myMatchingInfo)
+            .targetMatchingInfo(targetMatchingInfo)
+            .build();
+
     }
 }
 

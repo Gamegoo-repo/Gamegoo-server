@@ -72,4 +72,15 @@ public class MatchingController {
 
         return ApiResponse.onSuccess("매칭 상태 변경 성공");
     }
+
+    @PatchMapping("/found/target/{targetMemberId}")
+    @Parameter(name = "targetMemberId", description = "매칭 상대 회원의 id 입니다.")
+    @Operation(summary = "매칭 FOUND API", description = "나와 특정 상대 회원의 매칭 기록 상태를 FOUND 상태로 변경하고, 매칭 요청 데이터를 리턴하는 API 입니다.")
+    public ApiResponse<MatchingResponse.matchingFoundResponseDTO> matchingFound(
+        @PathVariable(name = "targetMemberId") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(matchingService.foundMatching(memberId, targetMemberId));
+
+    }
 }
