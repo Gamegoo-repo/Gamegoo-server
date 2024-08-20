@@ -8,16 +8,17 @@ import com.gamegoo.domain.member.Member;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
+
     private final MemberRepository memberRepository;
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
@@ -33,14 +34,13 @@ public class ProfileService {
     public List<MemberGameStyle> addMemberGameStyles(List<Long> gameStyleIdList, Long memberId) {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 요청으로 온 gamestyleId로 GameStyle 엔티티 리스트를 생성 및 gamestyleId에 해당하는 gamestyle이 db에 존재하는지 검증
         List<GameStyle> requestGameStyleList = gameStyleIdList.stream()
-                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
-                        .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
-                .toList();
+            .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
+            .toList();
 
         // db에는 존재하나, request에는 존재하지 않는 gameStyle을 삭제
         List<MemberGameStyle> toRemove = new ArrayList<>();
@@ -57,14 +57,14 @@ public class ProfileService {
 
         // request에는 존재하나, db에는 존재하지 않는 gameStyle을 추가
         List<GameStyle> currentGameStyleList = member.getMemberGameStyleList().stream()
-                .map(MemberGameStyle::getGameStyle)
-                .toList();
+            .map(MemberGameStyle::getGameStyle)
+            .toList();
 
         for (GameStyle reqGameStyle : requestGameStyleList) {
             if (!currentGameStyleList.contains(reqGameStyle)) {
                 MemberGameStyle memberGameStyle = MemberGameStyle.builder()
-                        .gameStyle(reqGameStyle)
-                        .build();
+                    .gameStyle(reqGameStyle)
+                    .build();
                 memberGameStyle.setMember(member); // 양방향 연관관계 매핑
                 memberGameStyleRepository.save(memberGameStyle);
             }
@@ -81,7 +81,7 @@ public class ProfileService {
     @Transactional
     public void deleteMember(Long userId) {
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // Blind 처리
         member.deactiveMember();
@@ -103,7 +103,7 @@ public class ProfileService {
         }
 
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updatePosition(mainP, subP);
         memberRepository.save(member);
@@ -118,7 +118,7 @@ public class ProfileService {
     @Transactional
     public void modifyProfileImage(Long userId, Integer profileImage) {
         Member member = memberRepository.findById(userId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updateProfileImage(profileImage);
 
@@ -134,6 +134,19 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
+    /**
+     * 해당 회원의 gameStyle string list 반환
+     *
+     * @param member
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<String> getGameStyleList(Member member) {
+        return member.getMemberGameStyleList().stream()
+            .map(memberGameStyle -> memberGameStyle.getGameStyle().getStyleName()).collect(
+                Collectors.toList());
     }
 }
