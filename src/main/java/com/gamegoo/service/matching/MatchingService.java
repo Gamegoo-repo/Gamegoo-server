@@ -78,9 +78,26 @@ public class MatchingService {
 
         }
 
+        // 내 매칭 기록 dto 생성
+        MatchingResponse.matchingRequestResponseDTO myMatchingInfo = matchingRequestResponseDTO.builder()
+            .memberId(member.getId())
+            .gameName(member.getGameName())
+            .tag(member.getTag())
+            .tier(member.getTier())
+            .rank(member.getRank())
+            .mannerLevel(member.getMannerLevel())
+            .profileImg(member.getProfileImage())
+            .mainPosition(request.getMainP())
+            .subPosition(request.getSubP())
+            .wantPosition(request.getWantP())
+            .mike(request.getMike())
+            .gameStyleList(profileService.getGameStyleList(member))
+            .build();
+
         return MatchingResponse.PriorityMatchingResponseDTO.builder()
             .myPriorityList(myPriorityList)
             .otherPriorityList(otherPriorityList)
+            .myMatchingInfo(myMatchingInfo)
             .build();
     }
 

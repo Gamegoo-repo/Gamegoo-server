@@ -29,7 +29,16 @@ public class MatchingController {
     private final MatchingService matchingService;
 
     @PostMapping("/priority")
-    @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description = "API for calculating and recording matching")
+    @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description =
+        "API for calculating and recording matching \n\n"
+            + "gameMode: 1 ~ 4 int를 넣어주세요. (1: 빠른 대전, 2: 솔로 랭크, 3: 자유 랭크, 4: 칼바람 나락) \n\n"
+            + "mike: true 또는 false를 넣어주세요. \n\n"
+            + "matchingType: \"BASIC\" 또는 \"PRECISE\"를 넣어주세요.\n\n"
+            + "mainP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "subP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "wantP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "gameStyleList: 1 ~ 17 int를 넣어주세요.")
+
     public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(
         @RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
