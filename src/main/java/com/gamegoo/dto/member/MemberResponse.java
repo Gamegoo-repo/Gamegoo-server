@@ -1,9 +1,12 @@
 package com.gamegoo.dto.member;
 
 import com.gamegoo.domain.member.Tier;
-import lombok.*;
-
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class MemberResponse {
 
@@ -97,6 +100,35 @@ public class MemberResponse {
         Boolean isBlind;
         String loginType;
         Double winrate;
+        List<GameStyleResponseDTO> gameStyleResponseDTOList;
+        List<ChampionResponseDTO> championResponseDTOList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class memberProfileDTO {
+
+        Long id;
+        Integer profileImg;
+        Boolean mike;
+        String email;
+        String gameName;
+        String tag;
+        Tier tier;
+        Integer rank;
+        Integer manner;
+        String updatedAt;
+        Integer mainP;
+        Integer subP;
+        Boolean isAgree;
+        Boolean isBlind;
+        String loginType;
+        Double winrate;
+        Boolean blocked; // 해당 회원을 차단했는지 여부
+        Boolean friend; // 해당 회원과의 친구 여부
+        Long friendRequestMemberId; // 해당 회원과의 친구 요청 상태
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
         List<ChampionResponseDTO> championResponseDTOList;
     }
