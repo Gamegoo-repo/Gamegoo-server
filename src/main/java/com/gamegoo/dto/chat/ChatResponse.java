@@ -39,6 +39,7 @@ public class ChatResponse {
         "memberProfileImg",
         "friend",
         "blocked",
+        "friendRequestMemberId",
         "system",
         "chatMessageList"
     })
