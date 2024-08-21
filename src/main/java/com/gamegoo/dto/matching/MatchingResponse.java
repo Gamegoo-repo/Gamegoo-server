@@ -44,6 +44,7 @@ public class MatchingResponse {
         Integer rank;
         Integer mannerLevel;
         Integer profileImg;
+        Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
