@@ -18,6 +18,7 @@ public class ChatResponse {
 
         Long chatroomId;
         String uuid;
+        Long targetMemberId;
         Integer targetMemberImg;
         String targetMemberName;
         boolean friend;
