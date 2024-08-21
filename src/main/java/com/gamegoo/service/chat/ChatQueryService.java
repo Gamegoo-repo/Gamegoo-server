@@ -78,6 +78,7 @@ public class ChatQueryService {
                 return ChatResponse.ChatroomViewDTO.builder()
                     .chatroomId(chatroom.getId())
                     .uuid(chatroom.getUuid())
+                    .targetMemberId(targetMember.getId())
                     .targetMemberImg(targetMember.getProfileImage())
                     .targetMemberName(targetMember.getGameName())
                     .friend(friendService.isFriend(member, targetMember))
