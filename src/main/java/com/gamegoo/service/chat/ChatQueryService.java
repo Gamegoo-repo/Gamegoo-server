@@ -10,8 +10,10 @@ import com.gamegoo.dto.chat.ChatResponse;
 import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
+import com.gamegoo.service.member.FriendService;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.DatetimeUtil;
+import com.gamegoo.util.MemberUtils;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,6 +33,7 @@ public class ChatQueryService {
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatRepository chatRepository;
     private final ProfileService profileService;
+    private final FriendService friendService;
     private final static int PAGE_SIZE = 20;
 
 
@@ -75,8 +78,13 @@ public class ChatQueryService {
                 return ChatResponse.ChatroomViewDTO.builder()
                     .chatroomId(chatroom.getId())
                     .uuid(chatroom.getUuid())
+                    .targetMemberId(targetMember.getId())
                     .targetMemberImg(targetMember.getProfileImage())
                     .targetMemberName(targetMember.getGameName())
+                    .friend(friendService.isFriend(member, targetMember))
+                    .blocked(MemberUtils.isBlocked(targetMember, member))
+                    .friendRequestMemberId(
+                        friendService.getFriendRequestMemberId(member, targetMember))
                     .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)
                     .lastMsgAt(lastChat.isPresent() ? DatetimeUtil.toKSTString(
                         lastChat.get().getCreatedAt())
@@ -144,7 +152,7 @@ public class ChatQueryService {
             })
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
-        
+
         return unreadChatroomUuids;
     }
 
