@@ -18,8 +18,12 @@ public class ChatResponse {
 
         Long chatroomId;
         String uuid;
+        Long targetMemberId;
         Integer targetMemberImg;
         String targetMemberName;
+        boolean friend;
+        boolean blocked;
+        Long friendRequestMemberId;
         String lastMsg;
         String lastMsgAt;
         Integer notReadMsgCnt;
@@ -36,6 +40,7 @@ public class ChatResponse {
         "memberProfileImg",
         "friend",
         "blocked",
+        "friendRequestMemberId",
         "system",
         "chatMessageList"
     })
@@ -47,6 +52,7 @@ public class ChatResponse {
         Integer memberProfileImg;
         boolean friend;
         boolean blocked;
+        Long friendRequestMemberId;
         SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
 

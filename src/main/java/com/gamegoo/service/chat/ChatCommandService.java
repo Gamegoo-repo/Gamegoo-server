@@ -92,6 +92,8 @@ public class ChatCommandService {
                     .memberProfileImg(targetMember.getProfileImage())
                     .friend(friendService.isFriend(member, targetMember))
                     .blocked(false)
+                    .friendRequestMemberId(
+                        friendService.getFriendRequestMemberId(member, targetMember))
                     .system(null)
                     .chatMessageList(null)
                     .build();
@@ -147,6 +149,8 @@ public class ChatCommandService {
                     .memberProfileImg(targetMember.getProfileImage())
                     .friend(friendService.isFriend(member, targetMember))
                     .blocked(false)
+                    .friendRequestMemberId(
+                        friendService.getFriendRequestMemberId(member, targetMember))
                     .system(systemFlagDTO)
                     .chatMessageList(null)
                     .build();
@@ -558,6 +562,7 @@ public class ChatCommandService {
             .memberProfileImg(targetMember.getProfileImage())
             .friend(friendService.isFriend(member, targetMember))
             .blocked(MemberUtils.isBlocked(targetMember, member))
+            .friendRequestMemberId(friendService.getFriendRequestMemberId(member, targetMember))
             .system(systemFlagDTO)
             .chatMessageList(chatMessageListDTO)
             .build();
