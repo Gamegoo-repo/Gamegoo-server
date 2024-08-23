@@ -6,6 +6,7 @@ import com.gamegoo.apiPayload.exception.handler.MatchingHandler;
 import com.gamegoo.domain.matching.MatchingType;
 import com.gamegoo.dto.matching.MatchingRequest;
 import com.gamegoo.dto.matching.MatchingResponse;
+import com.gamegoo.service.chat.ChatCommandService;
 import com.gamegoo.service.matching.MatchingService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MatchingController {
 
     private final MatchingService matchingService;
+    private final ChatCommandService chatCommandService;
 
     @PostMapping("/priority")
     @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description =
@@ -92,4 +94,18 @@ public class MatchingController {
         return ApiResponse.onSuccess(matchingService.foundMatching(memberId, targetMemberId));
 
     }
+
+    @PatchMapping("/success/target/{targetMemberId}")
+    @Parameter(name = "targetMemberId", description = "매칭 상대 회원의 id 입니다.")
+    @Operation(summary = "매칭 SUCCESS API", description = "나와 특정 상대 회원의 매칭 기록 상태를 SUCCESS 상태로 변경하고, 채팅방을 시작해 uuid를 리턴하는 API 입니다.")
+    public ApiResponse<String> matchingSuccess(
+        @PathVariable(name = "targetMemberId") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        matchingService.successMatching(memberId, targetMemberId);
+        String chatroomUuid = chatCommandService.startChatroomByMatching(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess(chatroomUuid);
+    }
+
 }

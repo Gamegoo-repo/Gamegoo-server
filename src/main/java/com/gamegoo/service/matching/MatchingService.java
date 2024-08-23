@@ -439,6 +439,32 @@ public class MatchingService {
             .build();
 
     }
+
+    /**
+     * member와 targetMember의 매칭 기록을 SUCCESS 상태로 변경
+     *
+     * @param memberId
+     * @param targetMemberId
+     * @return
+     */
+    @Transactional
+    public void successMatching(Long memberId, Long targetMemberId) {
+        // member 엔티티 조회
+        Member member = profileService.findMember(memberId);
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // member의 매칭 기록 상태 변경
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
+                member)
+            .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+        matchingRecord.updateStatus(MatchingStatus.SUCCESS);
+
+        // targetMember의 매칭 기록 상태 변경
+        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
+                targetMember)
+            .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
+        targetMatchingRecord.updateStatus(MatchingStatus.SUCCESS);
+    }
 }
 
 
