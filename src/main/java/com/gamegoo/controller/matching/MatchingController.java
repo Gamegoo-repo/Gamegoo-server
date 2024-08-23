@@ -29,7 +29,16 @@ public class MatchingController {
     private final MatchingService matchingService;
 
     @PostMapping("/priority")
-    @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description = "API for calculating and recording matching")
+    @Operation(summary = "우선순위 계산 및 매칭 기록을 저장하는 API 입니다.", description =
+        "API for calculating and recording matching \n\n"
+            + "gameMode: 1 ~ 4 int를 넣어주세요. (1: 빠른 대전, 2: 솔로 랭크, 3: 자유 랭크, 4: 칼바람 나락) \n\n"
+            + "mike: true 또는 false를 넣어주세요. \n\n"
+            + "matchingType: \"BASIC\" 또는 \"PRECISE\"를 넣어주세요.\n\n"
+            + "mainP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "subP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "wantP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "gameStyleList: 1 ~ 17 int를 넣어주세요.")
+
     public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(
         @RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
@@ -71,5 +80,16 @@ public class MatchingController {
         matchingService.updateBothStatus(request, memberId, targetMemberId);
 
         return ApiResponse.onSuccess("매칭 상태 변경 성공");
+    }
+
+    @PatchMapping("/found/target/{targetMemberId}")
+    @Parameter(name = "targetMemberId", description = "매칭 상대 회원의 id 입니다.")
+    @Operation(summary = "매칭 FOUND API", description = "나와 특정 상대 회원의 매칭 기록 상태를 FOUND 상태로 변경하고, 매칭 요청 데이터를 리턴하는 API 입니다.")
+    public ApiResponse<MatchingResponse.matchingFoundResponseDTO> matchingFound(
+        @PathVariable(name = "targetMemberId") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(matchingService.foundMatching(memberId, targetMemberId));
+
     }
 }
