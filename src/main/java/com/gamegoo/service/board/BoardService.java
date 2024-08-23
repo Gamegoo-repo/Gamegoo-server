@@ -402,6 +402,7 @@ public class BoardService {
                 .gameName(member.getGameName())
                 .tag(member.getTag())
                 .tier(member.getTier())
+                .rank(member.getRank())
                 .contents(board.getContent())
                 .createdAt(board.getCreatedAt())
                 .build();
