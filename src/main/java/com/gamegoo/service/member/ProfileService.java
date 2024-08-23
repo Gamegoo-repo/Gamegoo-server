@@ -16,6 +16,7 @@ import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,5 +174,18 @@ public class ProfileService {
         return MemberConverter.toMemberProfileDTO(member, targetMember,
             isFriend,
             friendRequestMemberId);
+    }
+
+    /**
+     * 해당 회원의 gameStyle string list 반환
+     *
+     * @param member
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<String> getGameStyleList(Member member) {
+        return member.getMemberGameStyleList().stream()
+            .map(memberGameStyle -> memberGameStyle.getGameStyle().getStyleName()).collect(
+                Collectors.toList());
     }
 }
