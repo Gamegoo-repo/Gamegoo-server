@@ -73,6 +73,7 @@ public class BoardResponse {
         String gameName;
         Integer mannerLevel;
         Tier tier;
+        Integer rank;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -98,6 +99,7 @@ public class BoardResponse {
         String tag;
         Integer mannerLevel;
         Tier tier;
+        Integer rank;
         Boolean mike;
         List<Long> championList;
         Integer gameMode;
@@ -129,6 +131,7 @@ public class BoardResponse {
         Integer mannerLevel;
         List<MannerResponse.mannerKeywordDTO> mannerKeywords;
         Tier tier;
+        Integer rank;
         Boolean mike;
         List<Long> championList;
         Integer gameMode;
