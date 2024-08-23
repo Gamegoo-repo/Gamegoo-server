@@ -157,6 +157,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Tier tier;
+        Integer rank;
         String contents;
         LocalDateTime createdAt;
     }
