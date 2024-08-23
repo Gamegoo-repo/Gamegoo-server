@@ -386,8 +386,8 @@ public class BoardService {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
         }
 
-        // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
-        Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE,
+        // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지. 페이지당 표시할 게시물 수 = 10개.
+        Pageable pageable = PageRequest.of(pageIdx - 1, 10,
             Sort.by(Sort.Direction.DESC, "createdAt"));
 
         List<Board> boards = boardRepository.findByMemberId(memberId, pageable).getContent();
