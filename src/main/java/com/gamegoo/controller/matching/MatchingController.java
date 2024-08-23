@@ -34,9 +34,9 @@ public class MatchingController {
             + "gameMode: 1 ~ 4 int를 넣어주세요. (1: 빠른 대전, 2: 솔로 랭크, 3: 자유 랭크, 4: 칼바람 나락) \n\n"
             + "mike: true 또는 false를 넣어주세요. \n\n"
             + "matchingType: \"BASIC\" 또는 \"PRECISE\"를 넣어주세요.\n\n"
-            + "mainP: 1 ~ 5 int를 넣어주세요. \n\n"
-            + "subP: 1 ~ 5 int를 넣어주세요. \n\n"
-            + "wantP: 1 ~ 5 int를 넣어주세요. \n\n"
+            + "mainP: 0 ~ 5 int를 넣어주세요. \n\n"
+            + "subP: 0 ~ 5 int를 넣어주세요. \n\n"
+            + "wantP: 0 ~ 5 int를 넣어주세요. \n\n"
             + "gameStyleList: 1 ~ 17 int를 넣어주세요.")
 
     public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(
