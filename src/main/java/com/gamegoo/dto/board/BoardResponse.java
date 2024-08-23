@@ -26,6 +26,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Tier tier;
+        Integer rank;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -49,6 +50,7 @@ public class BoardResponse {
         String gameName;
         String tag;
         Tier tier;
+        Integer rank;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
