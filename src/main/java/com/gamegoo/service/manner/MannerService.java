@@ -173,7 +173,7 @@ public class MannerService {
                 .orElseThrow(() -> new MannerHandler(ErrorStatus.MANNER_KEYWORD_NOT_FOUND)))
             .peek(mannerKeyword -> {
                 if (mannerKeyword.getIsPositive()) {
-                    throw new MannerHandler(ErrorStatus.MANNER_KEYWORD_TYPE_INVALID);
+                    throw new MannerHandler(ErrorStatus.BAD_MANNER_KEYWORD_TYPE_INVALID);
                 }
             })
             .collect(Collectors.toList());
