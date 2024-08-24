@@ -81,8 +81,8 @@ public class MemberConverter {
     public static MemberResponse.memberProfileDTO toMemberProfileDTO(Member member,
         Member targetMember, Boolean isFriend, Long friedRequestMemberId) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
-        if (member.getMemberGameStyleList() != null) {
-            gameStyleResponseDTOList = member.getMemberGameStyleList().stream()
+        if (targetMember.getMemberGameStyleList() != null) {
+            gameStyleResponseDTOList = targetMember.getMemberGameStyleList().stream()
                 .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
                     .gameStyleId(memberGameStyle.getGameStyle().getId())
                     .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
@@ -90,8 +90,8 @@ public class MemberConverter {
         }
 
         List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
-        if (member.getMemberChampionList() != null) {
-            championResponseDTOList = member.getMemberChampionList().stream()
+        if (targetMember.getMemberChampionList() != null) {
+            championResponseDTOList = targetMember.getMemberChampionList().stream()
                 .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
                     .championId(memberChampion.getMember().getId())
                     .championName(memberChampion.getChampion().getName())
@@ -99,22 +99,22 @@ public class MemberConverter {
         }
 
         return MemberResponse.memberProfileDTO.builder()
-            .id(member.getId())
-            .mike(member.getMike())
-            .email(member.getEmail())
-            .gameName(member.getGameName())
-            .tag(member.getTag())
-            .tier(member.getTier())
-            .rank(member.getRank())
-            .profileImg(member.getProfileImage())
-            .manner(member.getMannerLevel())
-            .mainP(member.getMainPosition())
-            .subP(member.getSubPosition())
-            .isAgree(member.getIsAgree())
-            .isBlind(member.getBlind())
-            .winrate(member.getWinRate())
-            .loginType(String.valueOf(member.getLoginType()))
-            .updatedAt(String.valueOf(member.getUpdatedAt()))
+            .id(targetMember.getId())
+            .mike(targetMember.getMike())
+            .email(targetMember.getEmail())
+            .gameName(targetMember.getGameName())
+            .tag(targetMember.getTag())
+            .tier(targetMember.getTier())
+            .rank(targetMember.getRank())
+            .profileImg(targetMember.getProfileImage())
+            .manner(targetMember.getMannerLevel())
+            .mainP(targetMember.getMainPosition())
+            .subP(targetMember.getSubPosition())
+            .isAgree(targetMember.getIsAgree())
+            .isBlind(targetMember.getBlind())
+            .winrate(targetMember.getWinRate())
+            .loginType(String.valueOf(targetMember.getLoginType()))
+            .updatedAt(String.valueOf(targetMember.getUpdatedAt()))
             .blocked(MemberUtils.isBlocked(member, targetMember))
             .friend(isFriend)
             .friendRequestMemberId(friedRequestMemberId)
