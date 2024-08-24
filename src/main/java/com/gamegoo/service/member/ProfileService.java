@@ -2,14 +2,21 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
+import com.gamegoo.converter.MemberConverter;
+import com.gamegoo.domain.friend.Friend;
+import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.member.Member;
+import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.repository.friend.FriendRepository;
+import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +28,9 @@ public class ProfileService {
     private final MemberRepository memberRepository;
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
+
+    private final FriendRepository friendRepository;
+    private final FriendRequestsRepository friendRequestsRepository;
 
     /**
      * MemberGameStyle 데이터 추가 : 회원에 따른 게임 스타일 정보 저장하기
@@ -140,5 +150,48 @@ public class ProfileService {
     public Member findSystemMember() {
         return memberRepository.findById(0L)
             .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
+    /**
+     * 특정 회원의 유저프로필 조회, 차단 여부, 친구 여부, 친구 요청 상태 포함
+     *
+     * @param memberId
+     * @param targetMemberId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public MemberResponse.memberProfileDTO getTargetMemberProfile(Long memberId,
+        Long targetMemberId) {
+        Member member = findMember(memberId);
+        Member targetMember = findMember(targetMemberId);
+
+        List<Friend> friendList = friendRepository.findBothDirections(member, targetMember);
+        boolean isFriend = (friendList.size() == 2);
+
+        Long friendRequestMemberId = friendRequestsRepository.findByFromMemberAndToMemberAndStatus(
+                member, targetMember,
+                FriendRequestStatus.PENDING)
+            .map(friendRequests -> member.getId())
+            .or(() -> friendRequestsRepository.findByFromMemberAndToMemberAndStatus(targetMember,
+                    member, FriendRequestStatus.PENDING)
+                .map(friendRequests -> targetMember.getId()))
+            .orElse(null); // 친구 요청이 없는 경우 null을 리턴
+
+        return MemberConverter.toMemberProfileDTO(member, targetMember,
+            isFriend,
+            friendRequestMemberId);
+    }
+
+    /**
+     * 해당 회원의 gameStyle string list 반환
+     *
+     * @param member
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<String> getGameStyleList(Member member) {
+        return member.getMemberGameStyleList().stream()
+            .map(memberGameStyle -> memberGameStyle.getGameStyle().getStyleName()).collect(
+                Collectors.toList());
     }
 }

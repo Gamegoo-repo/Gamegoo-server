@@ -52,6 +52,7 @@ public class BoardController {
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
+                .rank(memberProfile.getRank())
                 .gameMode(saveBoard.getMode())
                 .mainPosition(saveBoard.getMainPosition())
                 .subPosition(saveBoard.getSubPosition())
@@ -89,6 +90,7 @@ public class BoardController {
                 .gameName(memberProfile.getGameName())
                 .tag(memberProfile.getTag())
                 .tier(memberProfile.getTier())
+                .rank(memberProfile.getRank())
                 .gameMode(updateBoard.getMode())
                 .mainPosition(updateBoard.getMainPosition())
                 .subPosition(updateBoard.getSubPosition())
@@ -159,7 +161,7 @@ public class BoardController {
     }
 
     @GetMapping("/my")
-    @Operation(summary = "내가 작성한 게시판 글 목록 조회 API", description = "내가 작성한 게시판 글을 조회하는 API 입니다.")
+    @Operation(summary = "내가 작성한 게시판 글 목록 조회 API", description = "내가 작성한 게시판 글을 조회하는 API 입니다. 페이지 당 10개의 게시물이 표시됩니다.")
     @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
     public ApiResponse<List<BoardResponse.myBoardListResponseDTO>> getMyBoardList(@RequestParam(defaultValue = "1") int pageIdx) {
 
