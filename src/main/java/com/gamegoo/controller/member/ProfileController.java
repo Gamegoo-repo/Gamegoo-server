@@ -9,13 +9,18 @@ import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,17 +33,17 @@ public class ProfileController {
     @PutMapping("/gamestyle")
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
     public ApiResponse<List<MemberResponse.GameStyleResponseDTO>> addGameStyle(
-            @RequestBody MemberRequest.GameStyleRequestDTO gameStyleRequestDTO) {
+        @RequestBody MemberRequest.GameStyleRequestDTO gameStyleRequestDTO) {
         Long memberId = JWTUtil.getCurrentUserId();
         List<Long> gameStyleIdList = gameStyleRequestDTO.getGameStyleIdList();
         List<MemberGameStyle> memberGameStyles = profileService.addMemberGameStyles(
-                gameStyleIdList, memberId);
+            gameStyleIdList, memberId);
 
         List<MemberResponse.GameStyleResponseDTO> dtoList = memberGameStyles.stream()
-                .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
-                        .gameStyleId(memberGameStyle.getGameStyle().getId())
-                        .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
-                        .build()).collect(Collectors.toList());
+            .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
+                .gameStyleId(memberGameStyle.getGameStyle().getId())
+                .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
+                .build()).collect(Collectors.toList());
 
         return ApiResponse.onSuccess(dtoList);
     }
@@ -46,7 +51,7 @@ public class ProfileController {
     @PutMapping("/position")
     @Operation(summary = "주/부 포지션 수정 API 입니다.", description = "API for Main/Sub Position Modification")
     public ApiResponse<String> modifyPosition(
-            @RequestBody @Valid MemberRequest.PositionRequestDTO positionRequestDTO) {
+        @RequestBody @Valid MemberRequest.PositionRequestDTO positionRequestDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         int mainP = positionRequestDTO.getMainP();
         int subP = positionRequestDTO.getSubP();
@@ -59,7 +64,7 @@ public class ProfileController {
     @PutMapping("/profile_image")
     @Operation(summary = "프로필 이미지 수정 API 입니다.", description = "API for Profile Image Modification")
     public ApiResponse<String> modifyPosition(
-            @RequestBody MemberRequest.ProfileImageRequestDTO profileImageDTO) {
+        @RequestBody MemberRequest.ProfileImageRequestDTO profileImageDTO) {
         Long userId = JWTUtil.getCurrentUserId();
         Integer profileImage = profileImageDTO.getProfileImage();
 
@@ -88,12 +93,14 @@ public class ProfileController {
         return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
     }
 
-    @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 X)", description = "API for looking up member")
+    @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member")
     @GetMapping("/profile/other")
-    public ApiResponse<MemberResponse.myProfileMemberDTO> getMember(@RequestParam("id") Long memberId) {
-        Member myProfile = profileService.findMember(memberId);
+    public ApiResponse<MemberResponse.memberProfileDTO> getMember(
+        @RequestParam("id") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
 
-        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
+        return ApiResponse.onSuccess(
+            profileService.getTargetMemberProfile(memberId, targetMemberId));
     }
 
 }
