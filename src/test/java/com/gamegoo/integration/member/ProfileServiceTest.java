@@ -1,4 +1,4 @@
-package com.gamegoo.member;
+package com.gamegoo.integration.member;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
