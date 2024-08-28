@@ -244,12 +244,12 @@ public class MatchingService {
     }
 
     /**
-     * <매너레벨 가중치> 최대 가중치 16 , 최소 가중치 0 (매너레벨 5, 매너레벨 1 -> (5-1)*4 = 4*4 = 16)
+     * <매너레벨 가중치> 최대 가중치 12 , 최소 가중치 0 (매너레벨 5, 매너레벨 1 -> (5-1)*3 = 4*3 = 12)
      */
     private int getMannerPriority(Integer otherManner, Integer myManner) {
         int priority = 0;
         int mannerDifference = Math.abs(myManner - otherManner);
-        priority += 16 - mannerDifference * 4;
+        priority += 12 - mannerDifference * 3;
         return priority;
     }
 
