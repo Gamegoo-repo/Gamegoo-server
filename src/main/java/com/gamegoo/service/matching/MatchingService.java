@@ -140,8 +140,9 @@ public class MatchingService {
         }
 
         // 주/부 포지션 조합이 같을 경우 X
-        if ((otherMainPosition.equals(myMainPosition) && otherSubPosition.equals(mySubPosition)) ||
-                (otherMainPosition.equals(mySubPosition) && otherSubPosition.equals(myMainPosition))) {
+        // 겹치는게 둘 중 하나라도 0일 경우는 X
+        if ((otherMainPosition.equals(myMainPosition) && otherSubPosition.equals(mySubPosition) && !(otherMainPosition.equals(0) || otherSubPosition.equals(0))) ||
+                (otherMainPosition.equals(mySubPosition) && otherSubPosition.equals(myMainPosition) && !(otherMainPosition.equals(0) || otherSubPosition.equals(0)))) {
             return 0;
         }
 
