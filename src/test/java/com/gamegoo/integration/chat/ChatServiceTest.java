@@ -75,6 +75,8 @@ public class ChatServiceTest {
 
     private Member member2;
 
+    private Member member3;
+
     private Member blindMember;
 
     private Member systemMember;
@@ -120,6 +122,21 @@ public class ChatServiceTest {
             .boardList(new ArrayList<>())
             .build();
 
+        member3 = Member.builder()
+            .id(3L)
+            .email("test3@mail.com")
+            .password("12345678")
+            .loginType(LoginType.GENERAL)
+            .profileImage(randomProfileImage)
+            .blind(false)
+            .mike(false)
+            .mannerLevel(1)
+            .isAgree(true)
+            .blockList(new ArrayList<>())
+            .memberChatroomList(new ArrayList<>())
+            .boardList(new ArrayList<>())
+            .build();
+
         blindMember = Member.builder()
             .id(1000L)
             .email("blind@mail.com")
@@ -150,6 +167,7 @@ public class ChatServiceTest {
 
         member1 = memberRepository.save(member1);
         member2 = memberRepository.save(member2);
+        member3 = memberRepository.save(this.member3);
         blindMember = memberRepository.save(blindMember);
         systemMember = memberRepository.save(systemMember);
 
@@ -173,7 +191,7 @@ public class ChatServiceTest {
     @Nested
     @DisplayName("특정 회원과 채팅 시작")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class startChatroomByMemberId {
+    class StartChatroomByMemberId {
 
         @Nested
         @DisplayName("성공 케이스")
@@ -430,7 +448,7 @@ public class ChatServiceTest {
     @Nested
     @DisplayName("특정 글을 보고 채팅 시작")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class startChatroomByBoardId {
+    class StartChatroomByBoardId {
 
         @Nested
         @DisplayName("성공 케이스")
@@ -734,7 +752,7 @@ public class ChatServiceTest {
     @Nested
     @DisplayName("매칭을 통한 채팅 시작")
     @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-    class startChatroomByMatching {
+    class StartChatroomByMatching {
 
         @Nested
         @DisplayName("성공 케이스")
@@ -971,5 +989,259 @@ public class ChatServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("uuid를 통한 채팅방 입장")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class EnterChatroom {
 
+        @Nested
+        @DisplayName("성공 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class SuccessCase {
+
+            @Test
+            @Order(29)
+            @DisplayName("29. 기존 채팅방 있는 경우")
+            public void enterChatroomSucceeds() throws Exception {
+                // given
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom1);
+
+                // when
+                ChatroomEnterDTO chatroomEnterDTO = chatCommandService.enterChatroom(
+                    savedChatroom.getUuid(), member1.getId());
+
+                // then
+                // 1. 입장한 채팅방 uuid 검증
+                assertEquals(chatroomEnterDTO.getUuid(), savedChatroom.getUuid());
+
+                // 2. lastViewDate update 검증
+                MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                    member1.getId(), savedChatroom.getId()).get();
+                assertNotNull(memberChatroom.getLastViewDate());
+            }
+
+            @Test
+            @Order(30)
+            @DisplayName("30. 기존 채팅방 있음 && 상대가 나를 차단 && 이미 입장한 채팅방인 경우")
+            public void enterChatroomSucceedsWhenBlockedAndEntered() throws Exception {
+                // given
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom1);
+
+                // 상대가 나를 차단
+                blockService.blockMember(member2.getId(), member1.getId());
+
+                // when
+                ChatroomEnterDTO chatroomEnterDTO = chatCommandService.enterChatroom(
+                    savedChatroom.getUuid(), member1.getId());
+
+                // then
+                // 1. 입장한 채팅방 uuid 검증
+                assertEquals(chatroomEnterDTO.getUuid(), savedChatroom.getUuid());
+
+                // 2. lastViewDate update 검증
+                MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                    member1.getId(), savedChatroom.getId()).get();
+                assertNotNull(memberChatroom.getLastViewDate());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class FailCase {
+
+            @Test
+            @Order(31)
+            @DisplayName("31. uuid에 해당하는 채팅방이 없는 경우")
+            public void enterChatroomFailedWhenNoExists() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_NOT_EXIST;
+
+                String newUuid = UUID.randomUUID().toString();
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.enterChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(32)
+            @DisplayName("32. 해당 채팅방이 회원의 것이 아닌 경우")
+            public void enterChatroomFailedWhenNotOwner() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_ACCESS_DENIED;
+
+                // member2, member3 사이 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                MemberChatroom memberChatroom3 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom3.setMember(member3);
+                memberChatroomRepository.save(memberChatroom3);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.enterChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(33)
+            @DisplayName("33. 상대에게 차단 당함 && 이미 퇴장한 채팅방인 경우")
+            public void enterChatroomFailedWhenBlockedAndExit() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED;
+
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // 상대가 나를 차단
+                blockService.blockMember(member2.getId(), member1.getId());
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.enterChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(34)
+            @DisplayName("34. 상대를 차단한 경우")
+            public void enterChatroomFailedWhenBlock() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED;
+
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                Chatroom savedChatroom = chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // 내가 상대를 차단
+                blockService.blockMember(member1.getId(), member2.getId());
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.enterChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+        }
+    }
 }
