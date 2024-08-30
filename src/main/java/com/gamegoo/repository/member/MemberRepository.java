@@ -25,4 +25,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findAllByIdBetween(Long startId, Long endId);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT m.mannerLevel FROM Member m")
+    List<Integer> findAllMannerLevels();
 }

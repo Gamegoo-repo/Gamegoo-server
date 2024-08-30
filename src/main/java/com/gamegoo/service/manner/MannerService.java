@@ -615,9 +615,13 @@ public class MannerService {
             mannerKeywordDTOs);
 
         Integer mannerLevel = member.getMannerLevel();
+
+        Double mannerRank = getMannerLevelRank(member);
+
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
             .mannerKeywords(mannerKeywords)
+            .mannerRank(mannerRank)
             .build();
     }
 
@@ -763,4 +767,23 @@ public class MannerService {
             return contents;
         }
     }
+
+    // 회원의 매너레벨이 전체 회원 중 상위 몇 퍼센트에 위치하는지 계산
+    public double getMannerLevelRank(Member member) {
+
+        // 전체 회원의 매너레벨을 가져오기
+        List<Integer> mannerLevels = memberRepository.findAllMannerLevels();
+
+        // 전체 매너레벨을 정렬
+        List<Integer> sortedMannerLevels = mannerLevels.stream()
+                .sorted(Collections.reverseOrder())
+                .collect(Collectors.toList());
+
+        // 특정 회원의 매너레벨이 상위 몇 %인지 계산
+        int index = sortedMannerLevels.indexOf(member.getMannerLevel());
+        double mannerRank = ((double) (index + 1) / sortedMannerLevels.size()) * 100;
+
+        return mannerRank;
+    }
+
 }
