@@ -616,7 +616,7 @@ public class MannerService {
 
         Integer mannerLevel = member.getMannerLevel();
 
-        Double mannerRank = getMannerLevelRank(member);
+        Double mannerRank = getMannerLevelRank(member.getId());
 
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
@@ -769,7 +769,10 @@ public class MannerService {
     }
 
     // 회원의 매너레벨이 전체 회원 중 상위 몇 퍼센트에 위치하는지 계산
-    public double getMannerLevelRank(Member member) {
+    public double getMannerLevelRank(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 전체 회원의 매너레벨을 가져오기
         List<Integer> mannerLevels = memberRepository.findAllMannerLevels();
