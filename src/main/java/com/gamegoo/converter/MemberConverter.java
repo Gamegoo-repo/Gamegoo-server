@@ -79,7 +79,7 @@ public class MemberConverter {
     }
 
     public static MemberResponse.memberProfileDTO toMemberProfileDTO(Member member,
-        Member targetMember, Boolean isFriend, Long friedRequestMemberId) {
+        Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerLevelRank) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
         if (targetMember.getMemberGameStyleList() != null) {
             gameStyleResponseDTOList = targetMember.getMemberGameStyleList().stream()
@@ -108,6 +108,7 @@ public class MemberConverter {
             .rank(targetMember.getRank())
             .profileImg(targetMember.getProfileImage())
             .manner(targetMember.getMannerLevel())
+            .mannerRank(mannerLevelRank)
             .mainP(targetMember.getMainPosition())
             .subP(targetMember.getSubPosition())
             .isAgree(targetMember.getIsAgree())
