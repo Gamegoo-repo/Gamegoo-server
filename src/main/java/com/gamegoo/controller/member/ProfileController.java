@@ -87,12 +87,15 @@ public class ProfileController {
 
     @Operation(summary = "내 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member with jwt")
     @GetMapping("/profile")
-    public ApiResponse<MemberResponse.myProfileMemberDTO> getMemberJWT() {
+    public ApiResponse<MemberResponse.myProfileDTO> getMemberJWT() {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Member myProfile = profileService.findMember(memberId);
 
-        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
+        Double mannerLevelRank = mannerService.getMannerLevelRank(memberId);
+
+        return ApiResponse.onSuccess(
+                profileService.getMyProfile(myProfile, mannerLevelRank));
     }
 
     @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member")

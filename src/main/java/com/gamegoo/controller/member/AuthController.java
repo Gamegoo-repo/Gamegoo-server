@@ -36,7 +36,6 @@ public class AuthController {
         Boolean isAgree = joinRequestDTO.getIsAgree();
 
         Member member = authService.joinMember(email, password, gameName, tag, isAgree);
-
         return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(member));
     }
 

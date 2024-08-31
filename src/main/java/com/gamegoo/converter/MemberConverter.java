@@ -78,6 +78,49 @@ public class MemberConverter {
 
     }
 
+    public static MemberResponse.myProfileDTO ProfileDTO(Member member, Double mannerLevelRank) {
+        List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
+        if (member.getMemberGameStyleList() != null) {
+            gameStyleResponseDTOList = member.getMemberGameStyleList().stream()
+                    .map(memberGameStyle -> MemberResponse.GameStyleResponseDTO.builder()
+                            .gameStyleId(memberGameStyle.getGameStyle().getId())
+                            .gameStyleName(memberGameStyle.getGameStyle().getStyleName())
+                            .build()).collect(Collectors.toList());
+        }
+
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
+        if (member.getMemberChampionList() != null) {
+            championResponseDTOList = member.getMemberChampionList().stream()
+                    .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
+                            .championId(memberChampion.getMember().getId())
+                            .championName(memberChampion.getChampion().getName())
+                            .build()).collect(Collectors.toList());
+        }
+
+        return MemberResponse.myProfileDTO.builder()
+                .id(member.getId())
+                .mike(member.getMike())
+                .email(member.getEmail())
+                .gameName(member.getGameName())
+                .tag(member.getTag())
+                .tier(member.getTier())
+                .rank(member.getRank())
+                .profileImg(member.getProfileImage())
+                .manner(member.getMannerLevel())
+                .mannerRank(mannerLevelRank)
+                .mainP(member.getMainPosition())
+                .subP(member.getSubPosition())
+                .isAgree(member.getIsAgree())
+                .isBlind(member.getBlind())
+                .winrate(member.getWinRate())
+                .loginType(String.valueOf(member.getLoginType()))
+                .updatedAt(String.valueOf(member.getUpdatedAt()))
+                .gameStyleResponseDTOList(gameStyleResponseDTOList)
+                .championResponseDTOList(championResponseDTOList)
+                .build();
+
+    }
+
     public static MemberResponse.memberProfileDTO toMemberProfileDTO(Member member,
         Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerLevelRank) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
