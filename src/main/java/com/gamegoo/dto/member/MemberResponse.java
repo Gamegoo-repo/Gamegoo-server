@@ -119,6 +119,7 @@ public class MemberResponse {
         Tier tier;
         Integer rank;
         Integer manner;
+        Double mannerRank;
         String updatedAt;
         Integer mainP;
         Integer subP;

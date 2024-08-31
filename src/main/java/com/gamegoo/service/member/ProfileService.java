@@ -155,7 +155,7 @@ public class ProfileService {
      */
     @Transactional(readOnly = true)
     public MemberResponse.memberProfileDTO getTargetMemberProfile(Long memberId,
-        Long targetMemberId) {
+        Long targetMemberId, Double manenrLevelRank) {
         Member member = findMember(memberId);
         Member targetMember = findMember(targetMemberId);
 
@@ -173,7 +173,7 @@ public class ProfileService {
 
         return MemberConverter.toMemberProfileDTO(member, targetMember,
             isFriend,
-            friendRequestMemberId);
+            friendRequestMemberId, manenrLevelRank);
     }
 
     /**
