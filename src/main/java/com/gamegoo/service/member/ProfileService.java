@@ -146,6 +146,12 @@ public class ProfileService {
             .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public Member findSystemMember() {
+        return memberRepository.findById(0L)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
     /**
      * 특정 회원의 유저프로필 조회, 차단 여부, 친구 여부, 친구 요청 상태 포함
      *
