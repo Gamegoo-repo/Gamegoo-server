@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
@@ -15,6 +18,9 @@ import com.gamegoo.domain.chat.Chatroom;
 import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.domain.member.LoginType;
 import com.gamegoo.domain.member.Member;
+import com.gamegoo.dto.chat.ChatRequest;
+import com.gamegoo.dto.chat.ChatRequest.ChatCreateRequest;
+import com.gamegoo.dto.chat.ChatRequest.SystemFlagRequest;
 import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.chat.ChatRepository;
@@ -24,6 +30,7 @@ import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.chat.ChatCommandService;
 import com.gamegoo.service.member.BlockService;
 import com.gamegoo.service.member.ProfileService;
+import com.gamegoo.service.socket.SocketService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +47,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -55,6 +63,9 @@ public class ChatServiceTest {
 
     @SpyBean
     private ProfileService profileService;  // 실제 ProfileService를 Spy로 감싸기
+
+    @SpyBean
+    private SocketService socketService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -186,6 +197,7 @@ public class ChatServiceTest {
 
         // findSystemMember 메서드만 mock 처리
         doReturn(systemMember).when(profileService).findSystemMember();
+        doNothing().when(socketService).joinSocketToChatroom(anyLong(), anyString());
     }
 
     @Nested
@@ -1040,6 +1052,9 @@ public class ChatServiceTest {
                 MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                     member1.getId(), savedChatroom.getId()).get();
                 assertNotNull(memberChatroom.getLastViewDate());
+
+                // 3. 응답 dto 상대 회원 검증
+                assertEquals(chatroomEnterDTO.getMemberId(), member2.getId());
             }
 
             @Test
@@ -1086,6 +1101,9 @@ public class ChatServiceTest {
                 MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                     member1.getId(), savedChatroom.getId()).get();
                 assertNotNull(memberChatroom.getLastViewDate());
+
+                // 3. 응답 dto 상대 회원 검증
+                assertEquals(chatroomEnterDTO.getMemberId(), member2.getId());
             }
         }
 
@@ -1236,6 +1254,496 @@ public class ChatServiceTest {
                 // when
                 GeneralException exception = assertThrows(GeneralException.class, () -> {
                     chatCommandService.enterChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("채팅 등록")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class AddChat {
+
+        @Nested
+        @DisplayName("성공 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class SuccessCase {
+
+            @Test
+            @Order(35)
+            @DisplayName("35. 시스템 메시지 없음 && 기존에 입장한 채팅방인 경우")
+            public void enterChatroomSucceedsWhenNoSystemAndEntered() throws Exception {
+                // given
+                // 채팅방 생성 및 member1 입장
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom1 = memberChatroomRepository.save(
+                    memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                MemberChatroom savedMemberChatroom2 = memberChatroomRepository.save(
+                    memberChatroom2);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                Chat chat = chatCommandService.addChat(request, newUuid, member1.getId());
+
+                // then
+                // 1. 생성된 chat의 메시지 내용, member 검증
+                assertEquals(chat.getContents(), newMessage);
+                assertEquals(chat.getFromMember(), member1);
+
+                // 2. member1의 lastViewDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastViewDate());
+
+                // 3. member2의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom2.getLastJoinDate());
+
+            }
+
+            @Test
+            @Order(36)
+            @DisplayName("36. 시스템 메시지 없음 && 기존에 입장하지 않은 채팅방인 경우")
+            public void enterChatroomSucceedsWhenNoSystemAndNotEntered() throws Exception {
+                // given
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom1 = memberChatroomRepository.save(
+                    memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                MemberChatroom savedMemberChatroom2 = memberChatroomRepository.save(
+                    memberChatroom2);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                Chat chat = chatCommandService.addChat(request, newUuid, member1.getId());
+
+                // then
+                // 1. 생성된 chat의 메시지 내용, member 검증
+                assertEquals(chat.getContents(), newMessage);
+                assertEquals(chat.getFromMember(), member1);
+
+                // 2. member1의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastJoinDate());
+
+                // 3. member1의 lastViewDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastViewDate());
+
+                // 4. member2의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom2.getLastJoinDate());
+
+            }
+
+            @Test
+            @Order(37)
+            @DisplayName("37. init 시스템 메시지 있음 && 기존에 입장하지 않은 채팅방인 경우")
+            public void enterChatroomSucceedsWhenInitSystemAndNotEntered() throws Exception {
+                // given
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom1 = memberChatroomRepository.save(
+                    memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                MemberChatroom savedMemberChatroom2 = memberChatroomRepository.save(
+                    memberChatroom2);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+
+                ChatRequest.SystemFlagRequest systemFlagRequest = new SystemFlagRequest();
+                ReflectionTestUtils.setField(systemFlagRequest, "flag", 1);
+                ReflectionTestUtils.setField(systemFlagRequest, "boardId", 1L);
+
+                ReflectionTestUtils.setField(request, "message", newMessage);
+                ReflectionTestUtils.setField(request, "system", systemFlagRequest);
+
+                // when
+                Chat chat = chatCommandService.addChat(request, newUuid, member1.getId());
+
+                // then
+                // 1. 생성된 chat의 메시지 내용, member 검증
+                assertEquals(chat.getContents(), newMessage);
+                assertEquals(chat.getFromMember(), member1);
+
+                // 2. member1의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastJoinDate());
+
+                // 3. member1의 lastViewDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastViewDate());
+
+                // 4. member2의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom2.getLastJoinDate());
+
+                // 5. systemChat 생성되었는지 검증
+                assertEquals(chatRepository.count(), 3);
+
+                List<Chat> chats = chatRepository.findAll();
+                assertEquals(chats.get(0).getFromMember(), systemMember);
+                assertEquals(chats.get(1).getFromMember(), systemMember);
+
+                assertEquals(chats.get(0).getToMember(), member1);
+                assertEquals(chats.get(1).getToMember(), member2);
+
+                assertEquals(chats.get(0).getContents(), POST_SYSTEM_MESSAGE_TO_MEMBER_INIT);
+                assertEquals(chats.get(1).getContents(), POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER);
+
+            }
+
+            @Test
+            @Order(38)
+            @DisplayName("38. 시스템 메시지 있음 && 기존에 입장한 채팅방인 경우")
+            public void enterChatroomSucceedsWhenSystemAndEntered() throws Exception {
+                // given
+                // 채팅방 생성 및 member1 입장
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom1 = memberChatroomRepository.save(
+                    memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                MemberChatroom savedMemberChatroom2 = memberChatroomRepository.save(
+                    memberChatroom2);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+
+                ChatRequest.SystemFlagRequest systemFlagRequest = new SystemFlagRequest();
+                ReflectionTestUtils.setField(systemFlagRequest, "flag", 2);
+                ReflectionTestUtils.setField(systemFlagRequest, "boardId", 1L);
+
+                ReflectionTestUtils.setField(request, "message", newMessage);
+                ReflectionTestUtils.setField(request, "system", systemFlagRequest);
+
+                // when
+                Chat chat = chatCommandService.addChat(request, newUuid, member1.getId());
+
+                // then
+                // 1. 생성된 chat의 메시지 내용, member 검증
+                assertEquals(chat.getContents(), newMessage);
+                assertEquals(chat.getFromMember(), member1);
+
+                // 2. member1의 lastViewDate update 검증
+                assertNotNull(savedMemberChatroom1.getLastViewDate());
+
+                // 3. member2의 lastJoinDate update 검증
+                assertNotNull(savedMemberChatroom2.getLastJoinDate());
+
+                // 4. systemChat 생성되었는지 검증
+                assertEquals(chatRepository.count(), 3);
+
+                List<Chat> chats = chatRepository.findAll();
+                assertEquals(chats.get(0).getFromMember(), systemMember);
+                assertEquals(chats.get(1).getFromMember(), systemMember);
+
+                assertEquals(chats.get(0).getToMember(), member1);
+                assertEquals(chats.get(1).getToMember(), member2);
+
+                assertEquals(chats.get(0).getContents(), POST_SYSTEM_MESSAGE_TO_MEMBER);
+                assertEquals(chats.get(1).getContents(), POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER);
+
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class FailCase {
+
+            @Test
+            @Order(39)
+            @DisplayName("39. uuid에 해당하는 채팅방이 없는 경우")
+            public void enterChatroomFailedWhenNoExists() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_NOT_EXIST;
+
+                String newUuid = UUID.randomUUID().toString();
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.addChat(request, newUuid, member1.getId());
+
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(40)
+            @DisplayName("40. 해당 채팅방이 회원의 것이 아닌 경우")
+            public void enterChatroomFailedWhenNotOwner() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_ACCESS_DENIED;
+
+                // member2, member3 사이 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                MemberChatroom memberChatroom3 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom3.setMember(member3);
+                memberChatroomRepository.save(memberChatroom3);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.addChat(request, newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(41)
+            @DisplayName("41. 내가 상대에게 차단 당한 경우")
+            public void enterChatroomFailedWhenBlocked() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED;
+
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // 상대가 나를 차단
+                blockService.blockMember(member2.getId(), member1.getId());
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.addChat(request, newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(42)
+            @DisplayName("42. 내가 상대를 차단한 경우")
+            public void enterChatroomFailedWhenBlock() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED;
+
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // 내가 상대를 차단
+                blockService.blockMember(member1.getId(), member2.getId());
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.addChat(request, newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(43)
+            @DisplayName("43. 상대가 탈퇴한 회원인 경우")
+            public void enterChatroomFailedWhenBlind() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.USER_DEACTIVATED;
+
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(blindMember);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.addChat(request, newUuid, member1.getId());
                 });
 
                 // then
