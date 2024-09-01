@@ -1955,4 +1955,120 @@ public class ChatServiceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("채팅방 나가기")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class ExitChatroom {
+
+        @Nested
+        @DisplayName("성공 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class SuccessCase {
+
+            @Test
+            @Order(49)
+            @DisplayName("49. 채팅방 퇴장 성공")
+            public void exitChatroomSucceed() throws Exception {
+                // given
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom = memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // when
+                chatCommandService.exitChatroom(newUuid, member1.getId());
+
+                // then
+                assertNull(savedMemberChatroom.getLastJoinDate());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class FailCase {
+
+            @Test
+            @Order(50)
+            @DisplayName("50. uuid에 해당하는 채팅방이 없는 경우")
+            public void exitChatroomFailedWhenNoExists() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_NOT_EXIST;
+
+                String newUuid = UUID.randomUUID().toString();
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.exitChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(51)
+            @DisplayName("51. 해당 채팅방이 회원의 것이 아닌 경우")
+            public void exitChatroomFailedWhenNotOwner() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_ACCESS_DENIED;
+
+                // member2, member3 사이 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                MemberChatroom memberChatroom3 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom3.setMember(member3);
+                memberChatroomRepository.save(memberChatroom3);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.exitChatroom(newUuid, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+        }
+    }
 }
