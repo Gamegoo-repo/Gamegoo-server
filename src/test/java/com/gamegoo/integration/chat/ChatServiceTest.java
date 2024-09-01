@@ -1752,4 +1752,207 @@ public class ChatServiceTest {
             }
         }
     }
+
+    @Nested
+    @DisplayName("채팅 메시지 읽음 처리")
+    @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+    class ReadChatMessages {
+
+        @Nested
+        @DisplayName("성공 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class SuccessCase {
+
+            @Test
+            @Order(44)
+            @DisplayName("44. timestamp가 null인 경우")
+            public void readChatMessageSucceedsWhenTimestampIsNull() throws Exception {
+                // given
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                MemberChatroom savedMemberChatroom = memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(blindMember);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // when
+                chatCommandService.readChatMessages(newUuid, null, member1.getId());
+
+                // then
+                assertNotNull(savedMemberChatroom.getLastViewDate());
+            }
+
+            @Test
+            @Order(45)
+            @DisplayName("45. timestamp에 해당하는 채팅 메시지가 존재하는 경우")
+            public void readChatMessageSucceedsWhenTimestampMsgExists() throws Exception {
+                // given
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                MemberChatroom savedMemberChatroom = memberChatroomRepository.save(memberChatroom2);
+
+                // 채팅 메시지 등록
+                // 채팅 메시지 dto 생성
+                ChatRequest.ChatCreateRequest request = new ChatCreateRequest();
+                String newMessage = "test message";
+                ReflectionTestUtils.setField(request, "message", newMessage);
+
+                Chat chat = chatCommandService.addChat(request, newUuid, member1.getId());
+
+                // when
+                chatCommandService.readChatMessages(newUuid, chat.getTimestamp(), member2.getId());
+
+                // then
+                assertEquals(savedMemberChatroom.getLastViewDate(), chat.getCreatedAt());
+            }
+        }
+
+        @Nested
+        @DisplayName("실패 케이스")
+        @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+        class FailCase {
+
+            @Test
+            @Order(46)
+            @DisplayName("46. uuid에 해당하는 채팅방이 없는 경우")
+            public void readChatMessageFailedWhenNoExists() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_NOT_EXIST;
+
+                String newUuid = UUID.randomUUID().toString();
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.readChatMessages(newUuid, null, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(47)
+            @DisplayName("47. 해당 채팅방이 회원의 것이 아닌 경우")
+            public void readChatMessageFailedWhenNotOwner() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHATROOM_ACCESS_DENIED;
+
+                // member2, member3 사이 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                MemberChatroom memberChatroom3 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(LocalDateTime.now())
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom3.setMember(member3);
+                memberChatroomRepository.save(memberChatroom3);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.readChatMessages(newUuid, null, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+
+            @Test
+            @Order(48)
+            @DisplayName("48. timestamp에 해당하는 채팅 메시지가 존재하지 않는 경우")
+            public void readChatMessageFailedWhenTimestampMsgNotExists() throws Exception {
+                // given
+                ErrorStatus expectedErrorCode = ErrorStatus.CHAT_MESSAGE_NOT_FOUND;
+
+                // 채팅방 생성
+                String newUuid = UUID.randomUUID().toString();
+                Chatroom newChatroom = Chatroom.builder()
+                    .uuid(newUuid)
+                    .startMember(null)
+                    .build();
+
+                chatroomRepository.save(newChatroom);
+
+                MemberChatroom memberChatroom1 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom1.setMember(member1);
+                memberChatroomRepository.save(memberChatroom1);
+
+                MemberChatroom memberChatroom2 = MemberChatroom.builder()
+                    .lastViewDate(null)
+                    .lastJoinDate(null)
+                    .chatroom(newChatroom)
+                    .build();
+                memberChatroom2.setMember(member2);
+                memberChatroomRepository.save(memberChatroom2);
+
+                // when
+                GeneralException exception = assertThrows(GeneralException.class, () -> {
+                    chatCommandService.readChatMessages(newUuid, 1000000000000L, member1.getId());
+                });
+
+                // then
+                assertEquals(expectedErrorCode, exception.getCode());
+
+            }
+        }
+    }
 }
