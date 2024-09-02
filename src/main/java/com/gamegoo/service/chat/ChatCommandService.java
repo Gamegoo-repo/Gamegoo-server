@@ -2,6 +2,7 @@ package com.gamegoo.service.chat;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.converter.ChatConverter;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.chat.Chat;
@@ -83,7 +84,11 @@ public class ChatCommandService {
             .map(existingChatroom -> enterExistingChatroom(member, targetMember,
                 existingChatroom, null))// 기존 채팅방 존재하는 경우, 해당 채팅방에 입장
             .orElseGet(() -> {
-                // 기존에 채팅방이 존재하지 않는 경우: 새 채팅방 생성
+                // 기존에 채팅방이 존재하지 않는 경우: 상대방의 차단 여부 검증
+                MemberUtils.validateBlocked(targetMember, member,
+                    ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+
+                // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
                 return ChatroomEnterDTO.builder()
                     .uuid(newChatroom.getUuid())
@@ -133,8 +138,11 @@ public class ChatCommandService {
             .map(exitChatroom -> enterExistingChatroom(member, targetMember,
                 exitChatroom, board.getId())) // 기존 채팅방 존재하는 경우, 해당 채팅방에 입장 및 system 값 포함
             .orElseGet(() -> {
-                // 기존에 채팅방이 존재하지 않는 경우: 새 채팅방 생성
+                // 기존에 채팅방이 존재하지 않는 경우: 상대방의 차단 여부 검증
+                MemberUtils.validateBlocked(targetMember, member,
+                    ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
 
+                // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
                 // 시스템 메시지 기능을 위한 SystemFlagDTO 생성
                 ChatResponse.SystemFlagDTO systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
@@ -171,6 +179,21 @@ public class ChatCommandService {
 
         Member member1 = profileService.findMember(memberId1);
         Member member2 = profileService.findMember(memberId2);
+
+        // 대상 회원의 탈퇴 여부 검증
+        if (member2.getBlind()) {
+            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
+        }
+
+        // 내가 상대를 차단한 경우
+        if (MemberUtils.isBlocked(member1, member2)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+        }
+
+        // 상대가 나를 차단한 경우
+        if (MemberUtils.isBlocked(member2, member1)) {
+            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+        }
 
         Chatroom chatroom = chatroomRepository
             .findChatroomByMemberIds(member1.getId(), member2.getId())
@@ -237,10 +260,14 @@ public class ChatCommandService {
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
-        // 회원 간 차단 여부 검증
+        // 회원 간 차단 여부 및 탈퇴 여부 검증
         // 대화 상대 회원 조회
         Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
             chatroom.getId(), memberId);
+        // 상대 탈퇴 여부 검증
+        if (targetMember.getBlind()) {
+            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
+        }
         MemberUtils.validateBlocked(member, targetMember,
             ErrorStatus.CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED);
         MemberUtils.validateBlocked(targetMember, member,
@@ -552,8 +579,14 @@ public class ChatCommandService {
         ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatConverter.toChatMessageListDTO(
             recentChats);
 
+        ChatResponse.SystemFlagDTO systemFlagDTO;
         // 시스템 플래그 생성, boardId가 null인 경우 systemFlagDTO도 null
-        ChatResponse.SystemFlagDTO systemFlagDTO = createSystemFlagDTO(memberChatroom, boardId);
+        // 상대가 나를 차단한 경우 boardId null을 전달해 systemFlagDTO null로 설정
+        if (MemberUtils.isBlocked(targetMember, member)) {
+            systemFlagDTO = createSystemFlagDTO(memberChatroom, null);
+        } else {
+            systemFlagDTO = createSystemFlagDTO(memberChatroom, boardId);
+        }
 
         return ChatroomEnterDTO.builder()
             .uuid(chatroom.getUuid())
