@@ -2,6 +2,7 @@ package com.gamegoo.service.member;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.FriendHandler;
+import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.friend.FriendRequestStatus;
 import com.gamegoo.domain.friend.FriendRequests;
@@ -11,10 +12,10 @@ import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.service.notification.NotificationService;
 import com.gamegoo.util.MemberUtils;
-import com.gamegoo.util.SortUtil;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,22 +29,26 @@ public class FriendService {
     private final ProfileService profileService;
     private final NotificationService notificationService;
 
+    private final static int PAGE_SIZE = 10;
+
+
     /**
-     * memberId에 해당하는 회원의 친구 목록 조회
+     * memberId에 해당하는 회원의 친구 목록 조회, 오름차순 정렬 및 페이징 포함
      *
      * @param memberId
      * @return
      */
     @Transactional(readOnly = true)
-    public List<Friend> getFriends(Long memberId) {
-        List<Friend> friendList = friendRepository.findAllByFromMemberId(memberId);
+    public Slice<Friend> getFriends(Long memberId, Long cursorId) {
 
-        // 친구 회원의 gameName 기준 오름차순 정렬
-        friendList.sort(
-            (f1, f2) -> SortUtil.memberNameComparator.compare(f1.getToMember().getGameName(),
-                f2.getToMember().getGameName()));
+        // 커서 값 검증
+        if (cursorId < 0) {
+            throw new PageHandler(ErrorStatus.CURSOR_INVALID);
+        }
 
-        return friendList;
+        Member member = profileService.findMember(memberId);
+
+        return friendRepository.findFriendsByCursorAndOrdered(cursorId, member.getId(), PAGE_SIZE);
     }
 
 
