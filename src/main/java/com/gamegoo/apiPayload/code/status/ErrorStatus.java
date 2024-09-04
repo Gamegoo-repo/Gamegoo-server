@@ -26,33 +26,34 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // Member 관련 에러
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 사용자를 찾을 수 없습니다."),
-    USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER403", "해당 사용자는 탈퇴한 사용자입니다."),
-    MEMBER_CONFLICT(HttpStatus.CONFLICT, "MEMBER409", "이미 있는 사용자입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER401", "해당 사용자를 찾을 수 없습니다."),
+    USER_DEACTIVATED(HttpStatus.FORBIDDEN, "MEMBER402", "해당 사용자는 탈퇴한 사용자입니다."),
+    MEMBER_CONFLICT(HttpStatus.CONFLICT, "MEMBER403", "이미 있는 사용자입니다."),
 
     // JWT 관련 에러
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT401", "jwt 토큰이 만료되었습니다."),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT400", "유효하지 않은 jwt 토큰입니다."),
-    TOKEN_NULL(HttpStatus.NOT_FOUND, "JWT404", "JWT 토큰이 없습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT400", "jwt 토큰이 만료되었습니다."),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT401", "유효하지 않은 jwt 토큰입니다."),
+    TOKEN_NULL(HttpStatus.NOT_FOUND, "JWT402", "JWT 토큰이 없습니다."),
 
     // GameStyle 관련 에러
-    GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE404", "해당 게임 스타일을 찾을 수 없습니다."),
+    GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE400", "해당 게임 스타일을 찾을 수 없습니다."),
 
     // Position 관련 에러
-    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION404", "해당 Position을 찾을 수 없습니다."),
+    POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "POSITION400", "해당 Position을 찾을 수 없습니다."),
 
     // Email 인증 관련 에러
-    EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL500", "이메일 전송 도중, 에러가 발생했습니다."),
-    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL404", "해당 이메일을 찾을 수 없습니다."),
-    EMAIL_INVALID_CODE(HttpStatus.BAD_REQUEST, "EMAIL400", "인증 코드가 불일치합니다."),
-    EMAIL_INVALID_TIME(HttpStatus.BAD_REQUEST, "EMAIL400", "이메일 인증 시간이 3분 초과했습니다."),
+    EMAIL_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "EMAIL400", "이메일 전송 도중, 에러가 발생했습니다."),
+    EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL401", "해당 이메일을 찾을 수 없습니다."),
+    EMAIL_INVALID_CODE(HttpStatus.BAD_REQUEST, "EMAIL402", "인증 코드가 불일치합니다."),
+    EMAIL_INVALID_TIME(HttpStatus.BAD_REQUEST, "EMAIL403", "이메일 인증 시간이 3분 초과했습니다."),
 
     // 매칭 관련 에러
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
-        "status는 SUCCESS, FAIL 둘 중 하나로만 변경이 가능합니다."),
-    MATHCING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
-        "matchingType은 BASIC, PRECISE 둘 중 하나여야합니다."),
-    MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "해당 사용자의 매칭 정보가 없습니다."),
+            "status는 SUCCESS, FAIL 둘 중 하나로만 변경이 가능합니다."),
+    MATHCING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH401",
+            "matchingType은 BASIC, PRECISE 둘 중 하나여야합니다."),
+    MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH402", "해당 사용자의 매칭 정보가 없습니다."),
+    MATCHING_FAILED_BY_BLOCK(HttpStatus.BAD_REQUEST, "MATCH403", "차단된 사용자끼리의 매칭은 불가능합니다."),
 
 
     // Riot 관련 에러
@@ -134,9 +135,9 @@ public enum ErrorStatus implements BaseErrorCode {
     TARGET_PENDING_FRIEND_REQUEST_EXIST(HttpStatus.BAD_REQUEST, "FRIEND405",
         "해당 회원이 나에게 보낸 친구 요청이 수락 대기 중 입니다. 해당 요청을 수락 해주세요."),
     ALREADY_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND406",
-        "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
+            "두 회원은 이미 친구 관계 입니다. 친구 요청을 보낼 수 없습니다."),
     PENDING_FRIEND_REQUEST_NOT_EXIST(HttpStatus.NOT_FOUND, "FRIEND407",
-        "취소/수락/거절할 친구 요청이 존재하지 않습니다."),
+            "취소/수락/거절할 친구 요청이 존재하지 않습니다."),
     MEMBERS_NOT_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND408", "두 회원은 친구 관계가 아닙니다."),
     ALREADY_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND409", "이미 즐겨찾기 되어 있는 친구입니다."),
     NOT_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND410", "즐겨찾기 되어 있는 친구가 아닙니다."),
