@@ -51,6 +51,24 @@ public class FriendService {
         return friendRepository.findFriendsByCursorAndOrdered(cursorId, member.getId(), PAGE_SIZE);
     }
 
+    /**
+     * query string으로 시작하는 소환사명을 갖는 모든 친구 검색
+     *
+     * @param memberId
+     * @param queryString
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Friend> searchFriendByQueryString(Long memberId, String queryString) {
+        if (queryString.length() > 100) {
+            throw new FriendHandler(ErrorStatus.FRIEND_SEARCH_QUERY_BAD_REQUEST);
+        }
+
+        Member member = profileService.findMember(memberId);
+
+        return friendRepository.findFriendsByQueryStringAndOrdered(queryString, member.getId());
+    }
+
 
     /**
      * targetMemberId에 해당하는 회원에게 친구 요청 전송

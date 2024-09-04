@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.dto.member.MemberResponse.friendInfoDTO;
 import com.gamegoo.dto.member.MemberResponse.friendRequestResultDTO;
 import com.gamegoo.dto.member.MemberResponse.starFriendResultDTO;
 import com.gamegoo.service.member.FriendService;
@@ -11,6 +12,8 @@ import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
@@ -46,6 +49,23 @@ public class FriendController {
 
         return ApiResponse.onSuccess(MemberConverter.toFriendListDTO(friends));
 
+    }
+
+    @Operation(summary = "소환사명으로 친구 검색 API", description =
+        "해당 회원의 친구 중, query string으로 시작하는 소환사명을 가진 모든 친구 목록을 조회합니다.")
+    @Parameter(name = "query", description = "친구 목록 검색을 위한 소환사명 string으로, 100자 이하여야 합니다.")
+    @GetMapping("/search")
+    public ApiResponse<List<friendInfoDTO>> searchFriend(
+        @RequestParam(name = "query") String query
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        List<Friend> friends = friendService.searchFriendByQueryString(memberId, query);
+
+        List<friendInfoDTO> friendInfoDTOList = friends.stream()
+            .map(MemberConverter::toFriendInfoDto).collect(Collectors.toList());
+
+        return ApiResponse.onSuccess(friendInfoDTOList);
     }
 
     @Operation(summary = "친구 요청 전송 API", description = "대상 회원에게 친구 요청을 전송하는 API 입니다."
