@@ -14,6 +14,7 @@ import com.gamegoo.util.MemberUtils;
 import com.gamegoo.util.SortUtil;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,20 @@ public class FriendService {
         return friendList;
     }
 
+    /**
+     * memberId에 해당하는 회원의 모든 친구 id 조회
+     *
+     * @param memberId
+     * @return
+     */
+    public List<Long> getFriendIds(Long memberId) {
+        Member member = profileService.findMember(memberId);
+
+        List<Friend> friendList = friendRepository.findAllByFromMemberId(member.getId());
+
+        return friendList.stream().map(friend -> friend.getToMember().getId())
+            .collect(Collectors.toList());
+    }
 
     /**
      * targetMemberId에 해당하는 회원에게 친구 요청 전송

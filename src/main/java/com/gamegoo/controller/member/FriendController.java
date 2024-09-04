@@ -46,6 +46,16 @@ public class FriendController {
 
     }
 
+    @Operation(summary = "모든 친구 id 조회 API", description = "해당 회원의 모든 친구 id 목록을 조회하는 API 입니다.\n\n"
+        + "정렬 기능 없음, socket서버용 API 입니다.")
+    @GetMapping("/ids")
+    public ApiResponse<List<Long>> getFriendIds() {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(friendService.getFriendIds(memberId));
+
+    }
+
     @Operation(summary = "친구 요청 전송 API", description = "대상 회원에게 친구 요청을 전송하는 API 입니다."
         + "대상 회원에게 친구 요청 알림을 전송하며, 대상 회원이 현재 접속 중인 경우 socket을 통해 실시간 알림을 전송합니다.")
     @Parameter(name = "memberId", description = "친구 요청을 전송할 대상 회원의 id 입니다.")
