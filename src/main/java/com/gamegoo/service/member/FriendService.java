@@ -42,7 +42,7 @@ public class FriendService {
     public Slice<Friend> getFriends(Long memberId, Long cursorId) {
 
         // 커서 값 검증
-        if (cursorId < 0) {
+        if (cursorId != null && cursorId < 0) {
             throw new PageHandler(ErrorStatus.CURSOR_INVALID);
         }
 
