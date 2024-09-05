@@ -154,8 +154,8 @@ public class MemberResponse {
         Long memberId;
         String name;
         Integer memberProfileImg;
-        boolean isLiked;
-        boolean isBlind;
+        Boolean isLiked;
+        Boolean isBlind;
     }
 
     @Builder
