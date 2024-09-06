@@ -83,6 +83,7 @@ public class ChatQueryService {
                     .targetMemberName(targetMember.getGameName())
                     .friend(friendService.isFriend(member, targetMember))
                     .blocked(MemberUtils.isBlocked(targetMember, member))
+                    .blind(targetMember.getBlind())
                     .friendRequestMemberId(
                         friendService.getFriendRequestMemberId(member, targetMember))
                     .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)

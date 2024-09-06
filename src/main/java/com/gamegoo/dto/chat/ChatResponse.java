@@ -21,8 +21,9 @@ public class ChatResponse {
         Long targetMemberId;
         Integer targetMemberImg;
         String targetMemberName;
-        boolean friend;
-        boolean blocked;
+        Boolean friend;
+        Boolean blocked;
+        Boolean blind;
         Long friendRequestMemberId;
         String lastMsg;
         String lastMsgAt;
