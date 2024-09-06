@@ -41,6 +41,7 @@ public class ChatResponse {
         "memberProfileImg",
         "friend",
         "blocked",
+        "blind",
         "friendRequestMemberId",
         "system",
         "chatMessageList"
@@ -53,6 +54,7 @@ public class ChatResponse {
         Integer memberProfileImg;
         Boolean friend;
         Boolean blocked;
+        Boolean blind;
         Long friendRequestMemberId;
         SystemFlagDTO system;
         ChatMessageListDTO chatMessageList;
