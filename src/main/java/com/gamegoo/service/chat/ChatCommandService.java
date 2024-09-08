@@ -207,15 +207,14 @@ public class ChatCommandService {
 
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                 memberId, chatroom.getId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
         // 채팅 상대 회원 조회
         Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
             chatroom.getId(), memberId);
 
         // 내가 채팅 상대 회원을 차단한 경우
-        MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
+        validateBlockedTargetMember(member, targetMember);
 
         return enterExistingChatroom(member, targetMember, chatroom, null);
     }
@@ -311,14 +310,20 @@ public class ChatCommandService {
 
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                 member.getId(), chatroom.getId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        // 내가 입장한 상태인지 검증
+        if (memberChatroom.getLastJoinDate() == null) {
+            throw new ChatHandler(ErrorStatus.CHAT_READ_FAILED_NOT_ENTERED_CHATROOM);
+        }
 
         if (timestamp == null) { // timestamp 파라미터가 넘어오지 않은 경우, lastViewDate를 현재 시각으로 업데이트
             memberChatroom.updateLastViewDate(LocalDateTime.now());
 
         } else { // timestamp 파라미터가 넘어온 경우, lastViewDate를 해당 timestamp의 chat의 createdAt으로 업데이트
             Chat chat = chatRepository.findByChatroomAndTimestamp(chatroom, timestamp)
-                .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_MESSAGE_NOT_FOUND));
+                .orElseThrow(
+                    () -> new ChatHandler(ErrorStatus.CHAT_READ_FAILED_CHAT_MESSAGE_NOT_FOUND));
             memberChatroom.updateLastViewDate(chat.getCreatedAt());
         }
     }
@@ -462,7 +467,7 @@ public class ChatCommandService {
                 targetMemberChatroom.getChatroom().getUuid());
         }
     }
-    
+
     /**
      * 두 회원 간 새로운 채팅방 생성
      *
@@ -550,7 +555,7 @@ public class ChatCommandService {
 
             // 상대방이 탈퇴했는지 검증
             validateTargetMemberIsBlind(targetMember,
-                ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
+                ErrorStatus.CHAT_START_FAILED_TARGET_USER_DEACTIVATED);
         }
 
         // 최근 메시지 내역 조회
@@ -682,5 +687,16 @@ public class ChatCommandService {
     private Board validateAndGetBoard(Long boardId) {
         return boardRepository.findById(boardId)
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_START_FAILED_BOARD_NOT_FOUND));
+    }
+
+    private Chatroom validateAndGetChatroom(Long memberId, String uuid) {
+        Chatroom chatroom = chatroomRepository.findByUuid(uuid)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+                memberId, chatroom.getId())
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
+
+        return chatroom;
     }
 }
