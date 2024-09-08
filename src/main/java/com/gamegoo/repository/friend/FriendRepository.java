@@ -1,16 +1,14 @@
 package com.gamegoo.repository.friend;
 
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.friend.Friend;
-
+import com.gamegoo.domain.member.Member;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface FriendRepository extends JpaRepository<Friend, Long> {
+public interface FriendRepository extends JpaRepository<Friend, Long>, FriendRepositoryCustom {
 
     List<Friend> findAllByFromMemberId(Long memberId);
 

@@ -45,7 +45,7 @@ public class NotificationResponse {
         int notificationType;
         String content;
         String pageUrl;
-        boolean read;
+        Boolean read;
         LocalDateTime createdAt;
     }
 
