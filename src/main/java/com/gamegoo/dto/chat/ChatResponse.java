@@ -14,6 +14,18 @@ public class ChatResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class ChatroomViewListDTO {
+
+        List<ChatroomViewDTO> chatroomViewDTOList;
+        Integer list_size;
+        Boolean has_next;
+        Long next_cursor;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class ChatroomViewDTO {
 
         Long chatroomId;
@@ -28,6 +40,7 @@ public class ChatResponse {
         String lastMsg;
         String lastMsgAt;
         Integer notReadMsgCnt;
+        Long lastMsgTimestamp;
     }
 
     @Builder
