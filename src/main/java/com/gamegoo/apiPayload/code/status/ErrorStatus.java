@@ -124,11 +124,12 @@ public enum ErrorStatus implements BaseErrorCode {
         "해당 게시글이 존재하지 않습니다. 채팅 시작이 불가능합니다."),
     CHAT_START_FAILED_BOARD_CREATOR_IS_SELF(HttpStatus.BAD_REQUEST, "CHAT409",
         "해당 게시글의 작성자가 본인입니다. 채팅 시작이 불가능합니다."),
+    CHAT_START_FAILED_TARGET_USER_IS_SELF(HttpStatus.BAD_REQUEST, "CHAT410",
+        "채팅 대상 회원이 본인입니다. 채팅 시작이 불가능합니다."),
     CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED(HttpStatus.FORBIDDEN, "CHAT408",
         "채팅 상대 회원을 차단한 상태입니다. 채팅 메시지 전송이 불가능합니다."),
     BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED(HttpStatus.FORBIDDEN, "CHAT409",
         "채팅 상대 회원이 나를 차단했습니다. 채팅 메시지 전송이 불가능합니다."),
-    CHAT_TARGET_MEMBER_ID_INVALID(HttpStatus.BAD_REQUEST, "CHAT410", "채팅방 시작 대상 회원 id 값이 잘못되었습니다."),
 
 
     // 친구 관련 에러
