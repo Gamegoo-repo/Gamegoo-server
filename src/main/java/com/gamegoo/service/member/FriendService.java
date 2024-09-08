@@ -282,6 +282,11 @@ public class FriendService {
         Optional<Friend> friend = friendRepository.findByFromMemberAndToMember(member,
             friendMember);
 
+        // 친구 회원의 탈퇴 여부 검증
+        if (friendMember.getBlind()) {
+            throw new FriendHandler(ErrorStatus.FRIEND_USER_DEACTIVATED);
+        }
+
         // 두 회원이 친구 관계가 맞는지 검증
         if (friend.isEmpty()) {
             throw new FriendHandler(ErrorStatus.MEMBERS_NOT_FRIEND);
@@ -315,6 +320,11 @@ public class FriendService {
 
         Optional<Friend> friend = friendRepository.findByFromMemberAndToMember(member,
             friendMember);
+
+        // 친구 회원의 탈퇴 여부 검증
+        if (friendMember.getBlind()) {
+            throw new FriendHandler(ErrorStatus.FRIEND_USER_DEACTIVATED);
+        }
 
         // 두 회원이 친구 관계가 맞는지 검증
         if (friend.isEmpty()) {
