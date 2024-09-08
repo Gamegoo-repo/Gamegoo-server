@@ -80,7 +80,8 @@ public class ChatQueryService {
                     .uuid(chatroom.getUuid())
                     .targetMemberId(targetMember.getId())
                     .targetMemberImg(targetMember.getProfileImage())
-                    .targetMemberName(targetMember.getGameName())
+                    .targetMemberName(
+                        targetMember.getBlind() ? "(탈퇴한 사용자)" : targetMember.getGameName())
                     .friend(friendService.isFriend(member, targetMember))
                     .blocked(MemberUtils.isBlocked(targetMember, member))
                     .blind(targetMember.getBlind())
