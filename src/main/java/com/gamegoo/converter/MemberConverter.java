@@ -143,7 +143,8 @@ public class MemberConverter {
     public static MemberResponse.friendInfoDTO toFriendInfoDto(Friend friend) {
         return MemberResponse.friendInfoDTO.builder()
             .memberId(friend.getToMember().getId())
-            .name(friend.getToMember().getGameName())
+            .name(
+                friend.getToMember().getBlind() ? "(탈퇴한 사용자)" : friend.getToMember().getGameName())
             .memberProfileImg(friend.getToMember().getProfileImage())
             .isLiked(friend.getIsLiked())
             .isBlind(friend.getToMember().getBlind())
