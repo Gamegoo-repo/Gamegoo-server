@@ -12,7 +12,9 @@ import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.chat.ChatRequest;
 import com.gamegoo.dto.chat.ChatRequest.SystemFlagRequest;
 import com.gamegoo.dto.chat.ChatResponse;
+import com.gamegoo.dto.chat.ChatResponse.ChatMessageListDTO;
 import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
+import com.gamegoo.dto.chat.ChatResponse.SystemFlagDTO;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
@@ -89,19 +91,10 @@ public class ChatCommandService {
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
 
-                return ChatroomEnterDTO.builder()
-                    .uuid(newChatroom.getUuid())
-                    .memberId(targetMember.getId())
-                    .gameName(targetMember.getGameName())
-                    .memberProfileImg(targetMember.getProfileImage())
-                    .friend(friendService.isFriend(member, targetMember))
-                    .blocked(false)
-                    .blind(targetMember.getBlind())
-                    .friendRequestMemberId(
-                        friendService.getFriendRequestMemberId(member, targetMember))
-                    .system(null)
-                    .chatMessageList(initChatMessageListDTO())
-                    .build();
+                ChatResponse.ChatMessageListDTO chatMessageListDTO = initChatMessageListDTO();
+
+                return createChatroomEnterDTO(member, targetMember, newChatroom.getUuid(), null,
+                    chatMessageListDTO);
             });
     }
 
@@ -115,33 +108,31 @@ public class ChatCommandService {
     public ChatResponse.ChatroomEnterDTO startChatroomByBoardId(Long memberId, Long boardId) {
         Member member = profileService.findMember(memberId);
 
-        // 게시글 엔티티 조회
-        Board board = boardService.findBoard(boardId);
+        // 게시글 존재 여부 검증 및 조회
+        Board board = validateAndGetBoard(boardId);
 
         // 채팅 대상 회원의 존재 여부 검증
-        Member targetMember = memberRepository.findById(board.getMember().getId())
-            .orElseThrow(
-                () -> new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_NOT_FOUND));
+        Member targetMember = validateAndGetTargetMember(board.getMember().getId());
 
-        // 게시글 작성자가 본인인 경우
-        MemberUtils.validateDifferentMembers(member.getId(), targetMember.getId(),
-            ErrorStatus.CHAT_TARGET_MEMBER_ID_INVALID);
+        // 게시글 작성자가 본인이 아닌지 검증
+        if (member.getId().equals(targetMember.getId())) {
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_BOARD_CREATOR_IS_SELF);
+        }
+        // 상대가 탈퇴했는지 검증
+        validateTargetMemberIsBlind(targetMember,
+            ErrorStatus.CHAT_START_FAILED_TARGET_USER_DEACTIVATED);
 
-        // 채팅 대상 회원이 탈퇴한 경우
-        MemberUtils.checkBlind(targetMember);
-
-        // 내가 채팅 대상 회원을 차단한 경우, 기존 채팅방 입장 및 새 채팅방 생성 모두 불가
-        MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
+        // 내가 상대 회원 차단했는지 검증
+        validateBlockedTargetMember(member, targetMember);
 
         return chatroomRepository.findChatroomByMemberIds(
                 member.getId(), targetMember.getId())
             .map(exitChatroom -> enterExistingChatroom(member, targetMember,
                 exitChatroom, board.getId())) // 기존 채팅방 존재하는 경우, 해당 채팅방에 입장 및 system 값 포함
             .orElseGet(() -> {
-                // 기존에 채팅방이 존재하지 않는 경우: 상대방의 차단 여부 검증
-                MemberUtils.validateBlocked(targetMember, member,
-                    ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
+                // 기존에 채팅방이 존재하지 않는 경우
+                // 상대가 나를 차단했는지 검증
+                validateBlockedByTargetMember(member, targetMember);
 
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
@@ -154,26 +145,10 @@ public class ChatCommandService {
                     .build();
 
                 // chatMessageListDTO 생성
-                ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
-                    .chatMessageDtoList(new ArrayList<>())
-                    .list_size(0)
-                    .has_next(false)
-                    .next_cursor(null)
-                    .build();
+                ChatResponse.ChatMessageListDTO chatMessageListDTO = initChatMessageListDTO();
 
-                return ChatroomEnterDTO.builder()
-                    .uuid(newChatroom.getUuid())
-                    .memberId(targetMember.getId())
-                    .gameName(targetMember.getGameName())
-                    .memberProfileImg(targetMember.getProfileImage())
-                    .friend(friendService.isFriend(member, targetMember))
-                    .blocked(false)
-                    .blind(targetMember.getBlind())
-                    .friendRequestMemberId(
-                        friendService.getFriendRequestMemberId(member, targetMember))
-                    .system(systemFlagDTO)
-                    .chatMessageList(null)
-                    .build();
+                return createChatroomEnterDTO(member, targetMember, newChatroom.getUuid(),
+                    systemFlagDTO, chatMessageListDTO);
             });
     }
 
@@ -636,6 +611,34 @@ public class ChatCommandService {
     }
 
     /**
+     * ChatroomEnterDTO를 생성
+     *
+     * @param member
+     * @param targetMember
+     * @param uuid
+     * @param system
+     * @param chatMessageListDTO
+     * @return
+     */
+    private ChatResponse.ChatroomEnterDTO createChatroomEnterDTO(Member member,
+        Member targetMember, String uuid, SystemFlagDTO system,
+        ChatMessageListDTO chatMessageListDTO) {
+        return ChatroomEnterDTO.builder()
+            .uuid(uuid)
+            .memberId(targetMember.getId())
+            .gameName(targetMember.getGameName())
+            .memberProfileImg(targetMember.getProfileImage())
+            .friend(friendService.isFriend(member, targetMember))
+            .blocked(MemberUtils.isBlocked(targetMember, member))
+            .blind(targetMember.getBlind())
+            .friendRequestMemberId(
+                friendService.getFriendRequestMemberId(member, targetMember))
+            .system(system)
+            .chatMessageList(chatMessageListDTO)
+            .build();
+    }
+
+    /**
      * ChatMessageListDTO 객체를 초기화해 리턴
      *
      * @return
@@ -680,5 +683,10 @@ public class ChatCommandService {
         if (targetMember.getBlind()) {
             throw new ChatHandler(errorStatus);
         }
+    }
+
+    private Board validateAndGetBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_START_FAILED_BOARD_NOT_FOUND));
     }
 }
