@@ -24,6 +24,7 @@ import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.service.socket.SocketService;
 import com.gamegoo.util.MemberUtils;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -90,6 +91,15 @@ public class ChatCommandService {
 
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
+
+                // 응답 생성
+                ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
+                    .chatMessageDtoList(new ArrayList<>())
+                    .list_size(0)
+                    .has_next(false)
+                    .next_cursor(null)
+                    .build();
+
                 return ChatroomEnterDTO.builder()
                     .uuid(newChatroom.getUuid())
                     .memberId(targetMember.getId())
@@ -101,7 +111,7 @@ public class ChatCommandService {
                     .friendRequestMemberId(
                         friendService.getFriendRequestMemberId(member, targetMember))
                     .system(null)
-                    .chatMessageList(null)
+                    .chatMessageList(chatMessageListDTO)
                     .build();
             });
     }
@@ -145,10 +155,20 @@ public class ChatCommandService {
 
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
+
+                // 응답 생성
                 // 시스템 메시지 기능을 위한 SystemFlagDTO 생성
                 ChatResponse.SystemFlagDTO systemFlagDTO = ChatResponse.SystemFlagDTO.builder()
                     .flag(1)
                     .boardId(boardId)
+                    .build();
+
+                // chatMessageListDTO 생성
+                ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
+                    .chatMessageDtoList(new ArrayList<>())
+                    .list_size(0)
+                    .has_next(false)
+                    .next_cursor(null)
                     .build();
 
                 return ChatroomEnterDTO.builder()
