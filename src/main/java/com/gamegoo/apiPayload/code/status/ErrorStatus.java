@@ -22,6 +22,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 페이징 관련 에러
     PAGE_INVALID(HttpStatus.BAD_REQUEST, "PAGE401", "페이지 값은 1 이상이어야 합니다."),
+    CURSOR_INVALID(HttpStatus.BAD_REQUEST, "PAGE402", "커서 값은 1 이상이어야 합니다."),
 
     // Member 관련 에러
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호가 불일치합니다."),
@@ -155,6 +156,8 @@ public enum ErrorStatus implements BaseErrorCode {
     MEMBERS_NOT_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND408", "두 회원은 친구 관계가 아닙니다."),
     ALREADY_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND409", "이미 즐겨찾기 되어 있는 친구입니다."),
     NOT_STAR_FRIEND(HttpStatus.BAD_REQUEST, "FRIEND410", "즐겨찾기 되어 있는 친구가 아닙니다."),
+    FRIEND_SEARCH_QUERY_BAD_REQUEST(HttpStatus.BAD_REQUEST, "FRIEND411",
+        "친구 검색 쿼리는 100자 이하여야 합니다."),
 
     // 알림 관련 에러
     NOTIFICATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI401", "해당 알림 타입 데이터를 찾을 수 없습니다."),

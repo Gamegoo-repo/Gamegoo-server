@@ -137,12 +137,25 @@ public class MemberResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class friendListDTO {
+
+        List<friendInfoDTO> friendInfoDTOList;
+        Integer list_size;
+        Boolean has_next;
+        Long next_cursor;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class friendInfoDTO {
 
         Long memberId;
         String name;
         Integer memberProfileImg;
-        boolean isLiked;
+        Boolean isLiked;
+        Boolean isBlind;
     }
 
     @Builder
