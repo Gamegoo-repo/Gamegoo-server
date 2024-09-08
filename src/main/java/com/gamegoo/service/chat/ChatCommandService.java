@@ -64,41 +64,30 @@ public class ChatCommandService {
         Long targetMemberId) {
 
         // 대상 회원 검증 및 에러 처리
-        MemberUtils.validateDifferentMembers(memberId, targetMemberId,
-            ErrorStatus.CHAT_TARGET_MEMBER_ID_INVALID);
+        validateDifferentMembers(memberId, targetMemberId);
 
         Member member = profileService.findMember(memberId);
 
         // 채팅 대상 회원의 존재 여부 검증
-        Member targetMember = memberRepository.findById(targetMemberId)
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
+        Member targetMember = validateAndGetTargetMember(targetMemberId);
 
-        // 채팅 대상 회원이 탈퇴한 경우
-        MemberUtils.checkBlind(targetMember);
+        // 내가 상대 회원 차단했는지 검증
+        validateBlockedTargetMember(member, targetMember);
 
-        // 내가 채팅 대상 회원을 차단한 경우, 기존 채팅방 입장 및 새 채팅방 생성 모두 불가
-        MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
-
-        return chatroomRepository.findChatroomByMemberIds(
-                member.getId(), targetMember.getId())
-            .map(existingChatroom -> enterExistingChatroom(member, targetMember,
-                existingChatroom, null))// 기존 채팅방 존재하는 경우, 해당 채팅방에 입장
+        return chatroomRepository.findChatroomByMemberIds(member.getId(), targetMember.getId())
+            .map(existingChatroom -> enterExistingChatroom(member, targetMember, existingChatroom,
+                null))// 기존 채팅방 존재하는 경우, 해당 채팅방에 입장
             .orElseGet(() -> {
-                // 기존에 채팅방이 존재하지 않는 경우: 상대방의 차단 여부 검증
-                MemberUtils.validateBlocked(targetMember, member,
-                    ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+                // 기존에 채팅방이 존재하지 않는 경우
+                // 상대가 나를 차단했는지 검증
+                validateBlockedByTargetMember(member, targetMember);
+
+                // 상대가 탈퇴했는지 검증
+                validateTargetMemberIsBlind(targetMember,
+                    ErrorStatus.CHAT_START_FAILED_TARGET_USER_DEACTIVATED);
 
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
-
-                // 응답 생성
-                ChatResponse.ChatMessageListDTO chatMessageListDTO = ChatResponse.ChatMessageListDTO.builder()
-                    .chatMessageDtoList(new ArrayList<>())
-                    .list_size(0)
-                    .has_next(false)
-                    .next_cursor(null)
-                    .build();
 
                 return ChatroomEnterDTO.builder()
                     .uuid(newChatroom.getUuid())
@@ -111,7 +100,7 @@ public class ChatCommandService {
                     .friendRequestMemberId(
                         friendService.getFriendRequestMemberId(member, targetMember))
                     .system(null)
-                    .chatMessageList(chatMessageListDTO)
+                    .chatMessageList(initChatMessageListDTO())
                     .build();
             });
     }
@@ -131,7 +120,8 @@ public class ChatCommandService {
 
         // 채팅 대상 회원의 존재 여부 검증
         Member targetMember = memberRepository.findById(board.getMember().getId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHAT_TARGET_NOT_FOUND));
+            .orElseThrow(
+                () -> new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_NOT_FOUND));
 
         // 게시글 작성자가 본인인 경우
         MemberUtils.validateDifferentMembers(member.getId(), targetMember.getId(),
@@ -142,7 +132,7 @@ public class ChatCommandService {
 
         // 내가 채팅 대상 회원을 차단한 경우, 기존 채팅방 입장 및 새 채팅방 생성 모두 불가
         MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+            ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
 
         return chatroomRepository.findChatroomByMemberIds(
                 member.getId(), targetMember.getId())
@@ -151,7 +141,7 @@ public class ChatCommandService {
             .orElseGet(() -> {
                 // 기존에 채팅방이 존재하지 않는 경우: 상대방의 차단 여부 검증
                 MemberUtils.validateBlocked(targetMember, member,
-                    ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+                    ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
 
                 // 새 채팅방 생성
                 Chatroom newChatroom = createNewChatroom(member, targetMember, null);
@@ -209,12 +199,12 @@ public class ChatCommandService {
 
         // 내가 상대를 차단한 경우
         if (MemberUtils.isBlocked(member1, member2)) {
-            throw new ChatHandler(ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
         }
 
         // 상대가 나를 차단한 경우
         if (MemberUtils.isBlocked(member2, member1)) {
-            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
         }
 
         Chatroom chatroom = chatroomRepository
@@ -257,7 +247,7 @@ public class ChatCommandService {
 
         // 내가 채팅 상대 회원을 차단한 경우
         MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_TARGET_IS_BLOCKED_CHAT_START_FAILED);
+            ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
 
         return enterExistingChatroom(member, targetMember, chatroom, null);
     }
@@ -584,10 +574,14 @@ public class ChatCommandService {
                 member.getId(), chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
 
-        // 상대방이 나를 차단 && 내가 퇴장한 상태
-        if (MemberUtils.isBlocked(targetMember, member)
-            && memberChatroom.getLastJoinDate() == null) {
-            throw new ChatHandler(ErrorStatus.BLOCKED_BY_CHAT_TARGET_CHAT_START_FAILED);
+        // 내가 퇴장 상태인 경우 검증
+        if (memberChatroom.getLastJoinDate() == null) {
+            // 상대방이 나를 차단했는지 검증
+            validateBlockedByTargetMember(member, targetMember);
+
+            // 상대방이 탈퇴했는지 검증
+            validateTargetMemberIsBlind(targetMember,
+                ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
         }
 
         // 최근 메시지 내역 조회
@@ -613,7 +607,7 @@ public class ChatCommandService {
         return ChatroomEnterDTO.builder()
             .uuid(chatroom.getUuid())
             .memberId(targetMember.getId())
-            .gameName(targetMember.getGameName())
+            .gameName(targetMember.getBlind() ? "(탈퇴한 사용자)" : targetMember.getGameName())
             .memberProfileImg(targetMember.getProfileImage())
             .friend(friendService.isFriend(member, targetMember))
             .blocked(MemberUtils.isBlocked(targetMember, member))
@@ -639,5 +633,52 @@ public class ChatCommandService {
         return memberChatroom.getLastJoinDate() == null
             ? ChatResponse.SystemFlagDTO.builder().flag(1).boardId(boardId).build()
             : ChatResponse.SystemFlagDTO.builder().flag(2).boardId(boardId).build();
+    }
+
+    /**
+     * ChatMessageListDTO 객체를 초기화해 리턴
+     *
+     * @return
+     */
+    private ChatResponse.ChatMessageListDTO initChatMessageListDTO() {
+        return ChatResponse.ChatMessageListDTO.builder()
+            .chatMessageDtoList(new ArrayList<>())
+            .list_size(0)
+            .has_next(false)
+            .next_cursor(null)
+            .build();
+    }
+
+    //--- 검증 메소드 ---//
+
+    private void validateDifferentMembers(Long member1, Long member2) {
+        if (member1.equals(member2)) {
+            throw new ChatHandler(ErrorStatus.CHAT_TARGET_MEMBER_ID_INVALID);
+        }
+    }
+
+    private Member validateAndGetTargetMember(Long targetMemberId) {
+        return memberRepository.findById(targetMemberId)
+            .orElseThrow(
+                () -> new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_NOT_FOUND));
+
+    }
+
+    private void validateBlockedTargetMember(Member member, Member targetMember) {
+        if (MemberUtils.isBlocked(member, targetMember)) {
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
+        }
+    }
+
+    private void validateBlockedByTargetMember(Member member, Member targetMember) {
+        if (MemberUtils.isBlocked(targetMember, member)) {
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
+        }
+    }
+
+    private void validateTargetMemberIsBlind(Member targetMember, ErrorStatus errorStatus) {
+        if (targetMember.getBlind()) {
+            throw new ChatHandler(errorStatus);
+        }
     }
 }
