@@ -44,7 +44,8 @@ public class ChatConverter {
 
         return ChatResponse.ChatMessageDTO.builder()
             .senderId(chat.getFromMember().getId())
-            .senderName(chat.getFromMember().getGameName())
+            .senderName(
+                chat.getFromMember().getBlind() ? "(탈퇴한 사용자)" : chat.getFromMember().getGameName())
             .senderProfileImg(chat.getFromMember().getProfileImage())
             .message(chat.getContents())
             .createdAt(DatetimeUtil.toKSTString(chat.getCreatedAt()))
