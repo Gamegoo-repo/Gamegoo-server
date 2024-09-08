@@ -2,7 +2,6 @@ package com.gamegoo.service.chat;
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.ChatHandler;
-import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.converter.ChatConverter;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.chat.Chat;
@@ -237,20 +236,20 @@ public class ChatCommandService {
         // 해당 채팅방이 회원의 것이 맞는지 검증
         MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
                 memberId, chatroom.getId())
-            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_ACCESS_DENIED));
+            .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
         // 회원 간 차단 여부 및 탈퇴 여부 검증
         // 대화 상대 회원 조회
         Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
             chatroom.getId(), memberId);
         // 상대 탈퇴 여부 검증
-        if (targetMember.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
+        validateTargetMemberIsBlind(targetMember,
+            ErrorStatus.CHAT_ADD_FAILED_TARGET_USER_DEACTIVATED);
+
         MemberUtils.validateBlocked(member, targetMember,
-            ErrorStatus.CHAT_TARGET_IS_BLOCKED_SEND_CHAT_FAILED);
+            ErrorStatus.CHAT_ADD_FAILED_CHAT_TARGET_IS_BLOCKED);
         MemberUtils.validateBlocked(targetMember, member,
-            ErrorStatus.BLOCKED_BY_CHAT_TARGET_SEND_CHAT_FAILED);
+            ErrorStatus.CHAT_ADD_FAILED_BLOCKED_BY_CHAT_TARGET);
 
         // 등록해야 할 시스템 메시지가 있는 경우
         if (request.getSystem() != null) {
