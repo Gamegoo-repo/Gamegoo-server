@@ -45,11 +45,14 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅방 목록 조회 API", description = "회원이 속한 채팅방 목록을 조회하는 API 입니다.")
+    @Parameter(name = "cursor", description = "페이징을 위한 커서, 이전 페이지의 마지막 채팅방의 lastMsgTimestamp입니다. 13자리 timestamp integer를 보내주세요.")
     @GetMapping("/member/chatroom")
-    public ApiResponse<List<ChatResponse.ChatroomViewDTO>> getChatroom() {
+    public ApiResponse<ChatResponse.ChatroomViewListDTO> getChatroom(
+        @RequestParam(name = "cursor", required = false) Long cursor
+    ) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId));
+        return ApiResponse.onSuccess(chatQueryService.getChatroomList(memberId, cursor));
     }
 
     @Operation(summary = "특정 회원과 채팅방 시작 API", description = "특정 대상 회원과의 채팅방을 시작하는 API 입니다.\n\n" +
