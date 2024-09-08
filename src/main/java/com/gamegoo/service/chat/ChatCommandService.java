@@ -161,26 +161,19 @@ public class ChatCommandService {
     public String startChatroomByMatching(Long memberId1, Long memberId2) {
 
         // 매칭 대상 회원이 동일한 회원인 경우
-        MemberUtils.validateDifferentMembers(memberId1, memberId2,
-            ErrorStatus.CHAT_TARGET_MEMBER_ID_INVALID);
+        validateDifferentMembers(memberId1, memberId2);
 
         Member member1 = profileService.findMember(memberId1);
         Member member2 = profileService.findMember(memberId2);
 
         // 대상 회원의 탈퇴 여부 검증
-        if (member2.getBlind()) {
-            throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
-        }
+        validateTargetMemberIsBlind(member2, ErrorStatus.CHAT_START_FAILED_TARGET_USER_DEACTIVATED);
 
-        // 내가 상대를 차단한 경우
-        if (MemberUtils.isBlocked(member1, member2)) {
-            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_CHAT_TARGET_IS_BLOCKED);
-        }
+        // 내가 상대를 차단했는지 검증
+        validateBlockedTargetMember(member1, member2);
 
-        // 상대가 나를 차단한 경우
-        if (MemberUtils.isBlocked(member2, member1)) {
-            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_BLOCKED_BY_CHAT_TARGET);
-        }
+        // 상대가 나를 차단했는지 검증
+        validateBlockedByTargetMember(member1, member2);
 
         Chatroom chatroom = chatroomRepository
             .findChatroomByMemberIds(member1.getId(), member2.getId())
@@ -469,12 +462,13 @@ public class ChatCommandService {
                 targetMemberChatroom.getChatroom().getUuid());
         }
     }
-
+    
     /**
      * 두 회원 간 새로운 채팅방 생성
      *
      * @param member1
      * @param member2
+     * @param lastJoinDate
      * @return
      */
     private Chatroom createNewChatroom(Member member1, Member member2, LocalDateTime lastJoinDate) {
@@ -656,7 +650,7 @@ public class ChatCommandService {
 
     private void validateDifferentMembers(Long member1, Long member2) {
         if (member1.equals(member2)) {
-            throw new ChatHandler(ErrorStatus.CHAT_TARGET_MEMBER_ID_INVALID);
+            throw new ChatHandler(ErrorStatus.CHAT_START_FAILED_TARGET_USER_IS_SELF);
         }
     }
 
