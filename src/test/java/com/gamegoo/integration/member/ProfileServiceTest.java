@@ -1,20 +1,16 @@
-package com.gamegoo.chat;
+package com.gamegoo.integration.member;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.gamegoo.domain.chat.Chatroom;
-import com.gamegoo.domain.chat.MemberChatroom;
+import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.GeneralException;
 import com.gamegoo.domain.member.LoginType;
 import com.gamegoo.domain.member.Member;
-import com.gamegoo.dto.chat.ChatResponse.ChatroomEnterDTO;
-import com.gamegoo.repository.chat.ChatroomRepository;
-import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.service.chat.ChatCommandService;
+import com.gamegoo.service.member.ProfileService;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -25,19 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-public class ChatServiceTest {
+public class ProfileServiceTest {
 
     @Autowired
-    private ChatCommandService chatCommandService;
+    private ProfileService profileService;
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private ChatroomRepository chatroomRepository;
-
-    @Autowired
-    private MemberChatroomRepository memberChatroomRepository;
 
     private Member member1;
 
@@ -79,32 +69,34 @@ public class ChatServiceTest {
         member2 = memberRepository.save(member2);
     }
 
+
     @Test
-    @DisplayName("특정 회원과 채팅방 시작, 기존에 채팅방 없는 경우 - 성공")
-    public void successStartChatroomByMemberIdAndCreateNewChatroom() throws Exception {
+    @DisplayName("memberId로 member 찾기 - 성공")
+    public void successFindMemberById() throws Exception {
         // when
-        ChatroomEnterDTO chatroomEnterDTO = chatCommandService.startChatroomByMemberId(
-            member1.getId(), member2.getId());
+        System.out.println("member1 = " + member1.getId());
+        Member testMember = profileService.findMember(member1.getId());  // 실제 서비스 호출
 
         // then
-        // 1. ChatroomEnterDTO의 값 검증
-        assertNotNull(chatroomEnterDTO);
-        assertEquals(member2.getId(), chatroomEnterDTO.getMemberId());
-
-        // 2. 데이터베이스에서 채팅방이 실제로 생성되었는지 검증
-        Optional<Chatroom> createdChatroom = chatroomRepository.findByUuid(
-            chatroomEnterDTO.getUuid());
-        assertTrue(createdChatroom.isPresent());
-
-        // 3. MemberChatroom 엔티티가 각 회원에 대해 잘 생성되었는지 검증
-        Optional<MemberChatroom> member1Chatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-            member1.getId(), createdChatroom.get().getId());
-        Optional<MemberChatroom> member2Chatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
-            member2.getId(), createdChatroom.get().getId());
-
-        assertTrue(member1Chatroom.isPresent());
-        assertTrue(member2Chatroom.isPresent());
+        assertNotNull(member1);  // 결과가 null이 아님을 확인
+        assertEquals(member1.getId(), testMember.getId());  // ID 비교
+        assertEquals(member1.getEmail(), testMember.getEmail());  // 이메일 비교
     }
 
+    @Test
+    @DisplayName("memberId로 member 찾기 - 실패")
+    public void failFindMemberById() throws Exception {
+        // given
+        Long nonExistentMemberId = -1L;
+        ErrorStatus expectedErrorCode = ErrorStatus.MEMBER_NOT_FOUND;  // 기대하는 에러 코드
+
+        // when & then
+        GeneralException exception = assertThrows(GeneralException.class, () -> {
+            profileService.findMember(nonExistentMemberId);
+        });
+
+        // 발생한 예외의 code가 기대하는 값인지 확인
+        assertEquals(expectedErrorCode, exception.getCode());
+    }
 
 }
