@@ -34,7 +34,8 @@ public class ChatQueryService {
     private final ChatRepository chatRepository;
     private final ProfileService profileService;
     private final FriendService friendService;
-    private final static int PAGE_SIZE = 20;
+    private final static int CHAT_PAGE_SIZE = 20;
+    private final static int PAGE_SIZE = 10;
 
 
     /**
@@ -48,19 +49,19 @@ public class ChatQueryService {
     }
 
     /**
-     * 채팅방 목록 조회
+     * 채팅방 목록 조회, 페이징 포함
      *
      * @param memberId
      * @return
      */
-    public List<ChatResponse.ChatroomViewDTO> getChatroomList(Long memberId) {
+    public ChatResponse.ChatroomViewListDTO getChatroomList(Long memberId, Long cursor) {
         Member member = profileService.findMember(memberId);
 
-        // 현재 참여중인 memberChatroom을 각 memberChatroom에 속한 chat의 마지막 createdAt 기준 desc 정렬해 조회
-        List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomOrderByLastChat(
-            member.getId());
+        // 현재 참여중인 memberChatroom을 각 memberChatroom에 속한 chat의 마지막 createdAt 기준 desc 정렬해 조회. 페이징 포함
+        Slice<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomByCursorOrderByLastChat(
+            member.getId(), cursor, PAGE_SIZE);
 
-        List<ChatResponse.ChatroomViewDTO> chatroomViewDtoList = activeMemberChatroom.stream()
+        List<ChatResponse.ChatroomViewDTO> chatroomViewDTOList = activeMemberChatroom.stream()
             .map(memberChatroom -> {
                 // 채팅 상대 회원 조회
                 Member targetMember = memberChatroomRepository.findTargetMemberByChatroomIdAndMemberId(
@@ -80,9 +81,11 @@ public class ChatQueryService {
                     .uuid(chatroom.getUuid())
                     .targetMemberId(targetMember.getId())
                     .targetMemberImg(targetMember.getProfileImage())
-                    .targetMemberName(targetMember.getGameName())
+                    .targetMemberName(
+                        targetMember.getBlind() ? "(탈퇴한 사용자)" : targetMember.getGameName())
                     .friend(friendService.isFriend(member, targetMember))
                     .blocked(MemberUtils.isBlocked(targetMember, member))
+                    .blind(targetMember.getBlind())
                     .friendRequestMemberId(
                         friendService.getFriendRequestMemberId(member, targetMember))
                     .lastMsg(lastChat.isPresent() ? lastChat.get().getContents() : null)
@@ -90,12 +93,20 @@ public class ChatQueryService {
                         lastChat.get().getCreatedAt())
                         : DatetimeUtil.toKSTString(memberChatroom.getLastJoinDate()))
                     .notReadMsgCnt(unReadCnt)
+                    .lastMsgTimestamp(lastChat.isPresent() ? lastChat.get().getTimestamp() : null)
                     .build();
 
             })
             .collect(Collectors.toList());
 
-        return chatroomViewDtoList;
+        // ChatroomViewListDTO 생성
+        return ChatResponse.ChatroomViewListDTO.builder()
+            .chatroomViewDTOList(chatroomViewDTOList)
+            .list_size(chatroomViewDTOList.size())
+            .has_next(activeMemberChatroom.hasNext())
+            .next_cursor(activeMemberChatroom.hasNext() ? chatroomViewDTOList.get(
+                chatroomViewDTOList.size() - 1).getLastMsgTimestamp() : null)
+            .build();
 
     }
 
@@ -120,7 +131,7 @@ public class ChatQueryService {
 
         // 해당 회원이 퇴장한 채팅방은 아닌지도 나중에 검증 추가하기
 
-        PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
+        PageRequest pageRequest = PageRequest.of(0, CHAT_PAGE_SIZE);
 
         // requestParam으로 cursor가 넘어온 경우
         if (cursor != null) {
@@ -141,7 +152,8 @@ public class ChatQueryService {
     public List<String> getUnreadChatroomUuids(Long memberId) {
         Member member = profileService.findMember(memberId);
 
-        List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findActiveMemberChatroomOrderByLastChat(
+        // 해당 회원의 모든 입장 상태인 채팅방 조회, 정렬 필요 없음
+        List<MemberChatroom> activeMemberChatroom = memberChatroomRepository.findAllActiveMemberChatroom(
             member.getId());
 
         List<String> unreadChatroomUuids = activeMemberChatroom.stream().map(memberChatroom -> {

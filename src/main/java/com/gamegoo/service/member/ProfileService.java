@@ -146,6 +146,12 @@ public class ProfileService {
             .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public Member findSystemMember() {
+        return memberRepository.findById(0L)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    }
+
     /**
      * 회원의 프로필 조회, 매너랭킹 정보 포함
      **/

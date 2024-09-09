@@ -3,10 +3,12 @@ package com.gamegoo.converter;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.dto.member.MemberResponse.friendInfoDTO;
 import com.gamegoo.util.MemberUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Slice;
 
 public class MemberConverter {
 
@@ -168,12 +170,28 @@ public class MemberConverter {
 
     }
 
+    public static MemberResponse.friendListDTO toFriendListDTO(Slice<Friend> friends) {
+        List<friendInfoDTO> friendInfoDTOList = friends.stream()
+            .map(MemberConverter::toFriendInfoDto).collect(Collectors.toList());
+        return MemberResponse.friendListDTO.builder()
+            .friendInfoDTOList(friendInfoDTOList)
+            .list_size(friendInfoDTOList.size())
+            .has_next(friends.hasNext())
+            .next_cursor(
+                friends.hasNext() ? friends.getContent().get(friendInfoDTOList.size() - 1)
+                    .getToMember().getId()
+                    : null)
+            .build();
+    }
+
     public static MemberResponse.friendInfoDTO toFriendInfoDto(Friend friend) {
         return MemberResponse.friendInfoDTO.builder()
             .memberId(friend.getToMember().getId())
-            .name(friend.getToMember().getGameName())
+            .name(
+                friend.getToMember().getBlind() ? "(탈퇴한 사용자)" : friend.getToMember().getGameName())
             .memberProfileImg(friend.getToMember().getProfileImage())
             .isLiked(friend.getIsLiked())
+            .isBlind(friend.getToMember().getBlind())
             .build();
     }
 

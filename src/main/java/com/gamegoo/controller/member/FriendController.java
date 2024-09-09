@@ -4,6 +4,7 @@ import com.gamegoo.apiPayload.ApiResponse;
 import com.gamegoo.converter.MemberConverter;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.dto.member.MemberResponse.friendInfoDTO;
 import com.gamegoo.dto.member.MemberResponse.friendRequestResultDTO;
 import com.gamegoo.dto.member.MemberResponse.starFriendResultDTO;
 import com.gamegoo.service.member.FriendService;
@@ -15,12 +16,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -32,17 +35,46 @@ public class FriendController {
 
     private final FriendService friendService;
 
-    @Operation(summary = "친구 목록 조회 API", description = "해당 회원의 친구 목록을 조회하는 API 입니다. 이름 오름차순으로 정렬해 제공합니다.")
+    @Operation(summary = "친구 목록 조회 API", description =
+        "해당 회원의 친구 목록을 조회하는 API 입니다. 이름 오름차순(한글-영문-숫자 순)으로 정렬해 제공합니다.\n\n"
+            + "cursor를 보내지 않으면 상위 10개 친구 목록을 조회합니다.")
+    @Parameter(name = "cursor", description = "페이징을 위한 커서, 이전 친구 목록 조회에서 응답받은 next_cursor를 보내주세요.")
     @GetMapping
-    public ApiResponse<List<MemberResponse.friendInfoDTO>> getFriendList() {
+    public ApiResponse<MemberResponse.friendListDTO> getFriendList(
+        @RequestParam(name = "cursor", required = false) Long cursorId
+    ) {
         Long memberId = JWTUtil.getCurrentUserId();
-        List<Friend> friends = friendService.getFriends(memberId);
 
-        List<MemberResponse.friendInfoDTO> friendInfoDTOList = friends.stream()
-            .map(MemberConverter::toFriendInfoDto).collect(
-                Collectors.toList());
+        Slice<Friend> friends = friendService.getFriends(memberId, cursorId);
+
+        return ApiResponse.onSuccess(MemberConverter.toFriendListDTO(friends));
+
+    }
+
+    @Operation(summary = "소환사명으로 친구 검색 API", description =
+        "해당 회원의 친구 중, query string으로 시작하는 소환사명을 가진 모든 친구 목록을 조회합니다.")
+    @Parameter(name = "query", description = "친구 목록 검색을 위한 소환사명 string으로, 100자 이하여야 합니다.")
+    @GetMapping("/search")
+    public ApiResponse<List<friendInfoDTO>> searchFriend(
+        @RequestParam(name = "query") String query
+    ) {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        List<Friend> friends = friendService.searchFriendByQueryString(memberId, query);
+
+        List<friendInfoDTO> friendInfoDTOList = friends.stream()
+            .map(MemberConverter::toFriendInfoDto).collect(Collectors.toList());
 
         return ApiResponse.onSuccess(friendInfoDTOList);
+    }
+
+    @Operation(summary = "모든 친구 id 조회 API", description = "해당 회원의 모든 친구 id 목록을 조회하는 API 입니다.\n\n"
+        + "정렬 기능 없음, socket서버용 API 입니다.")
+    @GetMapping("/ids")
+    public ApiResponse<List<Long>> getFriendIds() {
+        Long memberId = JWTUtil.getCurrentUserId();
+
+        return ApiResponse.onSuccess(friendService.getFriendIds(memberId));
 
     }
 
