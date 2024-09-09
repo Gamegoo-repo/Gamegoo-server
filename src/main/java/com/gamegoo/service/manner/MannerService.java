@@ -550,6 +550,15 @@ public class MannerService {
         // 매너평가 ID 조회
         List<MannerRating> mannerRatings = member.getMannerRatingList();
 
+        // 매너평가 점수
+        Integer mannerScore;
+
+        if (mannerRatings.size() == 0) {
+            mannerScore = null;
+        }else{
+            mannerScore = updateMannerScore(member);
+        }
+
         // 매너키워드 조회
         List<MannerRating> positiveMannerRatings = mannerRatings.stream()
             .filter(MannerRating::getIsPositive)
@@ -621,6 +630,7 @@ public class MannerService {
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
             .mannerKeywords(mannerKeywords)
+            .mannerScore(mannerScore)
             .mannerRank(mannerRank)
             .build();
     }

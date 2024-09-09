@@ -52,6 +52,7 @@ public class MannerResponse {
     public static class myMannerResponseDTO{
         Integer mannerLevel;
         List<mannerKeywordDTO> mannerKeywords;
+        Integer mannerScore;
         Double mannerRank;
     }
 
