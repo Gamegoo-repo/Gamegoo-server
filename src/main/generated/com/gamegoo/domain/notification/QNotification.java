@@ -37,7 +37,7 @@ public class QNotification extends EntityPathBase<Notification> {
 
     public final QNotificationType notificationType;
 
-    public final NumberPath<Long> sourceId = createNumber("sourceId", Long.class);
+    public final com.gamegoo.domain.member.QMember sourceMember;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -62,6 +62,7 @@ public class QNotification extends EntityPathBase<Notification> {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
         this.notificationType = inits.isInitialized("notificationType") ? new QNotificationType(forProperty("notificationType")) : null;
+        this.sourceMember = inits.isInitialized("sourceMember") ? new com.gamegoo.domain.member.QMember(forProperty("sourceMember")) : null;
     }
 
 }
