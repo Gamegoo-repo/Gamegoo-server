@@ -34,7 +34,10 @@ public class Notification extends BaseDateTimeEntity {
     @Column(nullable = false)
     private boolean isRead;
 
-    private Long sourceId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "source_member_id")
+    private Member sourceMember;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
