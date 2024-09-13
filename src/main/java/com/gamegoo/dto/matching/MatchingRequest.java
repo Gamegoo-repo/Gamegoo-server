@@ -49,5 +49,7 @@ public class MatchingRequest {
     public static class ModifyMatchingRequestDTO {
         @NotBlank(message = "status는 비워둘 수 없습니다")
         String status;
+        @NotNull(message = "gameMode는 비워둘 수 없습니다")
+        Integer gameMode;
     }
 }
