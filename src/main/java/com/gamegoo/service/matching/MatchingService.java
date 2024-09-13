@@ -336,8 +336,8 @@ public class MatchingService {
         Member member = profileService.findMember(id);
 
         // 매칭 기록 불러오기
-        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        member)
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        member, request.getGameMode())
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
 
         try {
@@ -376,14 +376,14 @@ public class MatchingService {
         Member targetMember = profileService.findMember(targetMemberId);
 
         // member의 매칭 기록 상태 변경
-        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        member)
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        member, request.getGameMode())
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         matchingRecord.updateStatus(status);
 
         // targetMember의 매칭 기록 상태 변경
-        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        targetMember)
+        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        targetMember, request.getGameMode())
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         targetMatchingRecord.updateStatus(status);
     }
@@ -395,21 +395,21 @@ public class MatchingService {
      */
     @Transactional
     public MatchingResponse.matchingFoundResponseDTO foundMatching(Long memberId,
-                                                                   Long targetMemberId) {
+                                                                   Long targetMemberId, int gameMode) {
 
         // member 엔티티 조회
         Member member = profileService.findMember(memberId);
         Member targetMember = profileService.findMember(targetMemberId);
 
         // member의 매칭 기록 상태 변경
-        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        member)
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        member, gameMode)
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         matchingRecord.updateStatus(MatchingStatus.FOUND);
 
         // targetMember의 매칭 기록 상태 변경
-        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        targetMember)
+        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        targetMember, gameMode)
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         targetMatchingRecord.updateStatus(MatchingStatus.FOUND);
 
@@ -461,20 +461,20 @@ public class MatchingService {
      * @return
      */
     @Transactional
-    public void successMatching(Long memberId, Long targetMemberId) {
+    public void successMatching(Long memberId, Long targetMemberId, Integer gameMode) {
         // member 엔티티 조회
         Member member = profileService.findMember(memberId);
         Member targetMember = profileService.findMember(targetMemberId);
 
         // member의 매칭 기록 상태 변경
-        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        member)
+        MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        member, gameMode)
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         matchingRecord.updateStatus(MatchingStatus.SUCCESS);
 
         // targetMember의 매칭 기록 상태 변경
-        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberOrderByUpdatedAtDesc(
-                        targetMember)
+        MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
+                        targetMember, gameMode)
                 .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
         targetMatchingRecord.updateStatus(MatchingStatus.SUCCESS);
     }

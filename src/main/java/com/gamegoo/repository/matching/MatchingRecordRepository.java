@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MatchingRecordRepository extends JpaRepository<MatchingRecord, Long> {
-    Optional<MatchingRecord> findFirstByMemberOrderByUpdatedAtDesc(Member member);
+
+    Optional<MatchingRecord> findFirstByMemberAndGameModeOrderByUpdatedAtDesc(Member member, Integer gameMode);
 
     @Query("SELECT m FROM MatchingRecord m WHERE m.createdAt > :createdAt AND m.status = :status AND m.gameMode = :gameMode " +
             "AND m.id IN (SELECT MAX(mr.id) FROM MatchingRecord mr WHERE mr.createdAt > :createdAt AND mr.status = :status AND mr.gameMode = :gameMode GROUP BY mr.member)")
