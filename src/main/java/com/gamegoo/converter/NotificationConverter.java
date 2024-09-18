@@ -48,17 +48,29 @@ public class NotificationConverter {
             StringBuilder urlBuilder = new StringBuilder(
                 notification.getNotificationType().getSourceUrl());
 
-            if (notification.getSourceId() != null) {
-                urlBuilder.append(notification.getSourceId());
+            if (notification.getSourceMember() != null) {
+                urlBuilder.append(notification.getSourceMember().getId());
             }
 
             pageUrl = urlBuilder.toString();
         }
 
+        String content = notification.getContent();
+
+        // sourceMember 닉네임 표시
+        if (notification.getSourceMember() != null) {
+            if (notification.getSourceMember().getBlind()) { // sourceMember가 탈퇴한 회원인 경우
+                content = "(탈퇴한 사용자)" + content;
+            } else {
+                content = notification.getSourceMember().getGameName() + content;
+            }
+
+        }
+
         return NotificationResponse.notificationDTO.builder()
             .notificationId(notification.getId())
             .notificationType(notification.getNotificationType().getId().intValue())
-            .content(notification.getContent())
+            .content(content)
             .pageUrl(pageUrl)
             .read(notification.isRead())
             .createdAt(notification.getCreatedAt().withNano(0))
