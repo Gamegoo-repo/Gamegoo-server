@@ -143,11 +143,11 @@ public class FriendService {
         // 친구 요청 알림 생성
         // member -> targetMember
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_SEND,
-            targetMember.getGameName(), null, member);
+            null, targetMember, member);
 
         // targetMember -> member
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_RECEIVED,
-            member.getGameName(), member.getId(), targetMember);
+            null, member, targetMember);
     }
 
     /**
@@ -226,7 +226,7 @@ public class FriendService {
 
         // targetMember에게 친구 요청 수락 알림 생성
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_ACCEPTED,
-            member.getGameName(), null, targetMember);
+            member.getGameName(), member, targetMember);
     }
 
     /**
@@ -259,7 +259,7 @@ public class FriendService {
 
         // targetMember에게 친구 요청 거절 알림 생성
         notificationService.createNotification(NotificationTypeTitle.FRIEND_REQUEST_REJECTED,
-            member.getGameName(), null, targetMember);
+            member.getGameName(), member, targetMember);
     }
 
     /**

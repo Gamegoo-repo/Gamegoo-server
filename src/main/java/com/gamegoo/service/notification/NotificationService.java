@@ -35,27 +35,33 @@ public class NotificationService {
      * 새로운 알림 생성 및 저장 메소드
      *
      * @param notificationTypeTitle
-     * @param content               각 알림에 포함되어어야 할 정보 (사용자 닉네임, 매너레벨 단계, 키둬드)
-     * @param sourceId              이동해야할 url의 고유 id 파라미터, FRIEND_REQUEST_RECEIVED에서만 필요
+     * @param content               각 알림에 포함되어어야 할 정보 (매너레벨 단계, 키워드)
+     * @param sourceMember          알림 source 회원
      * @param member                알림을 받을 대상 회원
      * @return
      */
     public Notification createNotification(NotificationTypeTitle notificationTypeTitle,
-        String content, Long sourceId, Member member) {
+        String content, Member sourceMember, Member member) {
 
-        NotificationType notificationType = notificationTypeRepository.findNotificationTypeByTitle(
-                notificationTypeTitle)
-            .orElseThrow(() -> new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND));
+        NotificationType notificationType = findNotificationType(notificationTypeTitle);
+        String notificationContent = generateNotificationContent(notificationType, content,
+            sourceMember);
 
-        String notificationContent = switch (notificationTypeTitle) {
+        return saveNotification(notificationType, notificationContent, sourceMember, member);
+    }
+
+    private String generateNotificationContent(NotificationType notificationType, String content,
+        Member sourceMember) {
+        return switch (notificationType.getTitle()) {
+            // 알림 타입별로 분기 처리
             case FRIEND_REQUEST_SEND, FRIEND_REQUEST_ACCEPTED, FRIEND_REQUEST_REJECTED ->
-                content + notificationType.getContent();
+                notificationType.getContent();
 
             case FRIEND_REQUEST_RECEIVED -> {
-                if (sourceId == null) {
+                if (sourceMember == null) {
                     throw new NotificationHandler(ErrorStatus.NOTIFICATION_METHOD_BAD_REQUEST);
                 }
-                yield content + notificationType.getContent();
+                yield notificationType.getContent();
             }
 
             case MANNER_LEVEL_UP, MANNER_LEVEL_DOWN, MANNER_KEYWORD_RATED ->
@@ -67,14 +73,15 @@ public class NotificationService {
                 int i = random.nextInt(1000) + 1;
                 yield notificationType.getContent() + i;
             }
-
-            default -> throw new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND);
         };
+    }
 
+    private Notification saveNotification(NotificationType type, String content,
+        Member sourceMember, Member member) {
         Notification notification = Notification.builder()
-            .notificationType(notificationType)
-            .content(notificationContent)
-            .sourceId(sourceId)
+            .notificationType(type)
+            .content(content)
+            .sourceMember(sourceMember)
             .isRead(false)
             .build();
         notification.setMember(member);
@@ -154,5 +161,10 @@ public class NotificationService {
         return member.getNotificationList().stream()
             .filter(notification -> !notification.isRead())
             .count();
+    }
+
+    private NotificationType findNotificationType(NotificationTypeTitle title) {
+        return notificationTypeRepository.findNotificationTypeByTitle(title)
+            .orElseThrow(() -> new NotificationHandler(ErrorStatus.NOTIFICATION_TYPE_NOT_FOUND));
     }
 }
