@@ -60,6 +60,7 @@ public class BlockService {
 
         // block 엔티티 생성 및 연관관계 매핑
         Block block = Block.builder()
+            .isDeleted(false)
             .blockedMember(targetMember)
             .build();
         block.setBlockerMember(member);
@@ -100,7 +101,7 @@ public class BlockService {
 
         PageRequest pageRequest = PageRequest.of(pageIdx, PAGE_SIZE);
 
-        return memberRepository.findBlockedMembersByBlockerIdAndNotBlind(member.getId(),
+        return memberRepository.findBlockedMembersByBlockerIdAndNotDeleted(member.getId(),
             pageRequest);
     }
 
