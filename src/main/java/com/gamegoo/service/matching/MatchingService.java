@@ -236,6 +236,11 @@ public class MatchingService {
             if (gameMode == 4) {
                 priority += 6;
             } else {
+                // 포지션 값이 Null일 경우 예외처리
+                if (myMainPosition == null || mySubPosition == null || myWantPosition == null) {
+                    throw new MatchingHandler(ErrorStatus.POSITION_NOT_FOUND);
+                }
+
                 if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(0)
                         || otherMainPosition.equals(0)) {
                     priority += 3;
