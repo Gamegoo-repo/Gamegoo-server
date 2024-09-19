@@ -1,15 +1,12 @@
 package com.gamegoo.dto.board;
 
 import com.gamegoo.domain.member.Tier;
+import com.gamegoo.dto.manner.MannerResponse;
+import com.gamegoo.dto.member.MemberResponse;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.gamegoo.dto.manner.MannerResponse;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class BoardResponse {
 
@@ -35,6 +32,16 @@ public class BoardResponse {
         List<Long> gameStyles;
         String contents;
 
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChampionResponseDTO {
+
+        Long championId;
+        String championName;
     }
 
     @Getter
@@ -78,7 +85,7 @@ public class BoardResponse {
         Integer mainPosition;
         Integer subPosition;
         Integer wantPosition;
-        List<Long> championList;
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList;
         Double winRate;
         LocalDateTime createdAt;
         Boolean mike;
@@ -101,7 +108,7 @@ public class BoardResponse {
         Tier tier;
         Integer rank;
         Boolean mike;
-        List<Long> championList;
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
@@ -133,7 +140,7 @@ public class BoardResponse {
         Tier tier;
         Integer rank;
         Boolean mike;
-        List<Long> championList;
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList;
         Integer gameMode;
         Integer mainPosition;
         Integer subPosition;
