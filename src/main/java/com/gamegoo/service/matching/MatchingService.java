@@ -158,9 +158,26 @@ public class MatchingService {
             return 0;
         }
 
-        // 개인 랭크의 경우 티어 차이가 1개 이상 나면 X
+        // 개인 랭크 예외조건
         if (gameMode == 2) {
+            // 티어 차이가 1개 이상 나면 X
             if (Math.abs(myTier.ordinal() - otherTier.ordinal()) > 1) {
+                return 0;
+            }
+
+            // 마스터 이상은 게임 불가능
+            if (myTier.ordinal() >= 7 || otherTier.ordinal() >= 7) {
+                return 0;
+            }
+        }
+
+        // 자유랭크 예외조건
+        if (gameMode == 3) {
+            // 마스터 이상 플레이어는 골드 이하의 플레이어와 매칭 X
+            if (myTier.ordinal() >= 7 && otherTier.ordinal() <= 3) {
+                return 0;
+            }
+            if (otherTier.ordinal() >= 7 && myTier.ordinal() <= 3) {
                 return 0;
             }
         }
@@ -322,8 +339,12 @@ public class MatchingService {
                 .build();
 
         // 매칭 기록에 따라 member 정보 변경하기
-        member.updateMemberFromMatching(request.getMainP(), request.getSubP(), request.getMike());
-        profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
+        if (request.getMainP() != null && request.getSubP() != null && request.getWantP() != null) {
+            member.updateMemberFromMatching(request.getMainP(), request.getSubP(), request.getMike());
+        }
+        if (request.getGameStyleIdList() != null) {
+            profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
+        }
 
         matchingRecordRepository.save(matchingRecord);
         memberRepository.save(member);
