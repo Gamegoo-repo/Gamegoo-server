@@ -307,7 +307,20 @@ public class MannerService {
             int mannerScore = updateMannerScore(targetMember);
 
             // 매너레벨 결정.
-            int mannerLevel = mannerLevel(mannerScore);
+            Integer mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 상승 알림 전송
+            if (targetMember.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerUpNotification);
+            } else if (targetMember.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerDownNotification);
+            }
 
             // 매너레벨 반영.
             targetMember.setMannerLevel(mannerLevel);
@@ -374,7 +387,20 @@ public class MannerService {
             int mannerScore = updateMannerScore(targetMember);
 
             // 매너레벨 결정.
-            int mannerLevel = mannerLevel(mannerScore);
+            Integer mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 상승 알림 전송
+            if (targetMember.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerUpNotification);
+            } else if (targetMember.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerDownNotification);
+            }
 
             // 매너레벨 반영.
             targetMember.setMannerLevel(mannerLevel);
