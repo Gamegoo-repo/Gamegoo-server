@@ -23,13 +23,13 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "game_mode", nullable = false)
     private Integer gameMode;
 
-    @Column(name = "main_position", nullable = false)
+    @Column(name = "main_position")
     private Integer mainPosition;
 
-    @Column(name = "sub_position", nullable = false)
+    @Column(name = "sub_position")
     private Integer subPosition;
 
-    @Column(name = "want_position", nullable = false)
+    @Column(name = "want_position")
     private Integer wantPosition;
 
     @Column(name = "mike", nullable = false)
