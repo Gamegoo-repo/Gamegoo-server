@@ -56,6 +56,10 @@ public class AuthService {
 
         // 중복 확인하기
         if (memberRepository.existsByEmail(email)) {
+            Member member = memberRepository.findByEmail(email).get();
+            if (member.getBlind()) {
+                throw new MemberHandler(ErrorStatus.USER_DEACTIVATED);
+            }
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
         }
 
