@@ -124,5 +124,30 @@ public class BlockService {
         blockRepository.delete(block);
     }
 
+    /**
+     * memberId에 해당하는 회원이 targetMemberId에 해당하는 회원을 자신의 차단 목록에서 삭제 처리 =
+     *
+     * @param memberId
+     * @param targetMemberId
+     */
+    public void deleteBlockMember(Long memberId, Long targetMemberId) {
+        // member 엔티티 조회
+        Member member = profileService.findMember(memberId);
+        Member targetMember = profileService.findMember(targetMemberId);
+
+        // targetMember가 차단 실제로 차단 목록에 존재하는지 검증
+        Block block = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember)
+            .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
+
+        // targetMember가 탈퇴한 회원이 맞는지 검증
+        if (!targetMember.getBlind()) {
+            throw new BlockHandler(ErrorStatus.DELETE_BLOCKED_MEMBER_FAILED);
+        }
+
+        // Block 엔티티의 isDeleted 업데이트
+        block.updateIsDeleted(true);
+
+    }
+
 
 }
