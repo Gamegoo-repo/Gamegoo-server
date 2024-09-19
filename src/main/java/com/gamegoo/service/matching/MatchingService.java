@@ -215,22 +215,27 @@ public class MatchingService {
             }
 
             // 포지션 가중치
-            if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(0)
-                    || otherMainPosition.equals(0)) {
-                priority += 3;
-            } else if (myWantPosition.equals(otherSubPosition) || otherSubPosition.equals(0)) {
-                priority += 2;
+            // 칼바람 : 포지션 선택 제외하기 -> 포지션 점수 기본값으로 주고 시작하기
+            if (gameMode == 4) {
+                priority += 6;
             } else {
-                priority += 1;
-            }
+                if (myWantPosition.equals(otherMainPosition) || myWantPosition.equals(0)
+                        || otherMainPosition.equals(0)) {
+                    priority += 3;
+                } else if (myWantPosition.equals(otherSubPosition) || otherSubPosition.equals(0)) {
+                    priority += 2;
+                } else {
+                    priority += 1;
+                }
 
-            if (otherWantPosition.equals(myMainPosition) || otherWantPosition.equals(0)
-                    || myMainPosition.equals(0)) {
-                priority += 3;
-            } else if (otherWantPosition.equals(mySubPosition) || mySubPosition.equals(0)) {
-                priority += 2;
-            } else {
-                priority += 1;
+                if (otherWantPosition.equals(myMainPosition) || otherWantPosition.equals(0)
+                        || myMainPosition.equals(0)) {
+                    priority += 3;
+                } else if (otherWantPosition.equals(mySubPosition) || mySubPosition.equals(0)) {
+                    priority += 2;
+                } else {
+                    priority += 1;
+                }
             }
         }
 
