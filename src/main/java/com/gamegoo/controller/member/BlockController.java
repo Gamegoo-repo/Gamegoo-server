@@ -44,7 +44,7 @@ public class BlockController {
     @Parameter(name = "page", description = "페이지 번호, 1 이상의 숫자를 입력해 주세요.")
     @GetMapping
     public ApiResponse<MemberResponse.blockListDTO> getBlockList(
-            @RequestParam(name = "page") Integer page) {
+        @RequestParam(name = "page") Integer page) {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Page<Member> blockList = blockService.getBlockList(memberId, page - 1);
@@ -61,5 +61,17 @@ public class BlockController {
 
         return ApiResponse.onSuccess("차단 해제 성공");
     }
+
+    @Operation(summary = "차단 목록에서 해당 회원 삭제 API", description = "차단 목록에서 해당 회원을 삭제하는 API 입니다. (차단 해제 아님)")
+    @Parameter(name = "memberId", description = "목록에서 삭제할 대상 회원의 id 입니다.")
+    @DeleteMapping("/delete/{memberId}")
+    public ApiResponse<String> deleteBlockMember(
+        @PathVariable(name = "memberId") Long targetMemberId) {
+        Long memberId = JWTUtil.getCurrentUserId();
+        blockService.deleteBlockMember(memberId, targetMemberId);
+
+        return ApiResponse.onSuccess("차단 목록에서 삭제 성공");
+    }
+
 
 }
