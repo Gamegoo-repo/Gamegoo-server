@@ -30,17 +30,16 @@ public class MatchingRequest {
 
         @Min(value = 0, message = "메인 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "메인 포지션의 값은 5이하이어야 합니다.")
-        int mainP;
+        Integer mainP;
 
         @Min(value = 0, message = "서브 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "서브 포지션의 값은 5이하이어야합니다.")
-        int subP;
+        Integer subP;
 
         @Min(value = 0, message = "원하는 상대 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "원하는 상대 포지션의 값은 5이하이어야합니다.")
-        int wantP;
+        Integer wantP;
 
-        @NotNull(message = "gameStyleIdList는 비워둘 수 없습니다")
         List<Long> gameStyleIdList;
     }
 
