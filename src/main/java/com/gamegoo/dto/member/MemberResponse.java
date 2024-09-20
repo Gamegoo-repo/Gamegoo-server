@@ -35,6 +35,7 @@ public class MemberResponse {
         Integer profileImg;
         String email;
         String name;
+        Boolean isBlind;
     }
 
     @Getter
