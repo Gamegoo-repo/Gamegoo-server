@@ -116,6 +116,11 @@ public class BlockService {
         Member member = profileService.findMember(memberId);
         Member targetMember = profileService.findMember(targetMemberId);
 
+        // 대상 회원이 탈퇴 상태가 아닌지 검증
+        if (targetMember.getBlind()) {
+            throw new BlockHandler(ErrorStatus.UNBLOCK_TARGET_MEMBER_BLIND);
+        }
+
         // targetMember가 차단 실제로 차단 목록에 존재하는지 검증
         Block block = blockRepository.findByBlockerMemberAndBlockedMember(member, targetMember)
             .orElseThrow(() -> new BlockHandler(ErrorStatus.TARGET_MEMBER_NOT_BLOCKED));
