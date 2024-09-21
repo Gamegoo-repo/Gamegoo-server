@@ -1,11 +1,11 @@
 package com.gamegoo.scheduler;
 
-import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.matching.MatchingRecord;
 import com.gamegoo.domain.matching.MatchingStatus;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
 import com.gamegoo.service.chat.ChatCommandService;
 import com.gamegoo.service.chat.ChatQueryService;
+import com.gamegoo.service.socket.SocketService;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ public class SchedulerService {
     private final MatchingRecordRepository matchingRecordRepository;
     private final ChatCommandService chatCommandService;
     private final ChatQueryService chatQueryService;
+    private final SocketService socketService;
     private static final Long MANNER_MESSAGE_TIME = 60L; // 매칭 성공 n초 이후의 엔티티 조회함
     private static final String MANNER_SYSTEM_MESSAGE = "매칭은 어떠셨나요? 상대방의 매너를 평가해주세요!";
 
@@ -45,9 +46,16 @@ public class SchedulerService {
                 matchingRecord.getTargetMember()
             ).ifPresentOrElse(
                 chatroom -> {
-                    Chat andSaveSystemChat = chatCommandService.createAndSaveSystemChat(
+                    // 시스템 메시지 생성 및 db 저장
+                    chatCommandService.createAndSaveSystemChat(
                         chatroom, matchingRecord.getMember(), MANNER_SYSTEM_MESSAGE, null);
+
+                    // 매너 평가 메시지 전송 여부 업데이트
                     matchingRecord.updateMannerMessageSent(true);
+
+                    // socket 서버에게 메시지 전송 API 요청
+                    socketService.sendSystemMessage(matchingRecord.getMember().getId(),
+                        MANNER_SYSTEM_MESSAGE);
                 },
                 () -> log.info("Chatroom not found, member ID: {}, target member ID: {}",
                     matchingRecord.getMember().getId(), matchingRecord.getTargetMember().getId()));
