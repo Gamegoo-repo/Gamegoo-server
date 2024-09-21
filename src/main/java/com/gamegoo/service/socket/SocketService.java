@@ -54,10 +54,11 @@ public class SocketService {
         }
     }
 
-    public void sendSystemMessage(Long memberId, String content) {
+    public void sendSystemMessage(Long memberId, String chatroomUuid, String content) {
         String url = SOCKET_SERVER_URL + "/socket/sysmessage";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("memberId", memberId);
+        requestBody.put("chatroomUuid", chatroomUuid);
         requestBody.put("content", content);
 
         try {

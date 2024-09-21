@@ -55,7 +55,7 @@ public class SchedulerService {
 
                     // socket 서버에게 메시지 전송 API 요청
                     socketService.sendSystemMessage(matchingRecord.getMember().getId(),
-                        MANNER_SYSTEM_MESSAGE);
+                        chatroom.getUuid(), MANNER_SYSTEM_MESSAGE);
                 },
                 () -> log.info("Chatroom not found, member ID: {}, target member ID: {}",
                     matchingRecord.getMember().getId(), matchingRecord.getTargetMember().getId()));
