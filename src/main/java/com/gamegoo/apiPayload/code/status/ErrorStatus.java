@@ -54,7 +54,7 @@ public enum ErrorStatus implements BaseErrorCode {
         "matchingType은 BASIC, PRECISE 둘 중 하나여야합니다."),
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH402", "해당 사용자의 매칭 정보가 없습니다."),
     MATCHING_FAILED_BY_BLOCK(HttpStatus.BAD_REQUEST, "MATCH403", "차단된 사용자끼리의 매칭은 불가능합니다."),
-
+    MATCHING_POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "포지션 정보가 없습니다."),
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
@@ -74,6 +74,9 @@ public enum ErrorStatus implements BaseErrorCode {
     ALREADY_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK402", "이미 차단한 회원입니다."),
     TARGET_MEMBER_NOT_BLOCKED(HttpStatus.BAD_REQUEST, "BLOCK403", "차단 목록에 존재하지 않는 회원입니다."),
     BLOCK_MEMBER_BAD_REQUEST(HttpStatus.BAD_REQUEST, "BLOCK404", "잘못된 친구 차단 요청입니다."),
+    DELETE_BLOCKED_MEMBER_FAILED(HttpStatus.BAD_REQUEST, "BLOCK405", "차단 목록에서 삭제 불가한 회원입니다."),
+    UNBLOCK_TARGET_MEMBER_BLIND(HttpStatus.BAD_REQUEST, "BLOCK406",
+        "차단 대상 회원이 탈퇴했습니다. 차단 해제가 불가합니다."),
 
     // 신고 관련 에러
     REPORT_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "REPORT401", "신고 대상 회원을 찾을 수 없습니다."),

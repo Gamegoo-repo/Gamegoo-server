@@ -6,13 +6,13 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.board.Board;
 import com.gamegoo.domain.board.BoardGameStyle;
-import com.gamegoo.domain.champion.MemberChampion;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.board.BoardRequest;
 import com.gamegoo.dto.board.BoardResponse;
 import com.gamegoo.dto.manner.MannerResponse;
+import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.repository.board.BoardGameStyleRepository;
 import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
@@ -20,11 +20,6 @@ import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.util.MemberUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -32,6 +27,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +54,7 @@ public class BoardService {
     public Board save(BoardRequest.boardInsertDTO request, Long memberId, Member memberProfile) {
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 게임 모드 값 검증. (1 ~ 4 값만 가능)
         if (request.getGameMode() < 1 || request.getGameMode() > 4) {
@@ -87,9 +88,9 @@ public class BoardService {
 
         // 게임 스타일 실제 존재 여부 검증.
         List<GameStyle> gameStyleList = request.getGameStyles().stream()
-            .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
-                .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
-            .collect(Collectors.toList());
+                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                        .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
+                .collect(Collectors.toList());
 
         // 게시판 글 작성 - 프로필 이미지 수정 여부 검증.
         Integer boardProfileImage;
@@ -101,15 +102,15 @@ public class BoardService {
         }
 
         Board board = Board.builder()
-            .mode(request.getGameMode())
-            .mainPosition(request.getMainPosition())
-            .subPosition(request.getSubPosition())
-            .wantPosition(request.getWantPosition())
-            .mike(request.getMike())
-            .boardGameStyles(new ArrayList<>())
-            .content(request.getContents())
-            .boardProfileImage(boardProfileImage)
-            .build();
+                .mode(request.getGameMode())
+                .mainPosition(request.getMainPosition())
+                .subPosition(request.getSubPosition())
+                .wantPosition(request.getWantPosition())
+                .mike(request.getMike())
+                .boardGameStyles(new ArrayList<>())
+                .content(request.getContents())
+                .boardProfileImage(boardProfileImage)
+                .build();
 
         board.setMember(member);
         Board saveBoard = boardRepository.save(board);
@@ -117,8 +118,8 @@ public class BoardService {
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
         gameStyleList.forEach(gameStyle -> {
             BoardGameStyle boardGameStyle = BoardGameStyle.builder()
-                .gameStyle(gameStyle)
-                .build();
+                    .gameStyle(gameStyle)
+                    .build();
 
             boardGameStyle.setBoard(saveBoard);
             boardGameStyleRepository.save(boardGameStyle);
@@ -132,7 +133,7 @@ public class BoardService {
     public Board update(BoardRequest.boardUpdateDTO request, Long memberId, Long boardId) {
 
         Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
         // 게시글 작성자가 맞는지 검증.
         if (!board.getMember().getId().equals(memberId)) {
@@ -166,9 +167,9 @@ public class BoardService {
 
         // 게임 스타일 실제 존재 여부 검증.
         List<GameStyle> gameStyleList = request.getGameStyles().stream()
-            .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
-                .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
-            .collect(Collectors.toList());
+                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                        .orElseThrow(() -> new BoardHandler(ErrorStatus._BAD_REQUEST)))
+                .collect(Collectors.toList());
 
         // 게시판 글 수정 - 프로필 이미지 수정 여부 검증.
         Integer boardProfileImage;
@@ -186,25 +187,25 @@ public class BoardService {
 
         // 게시판 글 데이터 수정
         board.updateBoard(
-            request.getGameMode(),
-            request.getMainPosition(),
-            request.getSubPosition(),
-            request.getWantPosition(),
-            request.getMike(),
-            request.getContents(),
-            boardProfileImage
+                request.getGameMode(),
+                request.getMainPosition(),
+                request.getSubPosition(),
+                request.getWantPosition(),
+                request.getMike(),
+                request.getContents(),
+                boardProfileImage
         );
 
         // 기존 BoardGameStyle 엔티티 업데이트
         Map<Long, BoardGameStyle> existingGameStyles = board.getBoardGameStyles().stream()
-            .collect(Collectors.toMap(
-                boardGameStyle -> boardGameStyle.getGameStyle().getId(),
-                boardGameStyle -> boardGameStyle,
-                (existing, replacement) -> existing));
+                .collect(Collectors.toMap(
+                        boardGameStyle -> boardGameStyle.getGameStyle().getId(),
+                        boardGameStyle -> boardGameStyle,
+                        (existing, replacement) -> existing));
 
         Set<Long> newGameStyleIds = gameStyleList.stream()
-            .map(GameStyle::getId)
-            .collect(Collectors.toSet());
+                .map(GameStyle::getId)
+                .collect(Collectors.toSet());
 
         // 삭제할 엔티티를 검색
         List<BoardGameStyle> toRemove = new ArrayList<>();
@@ -220,8 +221,8 @@ public class BoardService {
             BoardGameStyle boardGameStyle = existingGameStyles.get(gameStyle.getId());
             if (boardGameStyle == null) {
                 boardGameStyle = BoardGameStyle.builder()
-                    .gameStyle(gameStyle)
-                    .build();
+                        .gameStyle(gameStyle)
+                        .build();
                 // 연관관계 메소드 사용
                 boardGameStyle.setBoard(board);
             } else {
@@ -238,7 +239,7 @@ public class BoardService {
     public void delete(Long boardId, Long memberId) {
 
         Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
         // 게시글 작성자가 맞는지 검증.
         if (!board.getMember().getId().equals(memberId)) {
@@ -252,7 +253,7 @@ public class BoardService {
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
     public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, Tier tier,
-        Integer mainPosition, Boolean mike, int pageIdx) {
+                                                                 Integer mainPosition, Boolean mike, int pageIdx) {
 
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
@@ -261,33 +262,41 @@ public class BoardService {
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
         Pageable pageable = PageRequest.of(pageIdx - 1, PAGE_SIZE,
-            Sort.by(Sort.Direction.DESC, "createdAt"));
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
         List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, mike, pageable)
-            .getContent();
+                .getContent();
 
         return boards.stream().map(board -> {
 
             Member member = board.getMember();
 
+            List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
+            if (member.getMemberChampionList() != null) {
+                championResponseDTOList = member.getMemberChampionList().stream()
+                        .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
+                                .championId(memberChampion.getMember().getId())
+                                .championName(memberChampion.getChampion().getName())
+                                .build()).collect(Collectors.toList());
+            }
+
             return BoardResponse.boardListResponseDTO.builder()
-                .boardId(board.getId())
-                .memberId(member.getId())
-                .profileImage(board.getBoardProfileImage())
-                .gameName(member.getGameName())
-                .mannerLevel(member.getMannerLevel())
-                .tier(member.getTier())
-                .rank(member.getRank())
-                .gameMode(board.getMode())
-                .mainPosition(board.getMainPosition())
-                .subPosition(board.getSubPosition())
-                .wantPosition(board.getWantPosition())
-                .championList(member.getMemberChampionList().stream().map(MemberChampion::getId)
-                    .collect(Collectors.toList()))
-                .winRate(member.getWinRate())
-                .createdAt(board.getCreatedAt())
-                .mike(board.getMike())
-                .build();
+                    .boardId(board.getId())
+                    .memberId(member.getId())
+                    .profileImage(board.getBoardProfileImage())
+                    .gameName(member.getGameName())
+                    .mannerLevel(member.getMannerLevel())
+                    .tier(member.getTier())
+                    .rank(member.getRank())
+                    .gameMode(board.getMode())
+                    .mainPosition(board.getMainPosition())
+                    .subPosition(board.getSubPosition())
+                    .wantPosition(board.getWantPosition())
+                    .championResponseDTOList(championResponseDTOList)
+                    .winRate(member.getWinRate())
+                    .createdAt(board.getCreatedAt())
+                    .mike(board.getMike())
+                    .build();
 
         }).collect(Collectors.toList());
     }
@@ -297,84 +306,102 @@ public class BoardService {
     public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId) {
 
         Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
         Member poster = board.getMember();
 
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
+        if (poster.getMemberChampionList() != null) {
+            championResponseDTOList = poster.getMemberChampionList().stream()
+                    .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
+                            .championId(memberChampion.getMember().getId())
+                            .championName(memberChampion.getChampion().getName())
+                            .build()).collect(Collectors.toList());
+        }
+
+
         return BoardResponse.boardByIdResponseDTO.builder()
-            .boardId(board.getId())
-            .memberId(poster.getId())
-            .createdAt(board.getCreatedAt())
-            .profileImage(board.getBoardProfileImage())
-            .gameName(poster.getGameName())
-            .tag(poster.getTag())
-            .mannerLevel(poster.getMannerLevel())
-            .tier(poster.getTier())
-            .rank(poster.getRank())
-            .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId)
-                .collect(Collectors.toList()))
-            .mike(board.getMike())
-            .gameMode(board.getMode())
-            .mainPosition(board.getMainPosition())
-            .subPosition(board.getSubPosition())
-            .wantPosition(board.getWantPosition())
-            .recentGameCount(poster.getGameCount())
-            .winRate(poster.getWinRate())
-            .gameStyles(board.getBoardGameStyles().stream()
-                .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
-                .collect(Collectors.toList()))
-            .contents(board.getContent())
-            .build();
+                .boardId(board.getId())
+                .memberId(poster.getId())
+                .createdAt(board.getCreatedAt())
+                .profileImage(board.getBoardProfileImage())
+                .gameName(poster.getGameName())
+                .tag(poster.getTag())
+                .mannerLevel(poster.getMannerLevel())
+                .tier(poster.getTier())
+                .rank(poster.getRank())
+                .championResponseDTOList(championResponseDTOList)
+                .mike(board.getMike())
+                .gameMode(board.getMode())
+                .mainPosition(board.getMainPosition())
+                .subPosition(board.getSubPosition())
+                .wantPosition(board.getWantPosition())
+                .recentGameCount(poster.getGameCount())
+                .winRate(poster.getWinRate())
+                .gameStyles(board.getBoardGameStyles().stream()
+                        .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
+                        .collect(Collectors.toList()))
+                .contents(board.getContent())
+                .build();
 
     }
 
     // 회원 게시판 글 조회
     @Transactional(readOnly = true)
     public BoardResponse.boardByIdResponseForMemberDTO getBoardByIdForMember(Long boardId,
-        Long memberId) {
+                                                                             Long memberId) {
 
         Board board = boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         Member poster = board.getMember();
 
         List<MannerResponse.mannerKeywordDTO> mannerKeywordDTOs = mannerService.mannerKeyword(
-            poster);
+                poster);
 
         List<MannerResponse.mannerKeywordDTO> mannerKeywords = mannerService.sortMannerKeywordDTOs(
-            mannerKeywordDTOs);
+                mannerKeywordDTOs);
+
+        List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
+        if (member.getMemberChampionList() != null) {
+            championResponseDTOList = member.getMemberChampionList().stream()
+                    .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
+                            .championId(memberChampion.getMember().getId())
+                            .championName(memberChampion.getChampion().getName())
+                            .build()).collect(Collectors.toList());
+        }
+
 
         return BoardResponse.boardByIdResponseForMemberDTO.builder()
-            .boardId(board.getId())
-            .memberId(poster.getId())
-            .isBlocked(MemberUtils.isBlocked(member, poster))
-            .isFriend(friendService.isFriend(member, poster))
-            .friendRequestMemberId(friendService.getFriendRequestMemberId(member, poster))
-            .createdAt(board.getCreatedAt())
-            .profileImage(board.getBoardProfileImage())
-            .gameName(poster.getGameName())
-            .tag(poster.getTag())
-            .mannerLevel(poster.getMannerLevel())
-            .mannerKeywords(mannerKeywords)
-            .tier(poster.getTier())
-            .rank(poster.getRank())
-            .championList(poster.getMemberChampionList().stream().map(MemberChampion::getId)
-                .collect(Collectors.toList()))
-            .mike(board.getMike())
-            .gameMode(board.getMode())
-            .mainPosition(board.getMainPosition())
-            .subPosition(board.getSubPosition())
-            .wantPosition(board.getWantPosition())
-            .recentGameCount(poster.getGameCount())
-            .winRate(poster.getWinRate())
-            .gameStyles(board.getBoardGameStyles().stream()
-                .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
-                .collect(Collectors.toList()))
-            .contents(board.getContent())
-            .build();
+                .boardId(board.getId())
+                .memberId(poster.getId())
+                .isBlocked(MemberUtils.isBlocked(member, poster))
+                .isFriend(friendService.isFriend(member, poster))
+                .friendRequestMemberId(friendService.getFriendRequestMemberId(member, poster))
+                .createdAt(board.getCreatedAt())
+                .profileImage(board.getBoardProfileImage())
+                .gameName(poster.getGameName())
+                .tag(poster.getTag())
+                .mannerLevel(poster.getMannerLevel())
+                .mannerKeywords(mannerKeywords)
+                .tier(poster.getTier())
+                .rank(poster.getRank())
+                .championResponseDTOList(championResponseDTOList)
+                .mike(board.getMike())
+                .gameMode(board.getMode())
+                .mainPosition(board.getMainPosition())
+                .subPosition(board.getSubPosition())
+                .wantPosition(board.getWantPosition())
+                .recentGameCount(poster.getGameCount())
+                .winRate(poster.getWinRate())
+                .gameStyles(board.getBoardGameStyles().stream()
+                        .map(boardGameStyle -> boardGameStyle.getGameStyle().getId())
+                        .collect(Collectors.toList()))
+                .contents(board.getContent())
+                .build();
     }
 
     // 내가 작성한 게시판 글 목록 조회
@@ -388,7 +415,7 @@ public class BoardService {
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지. 페이지당 표시할 게시물 수 = 10개.
         Pageable pageable = PageRequest.of(pageIdx - 1, 10,
-            Sort.by(Sort.Direction.DESC, "createdAt"));
+                Sort.by(Sort.Direction.DESC, "createdAt"));
 
         List<Board> boards = boardRepository.findByMemberId(memberId, pageable).getContent();
 
@@ -396,16 +423,16 @@ public class BoardService {
             Member member = board.getMember();
 
             return BoardResponse.myBoardListResponseDTO.builder()
-                .boardId(board.getId())
-                .memberId(member.getId())
-                .profileImage(board.getBoardProfileImage())
-                .gameName(member.getGameName())
-                .tag(member.getTag())
-                .tier(member.getTier())
-                .rank(member.getRank())
-                .contents(board.getContent())
-                .createdAt(board.getCreatedAt())
-                .build();
+                    .boardId(board.getId())
+                    .memberId(member.getId())
+                    .profileImage(board.getBoardProfileImage())
+                    .gameName(member.getGameName())
+                    .tag(member.getTag())
+                    .tier(member.getTier())
+                    .rank(member.getRank())
+                    .contents(board.getContent())
+                    .createdAt(board.getCreatedAt())
+                    .build();
         }).collect(Collectors.toList());
     }
 
@@ -417,6 +444,6 @@ public class BoardService {
      */
     public Board findBoard(Long boardId) {
         return boardRepository.findById(boardId)
-            .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
     }
 }

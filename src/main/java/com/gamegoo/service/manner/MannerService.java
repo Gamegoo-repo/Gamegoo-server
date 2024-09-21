@@ -105,9 +105,10 @@ public class MannerService {
 
         // 매너평가 등록됨 알림 전송
         // 등록된 매너 평가 키워드 string 생성
-        String mannerKeywordString = mannerRatingKeywordList.stream()
-            .map(MannerKeyword::getContents)
-            .collect(Collectors.joining(", "));
+        String mannerKeywordString = mannerRatingKeywordList.get(0).getContents();
+        if (mannerRatingKeywordList.size() > 1) {
+            mannerKeywordString += " 외 " + (mannerRatingKeywordList.size() - 1) + "개의";
+        }
 
         Notification ratedNotification = notificationService.createNotification(
             NotificationTypeTitle.MANNER_KEYWORD_RATED,
@@ -198,11 +199,12 @@ public class MannerService {
             mannerRatingKeywordRepository.save(mannerRatingKeyword);
         });
 
-        // 매너평가 등록됨 알림 전송
+        // 비매너평가 등록됨 알림 전송
         // 등록된 매너 평가 키워드 string 생성
-        String mannerKeywordString = mannerRatingKeywordList.stream()
-            .map(MannerKeyword::getContents)
-            .collect(Collectors.joining(", "));
+        String mannerKeywordString = mannerRatingKeywordList.get(0).getContents();
+        if (mannerRatingKeywordList.size() > 1) {
+            mannerKeywordString += " 외 " + (mannerRatingKeywordList.size() - 1) + "개의";
+        }
 
         Notification ratedNotification = notificationService.createNotification(
             NotificationTypeTitle.MANNER_KEYWORD_RATED,
@@ -305,7 +307,20 @@ public class MannerService {
             int mannerScore = updateMannerScore(targetMember);
 
             // 매너레벨 결정.
-            int mannerLevel = mannerLevel(mannerScore);
+            Integer mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 상승 알림 전송
+            if (targetMember.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerUpNotification);
+            } else if (targetMember.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerDownNotification);
+            }
 
             // 매너레벨 반영.
             targetMember.setMannerLevel(mannerLevel);
@@ -372,7 +387,20 @@ public class MannerService {
             int mannerScore = updateMannerScore(targetMember);
 
             // 매너레벨 결정.
-            int mannerLevel = mannerLevel(mannerScore);
+            Integer mannerLevel = mannerLevel(mannerScore);
+
+            // 매너레벨 상승 알림 전송
+            if (targetMember.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerUpNotification);
+            } else if (targetMember.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                    NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                    null, targetMember);
+                notificationRepository.save(mannerDownNotification);
+            }
 
             // 매너레벨 반영.
             targetMember.setMannerLevel(mannerLevel);
