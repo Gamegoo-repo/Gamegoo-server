@@ -518,7 +518,7 @@ public class ChatCommandService {
      * @param sourceBoard
      * @return
      */
-    private Chat createAndSaveSystemChat(Chatroom chatroom, Member toMember,
+    public Chat createAndSaveSystemChat(Chatroom chatroom, Member toMember,
         String content, Board sourceBoard) {
         Member systemMember = profileService.findSystemMember();
 

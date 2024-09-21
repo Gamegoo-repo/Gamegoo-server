@@ -35,6 +35,8 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
 
     public final NumberPath<Integer> mannerLevel = createNumber("mannerLevel", Integer.class);
 
+    public final BooleanPath mannerMessageSent = createBoolean("mannerMessageSent");
+
     public final EnumPath<MatchingType> matchingType = createEnum("matchingType", MatchingType.class);
 
     public final com.gamegoo.domain.member.QMember member;
@@ -46,6 +48,8 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
     public final EnumPath<MatchingStatus> status = createEnum("status", MatchingStatus.class);
 
     public final NumberPath<Integer> subPosition = createNumber("subPosition", Integer.class);
+
+    public final com.gamegoo.domain.member.QMember targetMember;
 
     public final EnumPath<com.gamegoo.domain.member.Tier> tier = createEnum("tier", com.gamegoo.domain.member.Tier.class);
 
@@ -75,6 +79,7 @@ public class QMatchingRecord extends EntityPathBase<MatchingRecord> {
     public QMatchingRecord(Class<? extends MatchingRecord> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.member = inits.isInitialized("member") ? new com.gamegoo.domain.member.QMember(forProperty("member")) : null;
+        this.targetMember = inits.isInitialized("targetMember") ? new com.gamegoo.domain.member.QMember(forProperty("targetMember")) : null;
     }
 
 }
