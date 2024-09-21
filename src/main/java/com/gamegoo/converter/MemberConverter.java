@@ -33,7 +33,8 @@ public class MemberConverter {
             .memberId(member.getId())
             .profileImg(member.getProfileImage())
             .email(member.getEmail())
-            .name(member.getGameName())
+            .name(member.getBlind() ? "(탈퇴한 사용자)" : member.getGameName())
+            .isBlind(member.getBlind())
             .build();
 
     }
