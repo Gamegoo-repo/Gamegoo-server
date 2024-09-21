@@ -49,8 +49,32 @@ public class SocketService {
                 log.info("joinSocketToChatroom API call SUCCESS: {}", response.getBody());
             }
         } catch (Exception e) {
-            log.error("Error occurred while notifyChatroomEntered method", e);
+            log.error("Error occurred while joinSocketToChatroom method", e);
             throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERROR);
         }
+    }
+
+    public void sendSystemMessage(Long memberId, String content) {
+        String url = SOCKET_SERVER_URL + "/socket/sysmessage";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("memberId", memberId);
+        requestBody.put("content", content);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody,
+                String.class);
+
+            log.info("response of joinSocketToChatroom: {}", response.getStatusCode().toString());
+            if (!response.getStatusCode().equals(HttpStatus.OK)) {
+                log.error("joinSocketToChatroom API call FAIL: {}", response.getBody());
+                throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERROR);
+            } else {
+                log.info("joinSocketToChatroom API call SUCCESS: {}", response.getBody());
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while sendSystemMessage method", e);
+            throw new SocketHandler(ErrorStatus.SOCKET_API_RESPONSE_ERROR);
+        }
+
     }
 }
