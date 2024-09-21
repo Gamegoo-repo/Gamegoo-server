@@ -3,9 +3,22 @@ package com.gamegoo.domain.matching;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
-import lombok.*;
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "MatchingRecord")
@@ -14,6 +27,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class MatchingRecord extends BaseDateTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "matching_id", nullable = false)
@@ -57,12 +71,27 @@ public class MatchingRecord extends BaseDateTimeEntity {
     @Column(name = "manner_level")
     private Integer mannerLevel;
 
+    private Boolean mannerMessageSent;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "target_member_id")
+    private Member targetMember;
+
     // status 변경
     public void updateStatus(MatchingStatus status) {
         this.status = status;
+    }
+
+    // targetMember 설정
+    public void updateTargetMember(Member member) {
+        this.targetMember = member;
+    }
+
+    public void updateMannerMessageSent(Boolean mannerMessageSent) {
+        this.mannerMessageSent = mannerMessageSent;
     }
 }
