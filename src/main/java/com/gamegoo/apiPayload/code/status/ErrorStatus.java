@@ -34,7 +34,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT400", "jwt 토큰이 만료되었습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT401", "유효하지 않은 jwt 토큰입니다."),
     TOKEN_NULL(HttpStatus.NOT_FOUND, "JWT402", "JWT 토큰이 없습니다."),
-
+    REFRESHTOKEN_NULL(HttpStatus.NOT_FOUND,"JWT403","Refresh Token이 없습니다."),
     // GameStyle 관련 에러
     GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE400", "해당 게임 스타일을 찾을 수 없습니다."),
 
