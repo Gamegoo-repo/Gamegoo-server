@@ -85,7 +85,7 @@ public class AuthController {
     @Operation(summary = "logout API 입니다.", description = "API for logout")
     public ApiResponse<String> logoutMember() {
         Long memberId = JWTUtil.getCurrentUserId();
-        authService.logoutMember(memberId);
+        authService.deleteRefreshToken(memberId);
 
         return ApiResponse.onSuccess("로그아웃에 성공했습니다");
     }
