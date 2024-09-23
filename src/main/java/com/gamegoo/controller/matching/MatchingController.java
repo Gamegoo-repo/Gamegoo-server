@@ -45,7 +45,7 @@ public class MatchingController {
         try {
             MatchingType.valueOf(request.getMatchingType().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new MatchingHandler(ErrorStatus.MATHCING_TYPE_BAD_REQUEST);
+            throw new MatchingHandler(ErrorStatus.MATCHING_TYPE_BAD_REQUEST);
         }
 
         // 우선순위 계산

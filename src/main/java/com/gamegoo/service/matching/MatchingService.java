@@ -375,6 +375,12 @@ public class MatchingService {
 
         try {
             MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
+
+            // PENDING이 아닐 경우 변경 X
+            if (!status.equals(MatchingStatus.PENDING)) {
+                throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_ONLY_PENDING);
+            }
+
             // status 값 변경
             matchingRecord.updateStatus(status);
             matchingRecordRepository.save(matchingRecord);
@@ -402,6 +408,11 @@ public class MatchingService {
         } catch (IllegalArgumentException e) {
             // status 값이 이상할 경우 에러처리
             throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
+        }
+
+        // PENDING이 아닐 경우 변경 X
+        if (!status.equals(MatchingStatus.PENDING)) {
+            throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_ONLY_PENDING);
         }
 
         // member 엔티티 조회
