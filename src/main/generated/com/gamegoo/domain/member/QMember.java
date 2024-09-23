@@ -49,6 +49,8 @@ public class QMember extends EntityPathBase<Member> {
 
     public final ListPath<com.gamegoo.domain.manner.MannerRating, com.gamegoo.domain.manner.QMannerRating> mannerRatingList = this.<com.gamegoo.domain.manner.MannerRating, com.gamegoo.domain.manner.QMannerRating>createList("mannerRatingList", com.gamegoo.domain.manner.MannerRating.class, com.gamegoo.domain.manner.QMannerRating.class, PathInits.DIRECT2);
 
+    public final NumberPath<Integer> mannerScore = createNumber("mannerScore", Integer.class);
+
     public final ListPath<com.gamegoo.domain.champion.MemberChampion, com.gamegoo.domain.champion.QMemberChampion> memberChampionList = this.<com.gamegoo.domain.champion.MemberChampion, com.gamegoo.domain.champion.QMemberChampion>createList("memberChampionList", com.gamegoo.domain.champion.MemberChampion.class, com.gamegoo.domain.champion.QMemberChampion.class, PathInits.DIRECT2);
 
     public final ListPath<com.gamegoo.domain.chat.MemberChatroom, com.gamegoo.domain.chat.QMemberChatroom> memberChatroomList = this.<com.gamegoo.domain.chat.MemberChatroom, com.gamegoo.domain.chat.QMemberChatroom>createList("memberChatroomList", com.gamegoo.domain.chat.MemberChatroom.class, com.gamegoo.domain.chat.QMemberChatroom.class, PathInits.DIRECT2);
