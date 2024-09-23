@@ -654,7 +654,13 @@ public class MannerService {
 
         Integer mannerLevel = member.getMannerLevel();
 
-        Double mannerRank = getMannerScoreRank(member.getId());
+        Double mannerRank;
+
+        if (member.getMannerScore()==null){
+            mannerRank = null;
+        }else {
+            mannerRank = getMannerScoreRank(member.getId());
+        }
 
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
