@@ -39,7 +39,7 @@ public class Member extends BaseDateTimeEntity {
     private Integer profileImage;
 
     @Column(name = "manner_level")
-    private Integer mannerLevel = 0;
+    private Integer mannerLevel;
 
     @Column(name = "manner_score")
     private Integer mannerScore;
@@ -153,6 +153,7 @@ public class Member extends BaseDateTimeEntity {
         this.refreshToken = refreshToken;
     }
 
+    public void setMannerScore(int mannerScore) { this.mannerScore = mannerScore; }
     public void setMannerLevel(int mannerLevel) {
         this.mannerLevel = mannerLevel;
     }

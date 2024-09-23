@@ -115,7 +115,10 @@ public class MannerService {
             mannerKeywordString, null, targetMember);
 
         // 매너점수 산정.
-        int mannerScore = updateMannerScore(targetMember);
+        Integer mannerScore = updateMannerScore(targetMember);
+
+        // 매너점수 반영.
+        targetMember.setMannerScore(mannerScore);
 
         // 매너레벨 결정.
         Integer mannerLevel = mannerLevel(mannerScore);
@@ -213,7 +216,10 @@ public class MannerService {
         notificationRepository.save(ratedNotification);
 
         // 매너점수 산정.
-        int mannerScore = updateMannerScore(targetMember);
+        Integer mannerScore = updateMannerScore(targetMember);
+
+        // 매너점수 반영.
+        targetMember.setMannerScore(mannerScore);
 
         // 매너레벨 결정.
         Integer mannerLevel = mannerLevel(mannerScore);
@@ -304,7 +310,10 @@ public class MannerService {
             }
 
             // 매너점수 산정.
-            int mannerScore = updateMannerScore(targetMember);
+            Integer mannerScore = updateMannerScore(targetMember);
+
+            // 매너점수 반영.
+            targetMember.setMannerScore(mannerScore);
 
             // 매너레벨 결정.
             Integer mannerLevel = mannerLevel(mannerScore);
@@ -384,7 +393,10 @@ public class MannerService {
             }
 
             // 매너점수 산정.
-            int mannerScore = updateMannerScore(targetMember);
+            Integer mannerScore = updateMannerScore(targetMember);
+
+            // 매너점수 반영.
+            targetMember.setMannerScore(mannerScore);
 
             // 매너레벨 결정.
             Integer mannerLevel = mannerLevel(mannerScore);
@@ -418,7 +430,7 @@ public class MannerService {
         // 매너평가 ID 조회
         List<MannerRating> mannerRatings = targetMember.getMannerRatingList();
 
-        int totalCount;
+        int totalCount = 0;
 
         // 매너 평가 + 비매너 평가를 처음 받은 회원
         if (mannerRatings.size() == 1) {
