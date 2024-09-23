@@ -165,7 +165,7 @@ public class AuthService {
     public MemberResponse.RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
         // refresh Token 검증하기
         Member member = memberRepository.findByRefreshToken(refresh_token)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.INVALID_TOKEN));
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.REFRESHTOKEN_NULL));
 
         // refresh 토큰에서 id 가져오기
         Long id = member.getId();
@@ -394,7 +394,7 @@ public class AuthService {
      * @param id
      */
     @Transactional
-    public void logoutMember(Long id) {
+    public void deleteRefreshToken(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updateRefreshToken(null);
