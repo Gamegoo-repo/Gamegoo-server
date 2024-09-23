@@ -41,6 +41,9 @@ public class Member extends BaseDateTimeEntity {
     @Column(name = "manner_level")
     private Integer mannerLevel = 0;
 
+    @Column(name = "manner_score")
+    private Integer mannerScore;
+
     @Column(name = "blind", nullable = false)
     private Boolean blind = false;
 
