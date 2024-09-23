@@ -17,13 +17,8 @@ import com.gamegoo.repository.manner.MannerRatingRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.repository.notification.NotificationRepository;
 import com.gamegoo.service.notification.NotificationService;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -591,13 +586,7 @@ public class MannerService {
         List<MannerRating> mannerRatings = member.getMannerRatingList();
 
         // 매너평가 점수
-        Integer mannerScore;
-
-        if (mannerRatings.size() == 0) {
-            mannerScore = null;
-        }else{
-            mannerScore = updateMannerScore(member);
-        }
+        Integer mannerScore = member.getMannerScore();
 
         // 매너키워드 조회
         List<MannerRating> positiveMannerRatings = mannerRatings.stream()
@@ -665,7 +654,7 @@ public class MannerService {
 
         Integer mannerLevel = member.getMannerLevel();
 
-        Double mannerRank = getMannerLevelRank(member.getId());
+        Double mannerRank = getMannerScoreRank(member.getId());
 
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
@@ -818,23 +807,28 @@ public class MannerService {
         }
     }
 
-    // 회원의 매너레벨이 전체 회원 중 상위 몇 퍼센트에 위치하는지 계산
-    public double getMannerLevelRank(Long memberId) {
+    // 회원의 매너점수가 전체 회원 중 상위 몇 퍼센트에 위치하는지 계산
+    public double getMannerScoreRank(Long memberId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        // 전체 회원의 매너레벨을 가져오기
-        List<Integer> mannerLevels = memberRepository.findAllMannerLevels();
+        // 전체 회원의 매너점수를 가져오기
+        List<Integer> mannerScores = memberRepository.findAllMannerScores();
 
-        // 전체 매너레벨을 정렬
-        List<Integer> sortedMannerLevels = mannerLevels.stream()
+        // 매너평가/비매너 평가를 받은 이력이 없는 회원(null) 계산에서 제외
+        List<Integer> filteredMannerScores = mannerScores.stream()
+                .filter(Objects::nonNull)  // null 값 제외
+                .collect(Collectors.toList());
+
+        // 전체 매너점수를 정렬
+        List<Integer> sortedMannerScores = filteredMannerScores.stream()
                 .sorted(Collections.reverseOrder())
                 .collect(Collectors.toList());
 
-        // 특정 회원의 매너레벨이 상위 몇 %인지 계산
-        int index = sortedMannerLevels.indexOf(member.getMannerLevel());
-        double mannerRank = ((double) (index + 1) / sortedMannerLevels.size()) * 100;
+        // 특정 회원의 매너점수가 상위 몇 %인지 계산
+        int index = sortedMannerScores.indexOf(member.getMannerScore());
+        double mannerRank = ((double) (index + 1) / sortedMannerScores.size()) * 100;
 
         return mannerRank;
     }

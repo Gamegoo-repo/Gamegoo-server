@@ -39,7 +39,7 @@ public class Member extends BaseDateTimeEntity {
     private Integer profileImage;
 
     @Column(name = "manner_level")
-    private Integer mannerLevel;
+    private Integer mannerLevel = 1;
 
     @Column(name = "manner_score")
     private Integer mannerScore;
