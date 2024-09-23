@@ -50,11 +50,12 @@ public enum ErrorStatus implements BaseErrorCode {
     // 매칭 관련 에러
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
         "status는 SUCCESS, FAIL 둘 중 하나로만 변경이 가능합니다."),
-    MATHCING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH401",
+    MATCHING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH401",
         "matchingType은 BASIC, PRECISE 둘 중 하나여야합니다."),
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH402", "해당 사용자의 매칭 정보가 없습니다."),
     MATCHING_FAILED_BY_BLOCK(HttpStatus.BAD_REQUEST, "MATCH403", "차단된 사용자끼리의 매칭은 불가능합니다."),
     MATCHING_POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "포지션 정보가 없습니다."),
+    MATCHING_STATUS_ONLY_PENDING(HttpStatus.BAD_REQUEST,"MATCH405", "매칭 status는 무조건 pending 상태에서만 변경이 가능합니다"),
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
