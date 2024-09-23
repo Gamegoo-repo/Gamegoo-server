@@ -28,9 +28,10 @@ public class ProfileService {
     private final MemberRepository memberRepository;
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
-
     private final FriendRepository friendRepository;
     private final FriendRequestsRepository friendRequestsRepository;
+
+    private final AuthService authService;
 
     /**
      * MemberGameStyle 데이터 추가 : 회원에 따른 게임 스타일 정보 저장하기
@@ -94,6 +95,9 @@ public class ProfileService {
 
         // Blind 처리
         member.deactiveMember();
+
+        // refresh token 삭제하기
+        authService.deleteRefreshToken(userId);
 
         memberRepository.save(member);
     }
