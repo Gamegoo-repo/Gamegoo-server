@@ -25,6 +25,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT m.mannerLevel FROM Member m")
-    List<Integer> findAllMannerLevels();
+    @Query("SELECT m.mannerScore FROM Member m")
+    List<Integer> findAllMannerScores();
 }

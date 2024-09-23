@@ -92,10 +92,10 @@ public class ProfileController {
 
         Member myProfile = profileService.findMember(memberId);
 
-        Double mannerLevelRank = mannerService.getMannerLevelRank(memberId);
+        Double mannerScoreRank = mannerService.getMannerScoreRank(memberId);
 
         return ApiResponse.onSuccess(
-                profileService.getMyProfile(myProfile, mannerLevelRank));
+                profileService.getMyProfile(myProfile, mannerScoreRank));
     }
 
     @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member")
@@ -104,10 +104,10 @@ public class ProfileController {
         @RequestParam("id") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
 
-        Double mannerLevelRank = mannerService.getMannerLevelRank(targetMemberId);
+        Double mannerScoreRank = mannerService.getMannerScoreRank(targetMemberId);
 
         return ApiResponse.onSuccess(
-            profileService.getTargetMemberProfile(memberId, targetMemberId,mannerLevelRank));
+            profileService.getTargetMemberProfile(memberId, targetMemberId, mannerScoreRank));
     }
 
 }

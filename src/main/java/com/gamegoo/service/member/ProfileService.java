@@ -156,8 +156,8 @@ public class ProfileService {
      * 회원의 프로필 조회, 매너랭킹 정보 포함
      **/
     @Transactional(readOnly = true)
-    public MemberResponse.myProfileDTO getMyProfile(Member myProfile, Double mannerLevelRank){
-        return MemberConverter.ProfileDTO(myProfile, mannerLevelRank);
+    public MemberResponse.myProfileDTO getMyProfile(Member myProfile, Double mannerScoreRank){
+        return MemberConverter.ProfileDTO(myProfile, mannerScoreRank);
     }
 
     /**
@@ -169,7 +169,7 @@ public class ProfileService {
      */
     @Transactional(readOnly = true)
     public MemberResponse.memberProfileDTO getTargetMemberProfile(Long memberId,
-        Long targetMemberId, Double manenrLevelRank) {
+        Long targetMemberId, Double mannerScoreRank) {
         Member member = findMember(memberId);
         Member targetMember = findMember(targetMemberId);
 
@@ -187,7 +187,7 @@ public class ProfileService {
 
         return MemberConverter.toMemberProfileDTO(member, targetMember,
             isFriend,
-            friendRequestMemberId, manenrLevelRank);
+            friendRequestMemberId, mannerScoreRank);
     }
 
     /**
