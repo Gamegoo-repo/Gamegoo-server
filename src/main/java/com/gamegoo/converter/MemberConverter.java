@@ -109,7 +109,7 @@ public class MemberConverter {
                 .tier(member.getTier())
                 .rank(member.getRank())
                 .profileImg(member.getProfileImage())
-                .manner(member.getMannerLevel())
+                .mannerLevel(member.getMannerLevel())
                 .mannerRank(mannerScoreRank)
                 .mainP(member.getMainPosition())
                 .subP(member.getSubPosition())
@@ -125,7 +125,7 @@ public class MemberConverter {
     }
 
     public static MemberResponse.memberProfileDTO toMemberProfileDTO(Member member,
-        Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerLevelRank) {
+        Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerScoreRank) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
         if (targetMember.getMemberGameStyleList() != null) {
             gameStyleResponseDTOList = targetMember.getMemberGameStyleList().stream()
@@ -153,8 +153,8 @@ public class MemberConverter {
             .tier(targetMember.getTier())
             .rank(targetMember.getRank())
             .profileImg(targetMember.getProfileImage())
-            .manner(targetMember.getMannerLevel())
-            .mannerRank(mannerLevelRank)
+            .mannerLevel(targetMember.getMannerLevel())
+            .mannerRank(mannerScoreRank)
             .mainP(targetMember.getMainPosition())
             .subP(targetMember.getSubPosition())
             .isAgree(targetMember.getIsAgree())

@@ -118,7 +118,7 @@ public class MemberResponse {
         Tier tier;
         Integer rank;
         Double mannerRank;
-        Integer manner;
+        Integer mannerLevel;
         String updatedAt;
         Integer mainP;
         Integer subP;
@@ -144,7 +144,7 @@ public class MemberResponse {
         String tag;
         Tier tier;
         Integer rank;
-        Integer manner;
+        Integer mannerLevel;
         Double mannerRank;
         String updatedAt;
         Integer mainP;
