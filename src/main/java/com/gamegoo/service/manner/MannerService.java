@@ -816,12 +816,15 @@ public class MannerService {
         if (member.getMannerScore()==null){
             return null;
         } else {
-            // 전체 회원의 매너점수를 가져오기
-            List<Integer> mannerScores = memberRepository.findAllMannerScores();
+            // 전체 회원 리스트 가져오기
+            List<Member> members = memberRepository.findAll();
 
             // 매너평가/비매너 평가를 받은 이력이 없는 회원(null) 계산에서 제외
-            List<Integer> filteredMannerScores = mannerScores.stream()
-                    .filter(Objects::nonNull)  // null 값 제외
+            // 탈퇴한 회원은 계산에서 제외
+            List<Integer> filteredMannerScores = members.stream()
+                    .filter(m -> m.getMannerScore() != null)  // 매너 점수가 null인 회원 제외
+                    .filter(m -> !m.getBlind())  // 탈퇴 회원 제외
+                    .map(Member::getMannerScore)  // 매너 점수 추출
                     .collect(Collectors.toList());
 
             // 전체 매너점수를 정렬
