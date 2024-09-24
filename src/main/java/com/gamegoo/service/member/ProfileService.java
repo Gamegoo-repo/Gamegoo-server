@@ -153,14 +153,6 @@ public class ProfileService {
     }
 
     /**
-     * 회원의 프로필 조회, 매너랭킹 정보 포함
-     **/
-    @Transactional(readOnly = true)
-    public MemberResponse.myProfileDTO getMyProfile(Member myProfile, Double mannerScoreRank){
-        return MemberConverter.ProfileDTO(myProfile, mannerScoreRank);
-    }
-
-    /**
      * 특정 회원의 유저프로필 조회, 차단 여부, 친구 여부, 친구 요청 상태 포함
      *
      * @param memberId

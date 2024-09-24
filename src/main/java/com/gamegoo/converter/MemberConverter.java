@@ -81,7 +81,7 @@ public class MemberConverter {
 
     }
 
-    public static MemberResponse.myProfileDTO ProfileDTO(Member member, Double  mannerScoreRank) {
+    public static MemberResponse.myProfileDTO profileDTO(Member member, Double  mannerScoreRank) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
         if (member.getMemberGameStyleList() != null) {
             gameStyleResponseDTOList = member.getMemberGameStyleList().stream()
