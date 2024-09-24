@@ -305,8 +305,11 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardResponse.boardByIdResponseDTO getBoardById(Long boardId) {
 
-        Board board = boardRepository.findById(boardId)
+        boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        Board board = boardRepository.findByIdAndDeletedFalse(boardId)
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_DELETED));
 
         Member poster = board.getMember();
 
@@ -351,8 +354,11 @@ public class BoardService {
     public BoardResponse.boardByIdResponseForMemberDTO getBoardByIdForMember(Long boardId,
                                                                              Long memberId) {
 
-        Board board = boardRepository.findById(boardId)
+        boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        Board board = boardRepository.findByIdAndDeletedFalse(boardId)
+                .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_DELETED));
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
