@@ -95,7 +95,7 @@ public class ProfileController {
         Double mannerScoreRank = mannerService.getMannerScoreRank(memberId);
 
         return ApiResponse.onSuccess(
-                profileService.getMyProfile(myProfile, mannerScoreRank));
+                MemberConverter.profileDTO(myProfile, mannerScoreRank));
     }
 
     @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member")
