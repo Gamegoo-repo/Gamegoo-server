@@ -423,7 +423,7 @@ public class MannerService {
     private int updateMannerScore(Member targetMember) {
 
         // 매너평가 ID 조회
-        List<MannerRating> mannerRatings = targetMember.getMannerRatingList();
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
 
         int totalCount = 0;
 
