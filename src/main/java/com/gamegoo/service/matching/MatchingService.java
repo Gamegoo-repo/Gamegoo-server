@@ -372,16 +372,18 @@ public class MatchingService {
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
                 member, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
-
-        try {
-            MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
-            // status 값 변경
-            matchingRecord.updateStatus(status);
-            matchingRecordRepository.save(matchingRecord);
-        } catch (IllegalArgumentException e) {
-            // status 값이 이상할 경우 에러처리
-            throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
+        if (matchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+            try {
+                MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
+                // status 값 변경
+                matchingRecord.updateStatus(status);
+                matchingRecordRepository.save(matchingRecord);
+            } catch (IllegalArgumentException e) {
+                // status 값이 이상할 경우 에러처리
+                throw new MatchingHandler(ErrorStatus.MATCHING_STATUS_BAD_REQUEST);
+            }
         }
+
     }
 
     /**
@@ -412,13 +414,18 @@ public class MatchingService {
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
                 member, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
-        matchingRecord.updateStatus(status);
+        if(matchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+            matchingRecord.updateStatus(status);
+        }
 
         // targetMember의 매칭 기록 상태 변경
         MatchingRecord targetMatchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
                 targetMember, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
-        targetMatchingRecord.updateStatus(status);
+
+        if(targetMatchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+            targetMatchingRecord.updateStatus(status);
+        }
     }
 
     /**
