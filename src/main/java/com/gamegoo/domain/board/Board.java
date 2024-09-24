@@ -42,6 +42,9 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "board_profile_image")
     private Integer boardProfileImage;
 
+    @Column(name = "deleted")
+    private Boolean deleted = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;

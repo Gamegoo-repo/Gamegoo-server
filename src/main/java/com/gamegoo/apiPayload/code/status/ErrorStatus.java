@@ -97,6 +97,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 게시판 글 삭제 관련 에러
     BOARD_DELETE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 삭제 가능합니다."),
+    BOARD_DELETED(HttpStatus.NOT_FOUND, "BOARD404", "해당 글은 삭제된 글입니다."),
 
     // 매너평가 관련 에러
     MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
