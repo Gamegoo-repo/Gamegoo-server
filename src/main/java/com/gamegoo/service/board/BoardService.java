@@ -308,6 +308,10 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
+        if(board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
+        }
+
         Member poster = board.getMember();
 
         List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
@@ -353,6 +357,10 @@ public class BoardService {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        if (board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
+        }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));

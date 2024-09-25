@@ -11,6 +11,7 @@ import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.repository.board.BoardRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
@@ -34,6 +35,7 @@ public class ProfileService {
     private final FriendRepository friendRepository;
     private final FriendRequestsRepository friendRequestsRepository;
     private final MemberChatroomRepository memberChatroomRepository;
+    private final BoardRepository boardRepository;
     private final AuthService authService;
 
     /**
@@ -117,6 +119,9 @@ public class ProfileService {
             member, FriendRequestStatus.PENDING);
         receivedFriendRequestsList.forEach(
             friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+
+        // 게시판 글 삭제 처리 (deleted = true)
+        boardRepository.deleteByMemberId(member.getId());
 
         // refresh token 삭제하기
         authService.deleteRefreshToken(userId);
