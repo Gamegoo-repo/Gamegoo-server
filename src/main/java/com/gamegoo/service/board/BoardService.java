@@ -143,6 +143,11 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.BOARD_UNAUTHORIZED);
         }
 
+        // 삭제된 게시글인지 검증.
+        if(board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
+        }
+
         // 게임 모드 값 검증. (1 ~ 4 값만 가능)
         if (request.getGameMode() < 1 || request.getGameMode() > 4) {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
@@ -430,7 +435,7 @@ public class BoardService {
         Pageable pageable = PageRequest.of(pageIdx - 1, 10,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<Board> boards = boardRepository.findByMemberId(memberId, pageable).getContent();
+        List<Board> boards = boardRepository.findByMemberIdAndDeletedFalse(memberId, pageable).getContent();
 
         return boards.stream().map(board -> {
             Member member = board.getMember();

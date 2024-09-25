@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board,Long>{
-    Page<Board> findByMemberId(Long memberId, Pageable pageable);
+    Page<Board> findByMemberIdAndDeletedFalse(Long memberId, Pageable pageable);
 
     @Query("SELECT b From Board b JOIN b.member m WHERE" +
             "(b.deleted = false) AND " +
