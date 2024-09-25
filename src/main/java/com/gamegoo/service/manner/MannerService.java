@@ -816,22 +816,14 @@ public class MannerService {
         if (member.getMannerScore()==null){
             return null;
         } else {
-            // repository에서 매너점수가 null이 아니고, 탈퇴하지 않은 회원만 가져오기
-            List<Member> members = memberRepository.findByMannerScoreIsNotNullAndBlindFalse();
+            // repository에서 탈퇴하지 않은 회원 중에서 매너점수가 null이 아닌 회원만 가져오기
+            long countMembersWithMannerScore = memberRepository.countByMannerScoreIsNotNullAndBlindFalse();
 
-            // 매너 점수 추출
-            List<Integer> filteredMannerScores = members.stream()
-                    .map(Member::getMannerScore)
-                    .collect(Collectors.toList());
-
-            // 전체 매너점수를 정렬
-            List<Integer> sortedMannerScores = filteredMannerScores.stream()
-                    .sorted(Collections.reverseOrder())
-                    .collect(Collectors.toList());
+            // repository에서 탈퇴하지 않은 회원 중에서 매너점수가 내 매너점수보다 큰 회원 수 조회
+            long countHigherMannerScores = memberRepository.countByMannerScoreGreaterThanAndBlindFalse(member.getMannerScore());
 
             // 특정 회원의 매너점수가 상위 몇 %인지 계산
-            int index = sortedMannerScores.indexOf(member.getMannerScore());
-            double mannerRank = ((double) (index + 1) / sortedMannerScores.size()) * 100;
+            double mannerRank = ((double) countHigherMannerScores / countMembersWithMannerScore) * 100;
 
             return mannerRank;
         }
