@@ -113,6 +113,9 @@ public class BoardService {
                 .build();
 
         board.setMember(member);
+
+        board.setDeleted(false);
+        
         Board saveBoard = boardRepository.save(board);
 
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
@@ -246,7 +249,9 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.BOARD_DELETE_UNAUTHORIZED);
         }
 
-        boardRepository.delete(board);
+        board.setDeleted(true);
+
+        boardRepository.save(board);
     }
 
 
