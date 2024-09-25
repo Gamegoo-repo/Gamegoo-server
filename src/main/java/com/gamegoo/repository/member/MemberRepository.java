@@ -28,5 +28,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query("SELECT m.mannerScore FROM Member m")
     List<Integer> findAllMannerScores();
 
-    List<Member> findByMannerScoreIsNotNullAndBlindFalse();
+    long countByMannerScoreIsNotNullAndBlindFalse();
+
+    long countByMannerScoreGreaterThanAndBlindFalse(Integer mannerScore);
+
 }
