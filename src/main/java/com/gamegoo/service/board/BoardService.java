@@ -110,9 +110,11 @@ public class BoardService {
                 .boardGameStyles(new ArrayList<>())
                 .content(request.getContents())
                 .boardProfileImage(boardProfileImage)
+                .deleted(false)
                 .build();
 
         board.setMember(member);
+
         Board saveBoard = boardRepository.save(board);
 
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
@@ -138,6 +140,11 @@ public class BoardService {
         // 게시글 작성자가 맞는지 검증.
         if (!board.getMember().getId().equals(memberId)) {
             throw new BoardHandler(ErrorStatus.BOARD_UNAUTHORIZED);
+        }
+
+        // 삭제된 게시글인지 검증.
+        if(board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
         }
 
         // 게임 모드 값 검증. (1 ~ 4 값만 가능)
@@ -246,7 +253,9 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.BOARD_DELETE_UNAUTHORIZED);
         }
 
-        boardRepository.delete(board);
+        board.setDeleted(true);
+
+        boardRepository.save(board);
     }
 
 
@@ -308,6 +317,10 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
 
+        if(board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
+        }
+
         Member poster = board.getMember();
 
         List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
@@ -353,6 +366,10 @@ public class BoardService {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardHandler(ErrorStatus.BOARD_NOT_FOUND));
+
+        if (board.getDeleted()){
+            throw new BoardHandler(ErrorStatus.BOARD_DELETED);
+        }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
@@ -417,7 +434,7 @@ public class BoardService {
         Pageable pageable = PageRequest.of(pageIdx - 1, 10,
                 Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        List<Board> boards = boardRepository.findByMemberId(memberId, pageable).getContent();
+        List<Board> boards = boardRepository.findByMemberIdAndDeletedFalse(memberId, pageable).getContent();
 
         return boards.stream().map(board -> {
             Member member = board.getMember();

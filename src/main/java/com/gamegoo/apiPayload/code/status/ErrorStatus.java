@@ -34,7 +34,7 @@ public enum ErrorStatus implements BaseErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "JWT400", "jwt 토큰이 만료되었습니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "JWT401", "유효하지 않은 jwt 토큰입니다."),
     TOKEN_NULL(HttpStatus.NOT_FOUND, "JWT402", "JWT 토큰이 없습니다."),
-
+    REFRESHTOKEN_NULL(HttpStatus.NOT_FOUND,"JWT403","Refresh Token이 없습니다."),
     // GameStyle 관련 에러
     GAMESTYLE_NOT_FOUND(HttpStatus.NOT_FOUND, "GAMESTYLE400", "해당 게임 스타일을 찾을 수 없습니다."),
 
@@ -50,11 +50,12 @@ public enum ErrorStatus implements BaseErrorCode {
     // 매칭 관련 에러
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
         "status는 SUCCESS, FAIL 둘 중 하나로만 변경이 가능합니다."),
-    MATHCING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH401",
+    MATCHING_TYPE_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH401",
         "matchingType은 BASIC, PRECISE 둘 중 하나여야합니다."),
     MATCHING_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH402", "해당 사용자의 매칭 정보가 없습니다."),
     MATCHING_FAILED_BY_BLOCK(HttpStatus.BAD_REQUEST, "MATCH403", "차단된 사용자끼리의 매칭은 불가능합니다."),
     MATCHING_POSITION_NOT_FOUND(HttpStatus.NOT_FOUND, "MATCH404", "포지션 정보가 없습니다."),
+    MATCHING_STATUS_ONLY_PENDING(HttpStatus.BAD_REQUEST,"MATCH405", "매칭 status는 무조건 pending 상태에서만 변경이 가능합니다"),
 
     // Riot 관련 에러
     RIOT_NOT_FOUND(HttpStatus.NOT_FOUND, "RIOT404", "해당 Riot 계정이 존재하지 않습니다."),
@@ -96,6 +97,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
     // 게시판 글 삭제 관련 에러
     BOARD_DELETE_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "BOARD401", "글 작성자만 삭제 가능합니다."),
+    BOARD_DELETED(HttpStatus.NOT_FOUND, "BOARD404", "해당 글은 삭제된 글입니다."),
 
     // 매너평가 관련 에러
     MANNER_TARGET_MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER401", "매너 평가 대상 회원을 찾을 수 없습니다."),
