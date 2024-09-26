@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board,Long>{
-    Page<Board> findByMemberId(Long memberId, Pageable pageable);
+    Page<Board> findByMemberIdAndDeletedFalse(Long memberId, Pageable pageable);
 
     @Query("SELECT b From Board b JOIN b.member m WHERE" +
             "(b.deleted = false) AND " +
@@ -33,5 +33,4 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
     @Query("UPDATE Board b SET b.deleted = true WHERE b.member.id = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
 
-    Optional<Board> findByIdAndDeletedFalse(@Param("boardId") Long boardId);
 }
