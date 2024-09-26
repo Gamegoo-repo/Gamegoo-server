@@ -104,6 +104,31 @@ public class MemberResponse {
         List<GameStyleResponseDTO> gameStyleResponseDTOList;
         List<ChampionResponseDTO> championResponseDTOList;
     }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myProfileDTO {
+        Long id;
+        Integer profileImg;
+        Boolean mike;
+        String email;
+        String gameName;
+        String tag;
+        Tier tier;
+        Integer rank;
+        Double mannerRank;
+        Integer mannerLevel;
+        String updatedAt;
+        Integer mainP;
+        Integer subP;
+        Boolean isAgree;
+        Boolean isBlind;
+        String loginType;
+        Double winrate;
+        List<GameStyleResponseDTO> gameStyleResponseDTOList;
+        List<ChampionResponseDTO> championResponseDTOList;
+    }
 
     @Builder
     @Getter
@@ -119,7 +144,8 @@ public class MemberResponse {
         String tag;
         Tier tier;
         Integer rank;
-        Integer manner;
+        Integer mannerLevel;
+        Double mannerRank;
         String updatedAt;
         Integer mainP;
         Integer subP;

@@ -6,6 +6,7 @@ import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberRequest;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.service.manner.MannerService;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.util.JWTUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final MannerService mannerService;
 
     @PutMapping("/gamestyle")
     @Operation(summary = "gamestyle 추가 및 수정 API 입니다.", description = "API for Gamestyle addition and modification ")
@@ -85,12 +87,15 @@ public class ProfileController {
 
     @Operation(summary = "내 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member with jwt")
     @GetMapping("/profile")
-    public ApiResponse<MemberResponse.myProfileMemberDTO> getMemberJWT() {
+    public ApiResponse<MemberResponse.myProfileDTO> getMemberJWT() {
         Long memberId = JWTUtil.getCurrentUserId();
 
         Member myProfile = profileService.findMember(memberId);
 
-        return ApiResponse.onSuccess(MemberConverter.toMyProfileDTO(myProfile));
+        Double mannerScoreRank = mannerService.getMannerScoreRank(memberId);
+
+        return ApiResponse.onSuccess(
+                MemberConverter.profileDTO(myProfile, mannerScoreRank));
     }
 
     @Operation(summary = "다른 회원 프로필 조회 API 입니다. (jwt 토큰 O)", description = "API for looking up member")
@@ -99,8 +104,10 @@ public class ProfileController {
         @RequestParam("id") Long targetMemberId) {
         Long memberId = JWTUtil.getCurrentUserId();
 
+        Double mannerScoreRank = mannerService.getMannerScoreRank(targetMemberId);
+
         return ApiResponse.onSuccess(
-            profileService.getTargetMemberProfile(memberId, targetMemberId));
+            profileService.getTargetMemberProfile(memberId, targetMemberId, mannerScoreRank));
     }
 
 }

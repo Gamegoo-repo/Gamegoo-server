@@ -17,13 +17,8 @@ import com.gamegoo.repository.manner.MannerRatingRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.repository.notification.NotificationRepository;
 import com.gamegoo.service.notification.NotificationService;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -115,7 +110,10 @@ public class MannerService {
             mannerKeywordString, null, targetMember);
 
         // 매너점수 산정.
-        int mannerScore = updateMannerScore(targetMember);
+        Integer mannerScore = updateMannerScore(targetMember);
+
+        // 매너점수 반영.
+        targetMember.setMannerScore(mannerScore);
 
         // 매너레벨 결정.
         Integer mannerLevel = mannerLevel(mannerScore);
@@ -213,7 +211,10 @@ public class MannerService {
         notificationRepository.save(ratedNotification);
 
         // 매너점수 산정.
-        int mannerScore = updateMannerScore(targetMember);
+        Integer mannerScore = updateMannerScore(targetMember);
+
+        // 매너점수 반영.
+        targetMember.setMannerScore(mannerScore);
 
         // 매너레벨 결정.
         Integer mannerLevel = mannerLevel(mannerScore);
@@ -304,7 +305,10 @@ public class MannerService {
             }
 
             // 매너점수 산정.
-            int mannerScore = updateMannerScore(targetMember);
+            Integer mannerScore = updateMannerScore(targetMember);
+
+            // 매너점수 반영.
+            targetMember.setMannerScore(mannerScore);
 
             // 매너레벨 결정.
             Integer mannerLevel = mannerLevel(mannerScore);
@@ -384,7 +388,10 @@ public class MannerService {
             }
 
             // 매너점수 산정.
-            int mannerScore = updateMannerScore(targetMember);
+            Integer mannerScore = updateMannerScore(targetMember);
+
+            // 매너점수 반영.
+            targetMember.setMannerScore(mannerScore);
 
             // 매너레벨 결정.
             Integer mannerLevel = mannerLevel(mannerScore);
@@ -416,9 +423,9 @@ public class MannerService {
     private int updateMannerScore(Member targetMember) {
 
         // 매너평가 ID 조회
-        List<MannerRating> mannerRatings = targetMember.getMannerRatingList();
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByToMemberId(targetMember.getId());
 
-        int totalCount;
+        int totalCount = 0;
 
         // 매너 평가 + 비매너 평가를 처음 받은 회원
         if (mannerRatings.size() == 1) {
@@ -578,6 +585,9 @@ public class MannerService {
         // 매너평가 ID 조회
         List<MannerRating> mannerRatings = member.getMannerRatingList();
 
+        // 매너평가 점수
+        Integer mannerScore = member.getMannerScore();
+
         // 매너키워드 조회
         List<MannerRating> positiveMannerRatings = mannerRatings.stream()
             .filter(MannerRating::getIsPositive)
@@ -643,9 +653,14 @@ public class MannerService {
             mannerKeywordDTOs);
 
         Integer mannerLevel = member.getMannerLevel();
+
+        Double mannerRank=getMannerScoreRank(member.getId());
+
         return MannerResponse.myMannerResponseDTO.builder()
             .mannerLevel(mannerLevel)
             .mannerKeywords(mannerKeywords)
+            .mannerScore(mannerScore)
+            .mannerRank(mannerRank)
             .build();
     }
 
@@ -791,4 +806,32 @@ public class MannerService {
             return contents;
         }
     }
+
+    // 회원의 매너점수가 전체 회원 중 상위 몇 퍼센트에 위치하는지 계산
+    public Double getMannerScoreRank(Long memberId) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        if (member.getMannerScore()==null){
+            return null;
+        } else {
+            // repository에서 탈퇴하지 않은 회원 중에서 매너점수가 null이 아닌 회원만 가져오기
+            long countMembersWithMannerScore = memberRepository.countByMannerScoreIsNotNullAndBlindFalse();
+
+            // repository에서 탈퇴하지 않은 회원 중에서 매너점수가 내 매너점수보다 큰 회원 수 조회
+            long countHigherMannerScores = memberRepository.countByMannerScoreGreaterThanAndBlindFalse(member.getMannerScore());
+
+            // 계산 불가
+            if (countMembersWithMannerScore == 0){
+                throw new MannerHandler(ErrorStatus.MANNER_RANK_FAILED_MANNER_SCORE_NOT_FOUND);
+            }
+
+            // 특정 회원의 매너점수가 상위 몇 %인지 계산
+            double mannerRank = ((double) countHigherMannerScores / countMembersWithMannerScore) * 100;
+
+            return mannerRank;
+        }
+    }
+
 }

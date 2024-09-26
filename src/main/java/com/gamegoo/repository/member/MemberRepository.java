@@ -24,4 +24,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findAllByIdBetween(Long startId, Long endId);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT m.mannerScore FROM Member m")
+    List<Integer> findAllMannerScores();
+
+    long countByMannerScoreIsNotNullAndBlindFalse();
+
+    long countByMannerScoreGreaterThanAndBlindFalse(Integer mannerScore);
+
 }
