@@ -110,12 +110,11 @@ public class BoardService {
                 .boardGameStyles(new ArrayList<>())
                 .content(request.getContents())
                 .boardProfileImage(boardProfileImage)
+                .deleted(false)
                 .build();
 
         board.setMember(member);
 
-        board.setDeleted(false);
-        
         Board saveBoard = boardRepository.save(board);
 
         // BoardGameStyle 엔티티 생성 및 연관관계 매핑.
