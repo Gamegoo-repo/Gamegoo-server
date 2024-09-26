@@ -36,7 +36,7 @@ public class SchedulerService {
         log.info("scheduler start");
 
         // 매칭 성공 1분이 경과된 matchingRecord 엔티티 조회 (실제로는 60분으로 해야함)
-        LocalDateTime updatedTime = LocalDateTime.now().plusSeconds(MANNER_MESSAGE_TIME);
+        LocalDateTime updatedTime = LocalDateTime.now().minusSeconds(MANNER_MESSAGE_TIME);
         List<MatchingRecord> matchingRecordList = matchingRecordRepository.findByStatusAndMannerMessageSentAndUpdatedAtBefore(
             MatchingStatus.SUCCESS, false, updatedTime);
 
