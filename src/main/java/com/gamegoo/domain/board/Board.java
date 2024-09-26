@@ -42,7 +42,7 @@ public class Board extends BaseDateTimeEntity {
     @Column(name = "board_profile_image")
     private Integer boardProfileImage;
 
-    @Column(name = "deleted")
+    @Column(name = "deleted", nullable = false)
     private Boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -76,6 +76,10 @@ public class Board extends BaseDateTimeEntity {
     public void removeBoardGameStyle(BoardGameStyle boardGameStyle) {
         this.boardGameStyles.remove(boardGameStyle);
         boardGameStyle.setBoard(null);
+    }
+
+    public void setDeleted(Boolean deleted){
+        this.deleted = deleted;
     }
 }
 
