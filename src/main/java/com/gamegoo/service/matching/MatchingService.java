@@ -342,6 +342,7 @@ public class MatchingService {
             .mannerLevel(member.getMannerLevel())
             .member(member)
             .targetMember(null)
+            .mannerMessageSent(false)
             .build();
 
         // 매칭 기록에 따라 member 정보 변경하기
