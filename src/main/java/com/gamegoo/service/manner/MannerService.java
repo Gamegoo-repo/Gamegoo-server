@@ -822,6 +822,11 @@ public class MannerService {
             // repository에서 탈퇴하지 않은 회원 중에서 매너점수가 내 매너점수보다 큰 회원 수 조회
             long countHigherMannerScores = memberRepository.countByMannerScoreGreaterThanAndBlindFalse(member.getMannerScore());
 
+            // 계산 불가
+            if (countMembersWithMannerScore == 0){
+                throw new MannerHandler(ErrorStatus.MANNER_RANK_FAILED_MANNER_SCORE_NOT_FOUND);
+            }
+
             // 특정 회원의 매너점수가 상위 몇 %인지 계산
             double mannerRank = ((double) countHigherMannerScores / countMembersWithMannerScore) * 100;
 

@@ -110,6 +110,7 @@ public enum ErrorStatus implements BaseErrorCode {
     MANNER_KEYWORD_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너 키워드를 찾을 수 없습니다."),
     MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 매너평가를 찾을 수 없습니다."),
     BAD_MANNER_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "해당 비매너평가를 찾을 수 없습니다."),
+    MANNER_RANK_FAILED_MANNER_SCORE_NOT_FOUND(HttpStatus.NOT_FOUND, "MANNER404", "매너점수를 가진 회원이 존재하지 않습니다. 계산이 불가합니다"),
     MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "매너 평가는 최초 1회만 가능합니다."),
     BAD_MANNER_CONFLICT(HttpStatus.CONFLICT, "MANNER409", "비매너 평가는 최초 1회만 가능합니다."),
     MANNER_INSERT_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MANNER410", "잘못된 매너평가 등록 요청입니다."),
