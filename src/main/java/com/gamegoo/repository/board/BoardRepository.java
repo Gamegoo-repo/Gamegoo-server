@@ -33,5 +33,4 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
     @Query("UPDATE Board b SET b.deleted = true WHERE b.member.id = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
 
-    Optional<Board> findByIdAndDeletedFalse(@Param("boardId") Long boardId);
 }
