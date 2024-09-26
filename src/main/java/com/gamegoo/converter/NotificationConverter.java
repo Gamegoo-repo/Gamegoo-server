@@ -45,14 +45,18 @@ public class NotificationConverter {
         String pageUrl = null;
 
         if (notification.getNotificationType().getSourceUrl() != null) {
+
             StringBuilder urlBuilder = new StringBuilder(
                 notification.getNotificationType().getSourceUrl());
 
-            if (notification.getSourceMember() != null) {
-                urlBuilder.append(notification.getSourceMember().getId());
+            if (notification.getSourceMember() != null) { // sourceMember가 존재하는 경우
+                if (!notification.getSourceMember().getBlind()) { // 해당 sourceMember가 탈퇴한 회원이 아닌 경우
+                    urlBuilder.append(notification.getSourceMember().getId());
+                    pageUrl = urlBuilder.toString();
+
+                }
             }
 
-            pageUrl = urlBuilder.toString();
         }
 
         String content = notification.getContent();

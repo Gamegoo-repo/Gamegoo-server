@@ -19,7 +19,6 @@ import com.gamegoo.repository.chat.ChatRepository;
 import com.gamegoo.repository.chat.ChatroomRepository;
 import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.member.MemberRepository;
-import com.gamegoo.service.board.BoardService;
 import com.gamegoo.service.member.FriendService;
 import com.gamegoo.service.member.ProfileService;
 import com.gamegoo.service.socket.SocketService;
@@ -41,7 +40,6 @@ public class ChatCommandService {
     private final ProfileService profileService;
     private final FriendService friendService;
     private final SocketService socketService;
-    private final BoardService boardService;
     private final MemberRepository memberRepository;
     private final MemberChatroomRepository memberChatroomRepository;
     private final ChatroomRepository chatroomRepository;
@@ -349,7 +347,6 @@ public class ChatCommandService {
 
     }
 
-
     /* private 메소드 */
 
     /**
@@ -518,7 +515,7 @@ public class ChatCommandService {
      * @param sourceBoard
      * @return
      */
-    private Chat createAndSaveSystemChat(Chatroom chatroom, Member toMember,
+    public Chat createAndSaveSystemChat(Chatroom chatroom, Member toMember,
         String content, Board sourceBoard) {
         Member systemMember = profileService.findSystemMember();
 

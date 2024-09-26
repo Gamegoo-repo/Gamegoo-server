@@ -3,12 +3,16 @@ package com.gamegoo.service.member;
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
 import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.converter.MemberConverter;
+import com.gamegoo.domain.chat.MemberChatroom;
 import com.gamegoo.domain.friend.Friend;
 import com.gamegoo.domain.friend.FriendRequestStatus;
+import com.gamegoo.domain.friend.FriendRequests;
 import com.gamegoo.domain.gamestyle.GameStyle;
 import com.gamegoo.domain.gamestyle.MemberGameStyle;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
+import com.gamegoo.repository.board.BoardRepository;
+import com.gamegoo.repository.chat.MemberChatroomRepository;
 import com.gamegoo.repository.friend.FriendRepository;
 import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
@@ -28,9 +32,11 @@ public class ProfileService {
     private final MemberRepository memberRepository;
     private final GameStyleRepository gameStyleRepository;
     private final MemberGameStyleRepository memberGameStyleRepository;
-
     private final FriendRepository friendRepository;
     private final FriendRequestsRepository friendRequestsRepository;
+    private final MemberChatroomRepository memberChatroomRepository;
+    private final BoardRepository boardRepository;
+    private final AuthService authService;
 
     /**
      * MemberGameStyle 데이터 추가 : 회원에 따른 게임 스타일 정보 저장하기
@@ -94,6 +100,31 @@ public class ProfileService {
 
         // Blind 처리
         member.deactiveMember();
+
+        // 해당 회원이 속한 모든 채팅방에서 퇴장 처리
+        List<MemberChatroom> allActiveMemberChatroom = memberChatroomRepository.findAllActiveMemberChatroom(
+            member.getId());
+        allActiveMemberChatroom.forEach(memberChatroom -> {
+            memberChatroom.updateLastJoinDate(null);
+        });
+
+        // 해당 회원이 보낸 모든 친구 요청 취소 처리
+        List<FriendRequests> sendFriendRequestsList = friendRequestsRepository.findAllByFromMemberAndStatus(
+            member, FriendRequestStatus.PENDING);
+        sendFriendRequestsList.forEach(
+            friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+
+        // 해당 회원이 받은 모든 친구 요청 취소 처리
+        List<FriendRequests> receivedFriendRequestsList = friendRequestsRepository.findAllByToMemberAndStatus(
+            member, FriendRequestStatus.PENDING);
+        receivedFriendRequestsList.forEach(
+            friendRequests -> friendRequests.updateStatus(FriendRequestStatus.CANCELLED));
+
+        // 게시판 글 삭제 처리 (deleted = true)
+        boardRepository.deleteByMemberId(member.getId());
+
+        // refresh token 삭제하기
+        authService.deleteRefreshToken(userId);
 
         memberRepository.save(member);
     }

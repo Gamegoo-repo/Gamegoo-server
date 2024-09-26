@@ -42,7 +42,7 @@ public class AuthController {
     @PostMapping("/email/send/join")
     @Operation(summary = "회원가입용 이메일 인증코드 전송 API 입니다. 중복확인 포함", description = "API for sending email for join")
     public ApiResponse<String> sendEmailwithCheckDuplication(
-            @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
+            @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
         authService.sendEmail(email, true);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
@@ -51,7 +51,7 @@ public class AuthController {
     @PostMapping("/email/send")
     @Operation(summary = "이메일 인증코드 전송 API 입니다. 중복확인 X", description = "API for sending email")
     public ApiResponse<String> sendEmail(
-            @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
+            @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
         authService.sendEmail(email, false);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
@@ -60,7 +60,7 @@ public class AuthController {
     @PostMapping("/email/verify")
     @Operation(summary = "이메일 인증코드 검증 API 입니다.", description = "API for email verification")
     public ApiResponse<String> verifyEmail(
-            @RequestBody MemberRequest.EmailCodeRequestDTO emailCodeRequestDTO) {
+            @Valid @RequestBody MemberRequest.EmailCodeRequestDTO emailCodeRequestDTO) {
         String email = emailCodeRequestDTO.getEmail();
         String code = emailCodeRequestDTO.getCode();
         authService.verifyEmail(email, code);
@@ -84,7 +84,7 @@ public class AuthController {
     @Operation(summary = "logout API 입니다.", description = "API for logout")
     public ApiResponse<String> logoutMember() {
         Long memberId = JWTUtil.getCurrentUserId();
-        authService.logoutMember(memberId);
+        authService.deleteRefreshToken(memberId);
 
         return ApiResponse.onSuccess("로그아웃에 성공했습니다");
     }
