@@ -92,6 +92,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://api.gamegoo.co.kr");
         config.addAllowedOrigin("https://socket.gamegoo.co.kr");
+        config.addAllowedOrigin("https://www.gamegoo.co.kr");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
