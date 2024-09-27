@@ -57,12 +57,11 @@ public class ChatConverter {
     public static ChatResponse.SystemMessageDTO toSystemMessageDTO(Chat chat) {
         return ChatResponse.SystemMessageDTO.builder()
             .senderId(chat.getFromMember().getId())
-            .senderName(chat.getFromMember().getGameName())
-            .senderProfileImg(chat.getFromMember().getProfileImage())
             .message(chat.getContents())
             .createdAt(DatetimeUtil.toKSTString(chat.getCreatedAt()))
             .timestamp(chat.getTimestamp())
             .boardId(chat.getSourceBoard() != null ? chat.getSourceBoard().getId() : null)
+            .systemType(chat.getSystemType())
             .build();
     }
 }

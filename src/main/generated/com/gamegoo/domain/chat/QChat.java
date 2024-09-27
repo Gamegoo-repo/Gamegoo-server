@@ -37,6 +37,8 @@ public class QChat extends EntityPathBase<Chat> {
 
     public final com.gamegoo.domain.board.QBoard sourceBoard;
 
+    public final NumberPath<Integer> systemType = createNumber("systemType", Integer.class);
+
     public final NumberPath<Long> timestamp = createNumber("timestamp", Long.class);
 
     public final com.gamegoo.domain.member.QMember toMember;

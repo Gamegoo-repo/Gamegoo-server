@@ -181,8 +181,8 @@ public class ChatCommandService {
                 LocalDateTime.now())); // 기존 채팅방 존재하지 않는 경우, 새로운 채팅방 생성
 
         // 두 회원에게 매칭 시스템 메시지 생성 및 저장
-        createAndSaveSystemChat(chatroom, member1, MATCHING_SYSTEM_MESSAGE, null);
-        createAndSaveSystemChat(chatroom, member2, MATCHING_SYSTEM_MESSAGE, null);
+        createAndSaveSystemChat(chatroom, member1, MATCHING_SYSTEM_MESSAGE, null, 0);
+        createAndSaveSystemChat(chatroom, member2, MATCHING_SYSTEM_MESSAGE, null, 0);
 
         return chatroom.getUuid();
     }
@@ -202,7 +202,7 @@ public class ChatCommandService {
         Chatroom chatroom = chatroomRepository.findByUuid(chatroomUuid)
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
-        MemberChatroom memberChatroom = memberChatroomRepository.findByMemberIdAndChatroomId(
+        memberChatroomRepository.findByMemberIdAndChatroomId(
                 memberId, chatroom.getId())
             .orElseThrow(() -> new ChatHandler(ErrorStatus.CHATROOM_NOT_EXIST));
 
@@ -260,12 +260,12 @@ public class ChatCommandService {
                     : POST_SYSTEM_MESSAGE_TO_MEMBER;
 
             Chat systemChatToMember = createAndSaveSystemChat(chatroom, member, messageContent,
-                board.orElse(null));
+                board.orElse(null), 0);
 
             // targetMember 대상 시스템 메시지 생성
             Chat systemChatToTargetMember = createAndSaveSystemChat(chatroom, targetMember,
                 POST_SYSTEM_MESSAGE_TO_TARGET_MEMBER,
-                board.orElse(null));
+                board.orElse(null), 0);
 
             updateLastJoinDateBySystemChat(memberChatroom, systemChatToMember.getCreatedAt(),
                 systemChatToTargetMember.getCreatedAt());
@@ -516,7 +516,7 @@ public class ChatCommandService {
      * @return
      */
     public Chat createAndSaveSystemChat(Chatroom chatroom, Member toMember,
-        String content, Board sourceBoard) {
+        String content, Board sourceBoard, Integer systemType) {
         Member systemMember = profileService.findSystemMember();
 
         Chat systemChat = Chat.builder()
@@ -525,6 +525,7 @@ public class ChatCommandService {
             .fromMember(systemMember)
             .toMember(toMember)
             .sourceBoard(sourceBoard)
+            .systemType(systemType)
             .build();
 
         return chatRepository.save(systemChat);
