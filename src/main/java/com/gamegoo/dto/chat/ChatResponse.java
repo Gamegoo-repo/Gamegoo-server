@@ -106,6 +106,7 @@ public class ChatResponse {
     @AllArgsConstructor
     public static class SystemMessageDTO extends ChatMessageDTO {
 
+        Integer systemType;
         Long boardId;
     }
 

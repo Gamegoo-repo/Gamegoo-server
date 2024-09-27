@@ -36,7 +36,7 @@ public class SchedulerService {
         log.info("scheduler start");
 
         // 매칭 성공 1분이 경과된 matchingRecord 엔티티 조회 (실제로는 60분으로 해야함)
-        LocalDateTime updatedTime = LocalDateTime.now().plusSeconds(MANNER_MESSAGE_TIME);
+        LocalDateTime updatedTime = LocalDateTime.now().minusSeconds(MANNER_MESSAGE_TIME);
         List<MatchingRecord> matchingRecordList = matchingRecordRepository.findByStatusAndMannerMessageSentAndUpdatedAtBefore(
             MatchingStatus.SUCCESS, false, updatedTime);
 
@@ -48,7 +48,7 @@ public class SchedulerService {
                 chatroom -> {
                     // 시스템 메시지 생성 및 db 저장
                     chatCommandService.createAndSaveSystemChat(
-                        chatroom, matchingRecord.getMember(), MANNER_SYSTEM_MESSAGE, null);
+                        chatroom, matchingRecord.getMember(), MANNER_SYSTEM_MESSAGE, null, 1);
 
                     // 매너 평가 메시지 전송 여부 업데이트
                     matchingRecord.updateMannerMessageSent(true);

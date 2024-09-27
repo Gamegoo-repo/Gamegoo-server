@@ -37,6 +37,8 @@ public class Chat extends BaseDateTimeEntity {
     @Column(nullable = false)
     private Long timestamp;
 
+    private Integer systemType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id", nullable = false)
     private Chatroom chatroom;

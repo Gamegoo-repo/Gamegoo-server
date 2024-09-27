@@ -342,6 +342,7 @@ public class MatchingService {
             .mannerLevel(member.getMannerLevel())
             .member(member)
             .targetMember(null)
+            .mannerMessageSent(false)
             .build();
 
         // 매칭 기록에 따라 member 정보 변경하기
@@ -372,7 +373,8 @@ public class MatchingService {
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
                 member, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
-        if (matchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+        if (matchingRecord.getStatus().equals(MatchingStatus.PENDING) || matchingRecord.getStatus()
+            .equals(MatchingStatus.FOUND)) {
             try {
                 MatchingStatus status = MatchingStatus.valueOf(request.getStatus().toUpperCase());
                 // status 값 변경
@@ -414,7 +416,8 @@ public class MatchingService {
         MatchingRecord matchingRecord = matchingRecordRepository.findFirstByMemberAndGameModeOrderByUpdatedAtDesc(
                 member, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
-        if(matchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+        if (matchingRecord.getStatus().equals(MatchingStatus.PENDING) || matchingRecord.getStatus()
+            .equals(MatchingStatus.FOUND)) {
             matchingRecord.updateStatus(status);
         }
 
@@ -423,7 +426,8 @@ public class MatchingService {
                 targetMember, request.getGameMode())
             .orElseThrow(() -> new MatchingHandler(ErrorStatus.MATCHING_NOT_FOUND));
 
-        if(targetMatchingRecord.getStatus().equals(MatchingStatus.PENDING)) {
+        if (targetMatchingRecord.getStatus().equals(MatchingStatus.PENDING)
+            || targetMatchingRecord.getStatus().equals(MatchingStatus.FOUND)) {
             targetMatchingRecord.updateStatus(status);
         }
     }
