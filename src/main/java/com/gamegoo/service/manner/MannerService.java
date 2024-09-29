@@ -566,6 +566,10 @@ public class MannerService {
 
             MannerRating negativeMannerRating = negativeMannerRatings.get(0);
 
+            if (negativeMannerRating.getMannerRatingKeywordList().isEmpty()){
+                isExist = false;
+            }
+
             List<Long> badMannerKeywordIds = negativeMannerRating.getMannerRatingKeywordList()
                 .stream()
                 .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
