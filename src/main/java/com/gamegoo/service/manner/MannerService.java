@@ -512,6 +512,10 @@ public class MannerService {
 
             MannerRating positiveMannerRating = positiveMannerRatings.get(0);
 
+            if (positiveMannerRating.getMannerRatingKeywordList().isEmpty()){
+                isExist = false;
+            }
+
             List<Long> mannerKeywordIds = positiveMannerRating.getMannerRatingKeywordList().stream()
                 .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
                 .collect(Collectors.toList());
