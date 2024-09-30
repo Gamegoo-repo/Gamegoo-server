@@ -423,11 +423,26 @@ public class BoardService {
 
     // 내가 작성한 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.myBoardListResponseDTO> getMyBoardList(Long memberId, int pageIdx) {
+    public BoardResponse.myBoardResponseDTO getMyBoardList(Long memberId, int pageIdx) {
 
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
+
+        // 내가 작성한 게시판 글 조회
+        List<Board> myBoards = boardRepository.findByMemberIdAndDeletedFalse(memberId);
+
+        // 내가 작성한 총 게시글 수
+        int totalCount = myBoards.size();
+
+        // 총 페이지 수
+        int totalPage;
+
+        if (totalCount == 0) {
+            totalPage = 1;
+        }else{
+            totalPage = (int) Math.ceil((double) totalCount / 10);
         }
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지. 페이지당 표시할 게시물 수 = 10개.
@@ -436,7 +451,7 @@ public class BoardService {
 
         List<Board> boards = boardRepository.findByMemberIdAndDeletedFalse(memberId, pageable).getContent();
 
-        return boards.stream().map(board -> {
+        List<BoardResponse.myBoardListResponseDTO> myBoardList = boards.stream().map(board -> {
             Member member = board.getMember();
 
             return BoardResponse.myBoardListResponseDTO.builder()
@@ -451,6 +466,12 @@ public class BoardService {
                     .createdAt(board.getCreatedAt())
                     .build();
         }).collect(Collectors.toList());
+
+        return BoardResponse.myBoardResponseDTO.builder()
+                .totalPage(totalPage)
+                .totalCount(totalCount)
+                .myBoards(myBoardList)
+                .build();
     }
 
     /**
