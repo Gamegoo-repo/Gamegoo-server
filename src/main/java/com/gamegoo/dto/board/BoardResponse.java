@@ -153,6 +153,17 @@ public class BoardResponse {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class myBoardResponseDTO{
+        Integer totalPage;
+        Integer totalCount;
+        List<myBoardListResponseDTO> myBoards;
+    }
+
+
+    @Getter
+    @Builder
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor

@@ -163,11 +163,11 @@ public class BoardController {
     @GetMapping("/my")
     @Operation(summary = "내가 작성한 게시판 글 목록 조회 API", description = "내가 작성한 게시판 글을 조회하는 API 입니다. 페이지 당 10개의 게시물이 표시됩니다.")
     @Parameter(name = "pageIdx", description = "조회할 페이지 번호를 입력해주세요.")
-    public ApiResponse<List<BoardResponse.myBoardListResponseDTO>> getMyBoardList(@RequestParam(defaultValue = "1") int pageIdx) {
+    public ApiResponse<BoardResponse.myBoardResponseDTO> getMyBoardList(@RequestParam(defaultValue = "1") int pageIdx) {
 
         Long memberId = JWTUtil.getCurrentUserId();
 
-        List<BoardResponse.myBoardListResponseDTO> result = boardService.getMyBoardList(memberId, pageIdx);
+        BoardResponse.myBoardResponseDTO result = boardService.getMyBoardList(memberId, pageIdx);
 
         return ApiResponse.onSuccess(result);
     }
