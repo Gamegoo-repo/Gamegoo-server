@@ -512,10 +512,6 @@ public class MannerService {
 
             MannerRating positiveMannerRating = positiveMannerRatings.get(0);
 
-            if (positiveMannerRating.getMannerRatingKeywordList().isEmpty()){
-                isExist = false;
-            }
-
             List<Long> mannerKeywordIds = positiveMannerRating.getMannerRatingKeywordList().stream()
                 .map(mannerRatingKeyword -> mannerRatingKeyword.getMannerKeyword().getId())
                 .collect(Collectors.toList());
@@ -565,10 +561,6 @@ public class MannerService {
             isExist = true;
 
             MannerRating negativeMannerRating = negativeMannerRatings.get(0);
-
-            if (negativeMannerRating.getMannerRatingKeywordList().isEmpty()){
-                isExist = false;
-            }
 
             List<Long> badMannerKeywordIds = negativeMannerRating.getMannerRatingKeywordList()
                 .stream()
