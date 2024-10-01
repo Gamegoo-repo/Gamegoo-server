@@ -2,15 +2,16 @@ package com.gamegoo.service.notification;
 
 
 import com.gamegoo.apiPayload.code.status.ErrorStatus;
+import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.apiPayload.exception.handler.NotificationHandler;
 import com.gamegoo.apiPayload.exception.handler.PageHandler;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.notification.Notification;
 import com.gamegoo.domain.notification.NotificationType;
 import com.gamegoo.domain.notification.NotificationTypeTitle;
+import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.repository.notification.NotificationRepository;
 import com.gamegoo.repository.notification.NotificationTypeRepository;
-import com.gamegoo.service.member.ProfileService;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ public class NotificationService {
 
     private final NotificationTypeRepository notificationTypeRepository;
     private final NotificationRepository notificationRepository;
-    private final ProfileService profileService;
+    private final MemberRepository memberRepository;
 
     private static final int PAGE_SIZE = 10;
 
@@ -98,7 +99,8 @@ public class NotificationService {
      * @return
      */
     public Slice<Notification> getNotificationListByCursor(Long memberId, Long cursor) {
-        Member member = profileService.findMember(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         return notificationRepository.findNotificationsByCursor(member.getId(),
             cursor);
@@ -113,7 +115,8 @@ public class NotificationService {
      */
     public Page<Notification> getNotificationListByPage(Long memberId,
         Integer pageIdx) {
-        Member member = profileService.findMember(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         if (pageIdx < 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
@@ -133,7 +136,8 @@ public class NotificationService {
      * @return
      */
     public Notification readNotification(Long memberId, Long notificationId) {
-        Member member = profileService.findMember(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 알림 엔티티 조회 및 검증
         Notification notification = notificationRepository.findById(notificationId)
@@ -156,7 +160,8 @@ public class NotificationService {
      * @return
      */
     public long countUnreadNotification(Long memberId) {
-        Member member = profileService.findMember(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         return member.getNotificationList().stream()
             .filter(notification -> !notification.isRead())
