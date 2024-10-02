@@ -419,6 +419,47 @@ public class MannerService {
         }
     }
 
+    //매너,비매너 평가 기록 삭제 처리
+    @Transactional
+    public void deleteMannerRatingsByMemberId(Long memberId) {
+        // 탈퇴한 회원이 남긴 매너,비매너 평가 기록
+        List<MannerRating> mannerRatings = mannerRatingRepository.findByFromMemberId(memberId);
+
+        // 탈퇴한 회원으로부터 매너,비매너 평가를 받은 회원 목록
+        List<Member> toMembers = mannerRatings.stream()
+                .map(MannerRating::getToMember)
+                .distinct()  // 중복된 회원 제거
+                .collect(Collectors.toList());
+
+        // 탈퇴한 회원이 남긴 매너.비매너 평가 삭제
+        mannerRatingRepository.deleteByMemberId(memberId);
+
+        for (Member member : toMembers){
+            // 매너점수 산정.
+            Integer mannerScore = updateMannerScore(member);
+            // 매너점수 반영.
+            member.setMannerScore(mannerScore);
+            // 매너레벨 결정.
+            Integer mannerLevel = mannerLevel(mannerScore);
+            // 매너레벨 상승 알림 전송
+            if (member.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                        NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                        null, member);
+                notificationRepository.save(mannerUpNotification);
+            } else if (member.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                        NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                        null, member);
+                notificationRepository.save(mannerDownNotification);
+            }
+            // 매너레벨 반영.
+            member.setMannerLevel(mannerLevel);
+            // db 저장.
+            memberRepository.save(member);
+        }
+    }
+
     // 매너점수를 산정하고 업데이트.
     private int updateMannerScore(Member targetMember) {
 
@@ -427,8 +468,10 @@ public class MannerService {
 
         int totalCount = 0;
 
-        // 매너 평가 + 비매너 평가를 처음 받은 회원
-        if (mannerRatings.size() == 1) {
+        // 내게 평가를 남긴 회원이 모두 탈퇴하여 매너,비매너 평가 이력이 없어진 경우
+        if (mannerRatings.size() == 0) {
+            totalCount = 0;
+        } else if (mannerRatings.size() == 1) {  // 매너 평가 + 비매너 평가를 처음 받은 회원
             if (mannerRatings.get(0).getIsPositive()) {
                 totalCount = mannerRatings.get(0).getMannerRatingKeywordList().size();
             } else {

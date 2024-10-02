@@ -21,6 +21,8 @@ import com.gamegoo.repository.member.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.gamegoo.service.manner.MannerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +38,7 @@ public class ProfileService {
     private final FriendRequestsRepository friendRequestsRepository;
     private final MemberChatroomRepository memberChatroomRepository;
     private final BoardRepository boardRepository;
+    private final MannerService mannerService;
     private final AuthService authService;
 
     /**
@@ -122,6 +125,9 @@ public class ProfileService {
 
         // 게시판 글 삭제 처리 (deleted = true)
         boardRepository.deleteByMemberId(member.getId());
+
+        // 매너,비매너 평가 기록 삭제 처리
+        mannerService.deleteMannerRatingsByMemberId(member.getId());
 
         // refresh token 삭제하기
         authService.deleteRefreshToken(userId);
