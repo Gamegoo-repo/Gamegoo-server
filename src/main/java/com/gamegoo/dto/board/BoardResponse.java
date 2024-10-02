@@ -69,6 +69,16 @@ public class BoardResponse {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class boardResponseDTO{
+        Integer totalPage;
+        Integer totalCount;
+        List<boardListResponseDTO> boards;
+    }
+
+    @Getter
+    @Builder
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor

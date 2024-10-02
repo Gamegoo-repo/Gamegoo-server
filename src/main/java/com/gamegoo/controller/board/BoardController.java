@@ -122,7 +122,7 @@ public class BoardController {
                 @Parameter(name = "tier", description = "(선택) 티어를 선택해주세요."),
                 @Parameter(name = "mainPosition", description = "(선택) 포지션을 입력해주세요. < 전체: 0, 탑: 1, 정글: 2, 미드: 3, 바텀: 4, 서포터: 5 >"),
                 @Parameter(name = "mike", description = "(선택) 마이크 여부를 선택해주세요.")})
-    public ApiResponse<List<BoardResponse.boardListResponseDTO>> boardList(@RequestParam(defaultValue = "1") int pageIdx,
+    public ApiResponse<BoardResponse.boardResponseDTO> boardList(@RequestParam(defaultValue = "1") int pageIdx,
                                                                            @RequestParam(required = false) Integer mode,
                                                                            @RequestParam(required = false) Tier tier,
                                                                            @RequestParam(required = false) Integer mainPosition,
@@ -134,7 +134,7 @@ public class BoardController {
             mainPosition = null;
         }
 
-        List<BoardResponse.boardListResponseDTO> result = boardService.getBoardList(mode, tier, mainPosition, mike, pageIdx);
+        BoardResponse.boardResponseDTO result = boardService.getBoardList(mode, tier, mainPosition, mike, pageIdx);
         return ApiResponse.onSuccess(result);
     }
 
