@@ -261,12 +261,27 @@ public class BoardService {
 
     // 게시판 글 목록 조회
     @Transactional(readOnly = true)
-    public List<BoardResponse.boardListResponseDTO> getBoardList(Integer mode, Tier tier,
+    public BoardResponse.boardResponseDTO getBoardList(Integer mode, Tier tier,
                                                                  Integer mainPosition, Boolean mike, int pageIdx) {
 
         // pageIdx 값 검증.
         if (pageIdx <= 0) {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
+        }
+
+        // 전체 게시판 글 조회
+        List<Board> totalBoards = boardRepository.findAllByDeletedFalse();
+
+        // 총 게시글 수
+        int totalCount = totalBoards.size();
+
+        // 총 페이지 수
+        int totalPage;
+
+        if (totalCount == 0) {
+            totalPage = 1;
+        }else{
+            totalPage = (int) Math.ceil((double) totalCount / PAGE_SIZE);
         }
 
         // 사용자로부터 받은 pageIdx를 1 감소 -> pageIdx=1 일 때, 1 페이지.
@@ -276,7 +291,7 @@ public class BoardService {
         List<Board> boards = boardRepository.findByFilters(mode, tier, mainPosition, mike, pageable)
                 .getContent();
 
-        return boards.stream().map(board -> {
+        List<BoardResponse.boardListResponseDTO> boardList =  boards.stream().map(board -> {
 
             Member member = board.getMember();
 
@@ -308,6 +323,12 @@ public class BoardService {
                     .build();
 
         }).collect(Collectors.toList());
+
+        return BoardResponse.boardResponseDTO.builder()
+                .totalPage(totalPage)
+                .totalCount(totalCount)
+                .boards(boardList)
+                .build();
     }
 
     // 비회원 게시판 글 조회
