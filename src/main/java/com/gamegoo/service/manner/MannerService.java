@@ -441,6 +441,18 @@ public class MannerService {
             member.setMannerScore(mannerScore);
             // 매너레벨 결정.
             Integer mannerLevel = mannerLevel(mannerScore);
+            // 매너레벨 상승 알림 전송
+            if (member.getMannerLevel() < mannerLevel) {
+                Notification mannerUpNotification = notificationService.createNotification(
+                        NotificationTypeTitle.MANNER_LEVEL_UP, mannerLevel.toString(),
+                        null, member);
+                notificationRepository.save(mannerUpNotification);
+            } else if (member.getMannerLevel() > mannerLevel) { // 매너레벨 하락 알림 전송
+                Notification mannerDownNotification = notificationService.createNotification(
+                        NotificationTypeTitle.MANNER_LEVEL_DOWN, mannerLevel.toString(),
+                        null, member);
+                notificationRepository.save(mannerDownNotification);
+            }
             // 매너레벨 반영.
             member.setMannerLevel(mannerLevel);
             // db 저장.
