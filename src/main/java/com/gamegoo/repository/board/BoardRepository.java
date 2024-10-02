@@ -35,4 +35,5 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
 
     List<Board> findByMemberIdAndDeletedFalse(Long memberId);
 
+    List<Board> findAllByDeletedFalse();
 }
