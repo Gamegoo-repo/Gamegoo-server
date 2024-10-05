@@ -268,8 +268,8 @@ public class BoardService {
             throw new PageHandler(ErrorStatus.PAGE_INVALID);
         }
 
-        // 전체 게시판 글 조회
-        List<Board> totalBoards = boardRepository.findAllByDeletedFalse();
+        // 필터링 된 게시글
+        List<Board> totalBoards = boardRepository.findByFilter(mode, tier, mainPosition, mike);
 
         // 총 게시글 수
         int totalCount = totalBoards.size();
