@@ -22,6 +22,17 @@ public interface BoardRepository extends JpaRepository<Board,Long>{
             "(:tier IS NULL OR m.tier = :tier) AND " +
             "(:mainPosition IS NULL OR b.mainPosition = :mainPosition OR b.subPosition = :mainPosition) AND " +
             "(:mike IS NULL OR b.mike = :mike)")
+    List<Board> findByFilter(@Param("mode") Integer mode,
+                              @Param("tier") Tier tier,
+                              @Param("mainPosition") Integer mainPosition,
+                              @Param("mike") Boolean mike);
+
+    @Query("SELECT b From Board b JOIN b.member m WHERE" +
+            "(b.deleted = false) AND " +
+            "(:mode IS NULL OR b.mode = :mode) AND " +
+            "(:tier IS NULL OR m.tier = :tier) AND " +
+            "(:mainPosition IS NULL OR b.mainPosition = :mainPosition OR b.subPosition = :mainPosition) AND " +
+            "(:mike IS NULL OR b.mike = :mike)")
     Page<Board> findByFilters(@Param("mode") Integer mode,
                               @Param("tier") Tier tier,
                               @Param("mainPosition") Integer mainPosition,
