@@ -47,6 +47,7 @@ public class MemberResponse {
         String refreshToken;
         String name;
         Integer profileImage;
+        Long memberId;
 
     }
 
