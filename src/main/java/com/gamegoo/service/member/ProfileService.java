@@ -52,17 +52,32 @@ public class ProfileService {
     public List<MemberGameStyle> addMemberGameStyles(List<Long> gameStyleIdList, Long memberId) {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        // 요청으로 온 gamestyleId로 GameStyle 엔티티 리스트를 생성 및 gamestyleId에 해당하는 gamestyle이 db에 존재하는지 검증
-        List<GameStyle> requestGameStyleList = gameStyleIdList.stream()
-            .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
-            .toList();
+        // 요청으로 온 gameStyleId로 GameStyle 엔티티 리스트를 생성 및 검증
+        List<GameStyle> requestGameStyleList = new ArrayList<>();
+        if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
+            requestGameStyleList = gameStyleIdList.stream()
+                    .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                            .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
+                    .toList();
+        }
 
-        // db에는 존재하나, request에는 존재하지 않는 gameStyle을 삭제
+        // 현재 DB에 저장된 MemberGameStyle 목록을 가져옴
+        List<MemberGameStyle> currentMemberGameStyleList = new ArrayList<>(member.getMemberGameStyleList());
+
+        // 요청된 gameStyleId가 빈 리스트인 경우, 모든 MemberGameStyle을 삭제
+        if (requestGameStyleList.isEmpty()) {
+            for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
+                memberGameStyle.removeMember(member); // 양방향 연관관계 제거
+                memberGameStyleRepository.delete(memberGameStyle);
+            }
+            return new ArrayList<>(); // 빈 리스트 반환
+        }
+
+        // DB에는 존재하나, 요청에는 없는 gameStyle 삭제
         List<MemberGameStyle> toRemove = new ArrayList<>();
-        for (MemberGameStyle memberGameStyle : member.getMemberGameStyleList()) {
+        for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
             if (!requestGameStyleList.contains(memberGameStyle.getGameStyle())) {
                 toRemove.add(memberGameStyle);
             }
@@ -73,16 +88,16 @@ public class ProfileService {
             memberGameStyleRepository.delete(memberGameStyle);
         }
 
-        // request에는 존재하나, db에는 존재하지 않는 gameStyle을 추가
-        List<GameStyle> currentGameStyleList = member.getMemberGameStyleList().stream()
-            .map(MemberGameStyle::getGameStyle)
-            .toList();
+        // 요청에는 있으나, DB에 없는 gameStyle 추가
+        List<GameStyle> currentGameStyleList = currentMemberGameStyleList.stream()
+                .map(MemberGameStyle::getGameStyle)
+                .toList();
 
         for (GameStyle reqGameStyle : requestGameStyleList) {
             if (!currentGameStyleList.contains(reqGameStyle)) {
                 MemberGameStyle memberGameStyle = MemberGameStyle.builder()
-                    .gameStyle(reqGameStyle)
-                    .build();
+                        .gameStyle(reqGameStyle)
+                        .build();
                 memberGameStyle.setMember(member); // 양방향 연관관계 매핑
                 memberGameStyleRepository.save(memberGameStyle);
             }
@@ -90,6 +105,7 @@ public class ProfileService {
 
         return member.getMemberGameStyleList();
     }
+
 
     /**
      * 회원 탈퇴 처리
@@ -107,9 +123,7 @@ public class ProfileService {
         // 해당 회원이 속한 모든 채팅방에서 퇴장 처리
         List<MemberChatroom> allActiveMemberChatroom = memberChatroomRepository.findAllActiveMemberChatroom(
             member.getId());
-        allActiveMemberChatroom.forEach(memberChatroom -> {
-            memberChatroom.updateLastJoinDate(null);
-        });
+        allActiveMemberChatroom.forEach(memberChatroom -> memberChatroom.updateLastJoinDate(null));
 
         // 해당 회원이 보낸 모든 친구 요청 취소 처리
         List<FriendRequests> sendFriendRequestsList = friendRequestsRepository.findAllByFromMemberAndStatus(
