@@ -68,10 +68,13 @@ public class MatchingController {
         // DB에 기록하기
         matchingService.save(request, id);
 
+        System.out.println("SAVE COMPLETED!!!");
+
         // gameStyleList 가져오기
         Member member = profileService.findMember(id);
         List<String> gameStyleList = profileService.getGameStyleList(member);
 
+        System.out.println("GAMESTYLE COMPLETED!!!!!!");
 
         // ApiResponse로 변환하여 반환
         return ApiResponse.onSuccess(MatchingConverter.toPriorityMatchingResponseDTO(
