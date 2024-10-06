@@ -64,6 +64,21 @@ public class MatchingService {
                 .targetMember(null)
                 .build();
 
+        System.out.println("MatchingRecord 정보:");
+        System.out.println("Member: " + myMatchingRecord.getMember());
+        System.out.println("Mike: " + myMatchingRecord.getMike());
+        System.out.println("Rank: " + myMatchingRecord.getRank());
+        System.out.println("Tier: " + myMatchingRecord.getTier());
+        System.out.println("WinRate: " + myMatchingRecord.getWinRate());
+        System.out.println("Status: " + myMatchingRecord.getStatus());
+        System.out.println("MatchingType: " + myMatchingRecord.getMatchingType());
+        System.out.println("MainPosition: " + myMatchingRecord.getMainPosition());
+        System.out.println("SubPosition: " + myMatchingRecord.getSubPosition());
+        System.out.println("WantPosition: " + myMatchingRecord.getWantPosition());
+        System.out.println("MannerLevel: " + myMatchingRecord.getMannerLevel());
+        System.out.println("GameMode: " + myMatchingRecord.getGameMode());
+        System.out.println("TargetMember: " + myMatchingRecord.getTargetMember());
+
         // 우선순위 리스트 초기화
         List<MemberPriority> myPriorityList = new ArrayList<>();
         List<MemberPriority> otherPriorityList = new ArrayList<>();
