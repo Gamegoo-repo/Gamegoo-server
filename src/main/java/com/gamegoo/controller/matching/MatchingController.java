@@ -49,7 +49,8 @@ public class MatchingController {
     public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(
             @RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
-
+        System.out.println("=================================");
+        System.out.println("JWT TOKEN USER ID : "+id);
         // 매칭 타입 유효성 검사
         try {
             MatchingType.valueOf(request.getMatchingType().toUpperCase());
