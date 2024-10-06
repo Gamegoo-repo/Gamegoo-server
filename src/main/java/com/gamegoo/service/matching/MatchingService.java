@@ -85,6 +85,7 @@ public class MatchingService {
 
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
+            System.out.println("MATCH JWT ID : "+otherMemberId);
             if (blockRepository.existsByBlockerMemberAndBlockedMember(member, record.getMember())) {
                 continue;
             }
@@ -101,7 +102,7 @@ public class MatchingService {
         Map<String, List<MemberPriority>> priorityLists = new HashMap<>();
         priorityLists.put("myPriorityList", myPriorityList);
         priorityLists.put("otherPriorityList", otherPriorityList);
-
+        System.out.println("Calculate Finished! ");
         return priorityLists;
     }
 
