@@ -53,7 +53,7 @@ public class ProfileService {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-
+        System.out.println("GAMESTYLE STARTED ID: "+memberId);
         // 요청으로 온 gameStyleId로 GameStyle 엔티티 리스트를 생성 및 검증
         List<GameStyle> requestGameStyleList = new ArrayList<>();
         if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
@@ -62,10 +62,10 @@ public class ProfileService {
                             .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
                     .toList();
         }
-
+        System.out.println("G1 ");
         // 현재 DB에 저장된 MemberGameStyle 목록을 가져옴
         List<MemberGameStyle> currentMemberGameStyleList = new ArrayList<>(member.getMemberGameStyleList());
-
+        System.out.println("G2 : ");
         // 요청된 gameStyleId가 빈 리스트인 경우, 모든 MemberGameStyle을 삭제
         if (requestGameStyleList.isEmpty()) {
             for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
@@ -74,7 +74,7 @@ public class ProfileService {
             }
             return new ArrayList<>(); // 빈 리스트 반환
         }
-
+        System.out.println("G3 : ");
         // DB에는 존재하나, 요청에는 없는 gameStyle 삭제
         List<MemberGameStyle> toRemove = new ArrayList<>();
         for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
@@ -87,6 +87,7 @@ public class ProfileService {
             memberGameStyle.removeMember(member); // 양방향 연관관계 제거
             memberGameStyleRepository.delete(memberGameStyle);
         }
+        System.out.println("G4 : ");
 
         // 요청에는 있으나, DB에 없는 gameStyle 추가
         List<GameStyle> currentGameStyleList = currentMemberGameStyleList.stream()
