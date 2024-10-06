@@ -54,6 +54,16 @@ public class ProfileService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
         System.out.println("GAMESTYLE STARTED ID: "+memberId);
+
+        System.out.println("gameStyleIdList 내용:");
+        if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
+            for (Long id : gameStyleIdList) {
+                System.out.println(id);
+            }
+        } else {
+            System.out.println("gameStyleIdList가 비어있거나 null입니다.");
+        }
+
         // 요청으로 온 gameStyleId로 GameStyle 엔티티 리스트를 생성 및 검증
         List<GameStyle> requestGameStyleList = new ArrayList<>();
         if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
