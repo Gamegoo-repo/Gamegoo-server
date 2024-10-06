@@ -318,9 +318,10 @@ public class MatchingService {
      */
     @Transactional
     public void save(MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
+        System.out.println("SAVE START");
         // 회원 정보 불러오기
         Member member = profileService.findMember(id);
-
+        System.out.println("FIND ID COMPLETE ID: "+member.getId());
         // 매칭 기록 저장
         MatchingRecord matchingRecord = MatchingRecord.builder()
             .mike(request.getMike())
@@ -338,14 +339,14 @@ public class MatchingService {
             .targetMember(null)
             .mannerMessageSent(false)
             .build();
-
+        System.out.println("MAKE RECORD COMPLETE");
         // 매칭 기록에 따라 member 정보 변경하기
         if (request.getMainP() != null && request.getSubP() != null && request.getWantP() != null) {
             member.updateMemberFromMatching(request.getMainP(), request.getSubP(),
                 request.getMike());
         }
-
         profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
+        System.out.println("ADD GAMESTYLE COMPLETED");
 
         matchingRecordRepository.save(matchingRecord);
         memberRepository.save(member);
