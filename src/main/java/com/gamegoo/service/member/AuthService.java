@@ -178,7 +178,7 @@ public class AuthService {
         member.updateRefreshToken(new_refresh_token);
         memberRepository.save(member);
 
-        return new MemberResponse.RefreshTokenResponseDTO(access_token, new_refresh_token);
+        return new MemberResponse.RefreshTokenResponseDTO(id,access_token, new_refresh_token);
     }
 
     /**
