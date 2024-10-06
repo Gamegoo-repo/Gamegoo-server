@@ -42,12 +42,12 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class LoginResponseDTO {
-
+        Long id;
         String accessToken;
         String refreshToken;
         String name;
         Integer profileImage;
-        Long memberId;
+
 
     }
 
@@ -75,7 +75,7 @@ public class MemberResponse {
     @Setter
     @AllArgsConstructor
     public static class RefreshTokenResponseDTO {
-
+        Long id;
         String accessToken;
         String refreshToken;
     }
