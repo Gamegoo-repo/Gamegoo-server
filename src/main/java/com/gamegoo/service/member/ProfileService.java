@@ -219,6 +219,8 @@ public class ProfileService {
         List<Friend> friendList = friendRepository.findBothDirections(member, targetMember);
         boolean isFriend = (friendList.size() == 2);
 
+        Long mannerRatingCount = mannerService.getMannerRatingCount(targetMemberId);
+
         Long friendRequestMemberId = friendRequestsRepository.findByFromMemberAndToMemberAndStatus(
                 member, targetMember,
                 FriendRequestStatus.PENDING)
@@ -230,7 +232,7 @@ public class ProfileService {
 
         return MemberConverter.toMemberProfileDTO(member, targetMember,
             isFriend,
-            friendRequestMemberId, mannerScoreRank);
+            friendRequestMemberId, mannerScoreRank, mannerRatingCount);
     }
 
     /**
