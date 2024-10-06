@@ -1,6 +1,7 @@
 package com.gamegoo.converter;
 
 import com.gamegoo.domain.friend.Friend;
+//import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.dto.member.MemberResponse.friendInfoDTO;

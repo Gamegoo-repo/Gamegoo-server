@@ -17,8 +17,7 @@ import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,47 +36,43 @@ public class MatchingService {
      *
      * @param request
      * @param id
-     * @return
      * @throws MemberHandler
      */
-    public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(
-        MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
+    // 우선순위 계산
+    public Map<String, List<MemberPriority>> calculatePriorityList(
+            MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
 
-        // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
         List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(
-            fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
+                fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
 
         Member member = profileService.findMember(id);
 
-        List<MemberPriority> otherPriorityList = new ArrayList<>();
-        List<MemberPriority> myPriorityList = new ArrayList<>();
-
         MatchingRecord myMatchingRecord = MatchingRecord.builder()
-            .member(member)
-            .mike(request.getMike())
-            .rank(member.getRank())
-            .tier(member.getTier())
-            .winRate(member.getWinRate())
-            .status(MatchingStatus.PENDING)
-            .matchingType(MatchingType.valueOf(request.getMatchingType()))
-            .mainPosition(request.getMainP())
-            .subPosition(request.getSubP())
-            .wantPosition(request.getWantP())
-            .mannerLevel(member.getMannerLevel())
-            .gameMode(request.getGameMode())
-            .targetMember(null)
-            .build();
+                .member(member)
+                .mike(request.getMike())
+                .rank(member.getRank())
+                .tier(member.getTier())
+                .winRate(member.getWinRate())
+                .status(MatchingStatus.PENDING)
+                .matchingType(MatchingType.valueOf(request.getMatchingType()))
+                .mainPosition(request.getMainP())
+                .subPosition(request.getSubP())
+                .wantPosition(request.getWantP())
+                .mannerLevel(member.getMannerLevel())
+                .gameMode(request.getGameMode())
+                .targetMember(null)
+                .build();
 
-        // 우선순위 계산하기
+        // 우선순위 리스트 초기화
+        List<MemberPriority> myPriorityList = new ArrayList<>();
+        List<MemberPriority> otherPriorityList = new ArrayList<>();
+
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
-
-            // 서로 차단한 사용자일 경우 우선순위 계산 X
             if (blockRepository.existsByBlockerMemberAndBlockedMember(member, record.getMember())) {
                 continue;
             }
-
             if (!id.equals(otherMemberId)) {
                 int otherPriority = calculatePriority(myMatchingRecord, record);
                 myPriorityList.add(new MemberPriority(otherMemberId, otherPriority));
@@ -85,33 +80,16 @@ public class MatchingService {
                 int myPriority = calculatePriority(record, myMatchingRecord);
                 otherPriorityList.add(new MemberPriority(record.getMember().getId(), myPriority));
             }
-
-
         }
 
-        // 내 매칭 기록 dto 생성
-        MatchingResponse.matchingRequestResponseDTO myMatchingInfo = matchingRequestResponseDTO.builder()
-            .memberId(member.getId())
-            .gameName(member.getGameName())
-            .tag(member.getTag())
-            .tier(member.getTier())
-            .rank(member.getRank())
-            .mannerLevel(member.getMannerLevel())
-            .profileImg(member.getProfileImage())
-            .gameMode(request.getGameMode())
-            .mainPosition(request.getMainP())
-            .subPosition(request.getSubP())
-            .wantPosition(request.getWantP())
-            .mike(request.getMike())
-            .gameStyleList(profileService.getGameStyleList(member))
-            .build();
+        // 두 리스트를 Map으로 반환
+        Map<String, List<MemberPriority>> priorityLists = new HashMap<>();
+        priorityLists.put("myPriorityList", myPriorityList);
+        priorityLists.put("otherPriorityList", otherPriorityList);
 
-        return MatchingResponse.PriorityMatchingResponseDTO.builder()
-            .myPriorityList(myPriorityList)
-            .otherPriorityList(otherPriorityList)
-            .myMatchingInfo(myMatchingInfo)
-            .build();
+        return priorityLists;
     }
+
 
 
     /**
@@ -350,9 +328,8 @@ public class MatchingService {
             member.updateMemberFromMatching(request.getMainP(), request.getSubP(),
                 request.getMike());
         }
-        if (request.getGameStyleIdList() != null) {
-            profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
-        }
+
+        profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
 
         matchingRecordRepository.save(matchingRecord);
         memberRepository.save(member);
@@ -502,7 +479,6 @@ public class MatchingService {
      *
      * @param memberId
      * @param targetMemberId
-     * @return
      */
     @Transactional
     public void successMatching(Long memberId, Long targetMemberId, Integer gameMode) {
