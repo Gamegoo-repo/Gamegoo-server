@@ -20,27 +20,27 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Component
 public class LogAspect {
 
-    @Pointcut("execution(* com.gamegoo.controller..*.*(..))")
-    public void all() {
-
-    }
+//    @Pointcut("execution(* com.gamegoo.controller..*.*(..))")
+//    public void all() {
+//
+//    }
 
     @Pointcut("execution(* com.gamegoo.controller..*.*(..))")
     public void controller() {
     }
 
-    @Around("all()")
-    public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
-        try {
-            Object result = joinPoint.proceed();
-            return result;
-        } finally {
-            long end = System.currentTimeMillis();
-            long timeinMs = end - start;
-            log.info("{} | time = {}ms", joinPoint.getSignature(), timeinMs);
-        }
-    }
+//    @Around("all()")
+//    public Object logging(ProceedingJoinPoint joinPoint) throws Throwable {
+//        long start = System.currentTimeMillis();
+//        try {
+//            Object result = joinPoint.proceed();
+//            return result;
+//        } finally {
+//            long end = System.currentTimeMillis();
+//            long timeinMs = end - start;
+//            log.info("{} | time = {}ms", joinPoint.getSignature(), timeinMs);
+//        }
+//    }
 
     @Around("controller()")
     public Object loggingBefore(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -57,7 +57,6 @@ public class LogAspect {
             params.put("controller", controllerName);
             params.put("method", methodName);
             params.put("params", getParams(request));
-            params.put("log_time", System.currentTimeMillis());
             params.put("request_uri", decodedURI);
             params.put("http_method", request.getMethod());
             params.put("client_ip", clientIp); // IP 주소 추가
@@ -66,12 +65,17 @@ public class LogAspect {
             log.error("LoggerAspect error", e);
         }
 
-        log.info("[{}] {} | IP: {}", params.get("http_method"), params.get("request_uri"),
-            params.get("client_ip"));
-        log.info("method: {}.{}", params.get("controller"), params.get("method"));
-        log.info("params: {}", params.get("params"));
-
+        long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
+
+        long executionTime = System.currentTimeMillis() - start;
+
+        log.info(
+            "[{}] {} | IP: {} | Controller: {} | Method: {} | Params: {} | Execution Time: {}ms",
+            params.get("http_method"), params.get("request_uri"), params.get("client_ip"),
+            controllerName,
+            methodName, params.get("params"),
+            executionTime);
 
         return result;
     }
