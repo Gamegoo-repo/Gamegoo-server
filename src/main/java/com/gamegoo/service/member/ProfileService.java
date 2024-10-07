@@ -18,17 +18,18 @@ import com.gamegoo.repository.friend.FriendRequestsRepository;
 import com.gamegoo.repository.member.GameStyleRepository;
 import com.gamegoo.repository.member.MemberGameStyleRepository;
 import com.gamegoo.repository.member.MemberRepository;
+import com.gamegoo.service.manner.MannerService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.gamegoo.service.manner.MannerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProfileService {
 
     private final MemberRepository memberRepository;
@@ -52,39 +53,42 @@ public class ProfileService {
     public List<MemberGameStyle> addMemberGameStyles(List<Long> gameStyleIdList, Long memberId) {
         // 회원 엔티티 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
-//        System.out.println("GAMESTYLE STARTED ID: "+memberId);
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        log.info("Started adding game styles for memberId: {}", memberId);
 
-//        System.out.println("gameStyleIdList 내용:");
         if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
-            for (Long id : gameStyleIdList) {
-                System.out.println(id);
-            }
+            log.debug("Received gameStyleIdList for memberId {}: {}", memberId, gameStyleIdList);
         } else {
-            System.out.println("gameStyleIdList가 비어있거나 null입니다.");
+            log.warn("Received empty or null gameStyleIdList for memberId: {}", memberId);
         }
 
         // 요청으로 온 gameStyleId로 GameStyle 엔티티 리스트를 생성 및 검증
         List<GameStyle> requestGameStyleList = new ArrayList<>();
         if (gameStyleIdList != null && !gameStyleIdList.isEmpty()) {
             requestGameStyleList = gameStyleIdList.stream()
-                    .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
-                            .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
-                    .toList();
+                .map(gameStyleId -> gameStyleRepository.findById(gameStyleId)
+                    .orElseThrow(() -> new MemberHandler(ErrorStatus.GAMESTYLE_NOT_FOUND)))
+                .toList();
+            log.debug("Validated and retrieved gameStyleList for memberId {}: {}", memberId,
+                requestGameStyleList);
         }
-//        System.out.println("G1 ");
+
         // 현재 DB에 저장된 MemberGameStyle 목록을 가져옴
-        List<MemberGameStyle> currentMemberGameStyleList = new ArrayList<>(member.getMemberGameStyleList());
-//        System.out.println("G2 : ");
+        List<MemberGameStyle> currentMemberGameStyleList = new ArrayList<>(
+            member.getMemberGameStyleList());
+        log.debug("Fetched current MemberGameStyle list for memberId {}: {}", memberId,
+            currentMemberGameStyleList);
+
         // 요청된 gameStyleId가 빈 리스트인 경우, 모든 MemberGameStyle을 삭제
         if (requestGameStyleList.isEmpty()) {
+            log.info("Removing all game styles for memberId: {}", memberId);
             for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
                 memberGameStyle.removeMember(member); // 양방향 연관관계 제거
                 memberGameStyleRepository.delete(memberGameStyle);
             }
+            log.info("All game styles removed for memberId: {}", memberId);
             return new ArrayList<>(); // 빈 리스트 반환
         }
-//        System.out.println("G3 : ");
         // DB에는 존재하나, 요청에는 없는 gameStyle 삭제
         List<MemberGameStyle> toRemove = new ArrayList<>();
         for (MemberGameStyle memberGameStyle : currentMemberGameStyleList) {
@@ -94,25 +98,30 @@ public class ProfileService {
         }
 
         for (MemberGameStyle memberGameStyle : toRemove) {
+            log.info("Removing game style for memberId: {}, gameStyleId: {}", memberId,
+                memberGameStyle.getGameStyle().getId());
             memberGameStyle.removeMember(member); // 양방향 연관관계 제거
             memberGameStyleRepository.delete(memberGameStyle);
         }
-//        System.out.println("G4 : ");
 
         // 요청에는 있으나, DB에 없는 gameStyle 추가
         List<GameStyle> currentGameStyleList = currentMemberGameStyleList.stream()
-                .map(MemberGameStyle::getGameStyle)
-                .toList();
+            .map(MemberGameStyle::getGameStyle)
+            .toList();
 
         for (GameStyle reqGameStyle : requestGameStyleList) {
             if (!currentGameStyleList.contains(reqGameStyle)) {
+                log.info("Adding new game style for memberId: {}, gameStyleId: {}", memberId,
+                    reqGameStyle.getId());
                 MemberGameStyle memberGameStyle = MemberGameStyle.builder()
-                        .gameStyle(reqGameStyle)
-                        .build();
+                    .gameStyle(reqGameStyle)
+                    .build();
                 memberGameStyle.setMember(member); // 양방향 연관관계 매핑
                 memberGameStyleRepository.save(memberGameStyle);
             }
         }
+
+        log.info("Completed adding game styles for memberId: {}", memberId);
 
         return member.getMemberGameStyleList();
     }

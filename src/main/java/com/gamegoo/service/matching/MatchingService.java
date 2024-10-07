@@ -17,13 +17,18 @@ import com.gamegoo.repository.member.BlockRepository;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchingService {
 
     private final MemberRepository memberRepository;
@@ -40,44 +45,47 @@ public class MatchingService {
      */
     // 우선순위 계산
     public Map<String, List<MemberPriority>> calculatePriorityList(
-            MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
+        MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
 
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        log.info("Fetching matching records from the past 5 minutes");
+
         List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(
-                fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
+            fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
 
         Member member = profileService.findMember(id);
 
         MatchingRecord myMatchingRecord = MatchingRecord.builder()
-                .member(member)
-                .mike(request.getMike())
-                .rank(member.getRank())
-                .tier(member.getTier())
-                .winRate(member.getWinRate())
-                .status(MatchingStatus.PENDING)
-                .matchingType(MatchingType.valueOf(request.getMatchingType()))
-                .mainPosition(request.getMainP())
-                .subPosition(request.getSubP())
-                .wantPosition(request.getWantP())
-                .mannerLevel(member.getMannerLevel())
-                .gameMode(request.getGameMode())
-                .targetMember(null)
-                .build();
+            .member(member)
+            .mike(request.getMike())
+            .rank(member.getRank())
+            .tier(member.getTier())
+            .winRate(member.getWinRate())
+            .status(MatchingStatus.PENDING)
+            .matchingType(MatchingType.valueOf(request.getMatchingType()))
+            .mainPosition(request.getMainP())
+            .subPosition(request.getSubP())
+            .wantPosition(request.getWantP())
+            .mannerLevel(member.getMannerLevel())
+            .gameMode(request.getGameMode())
+            .targetMember(null)
+            .build();
 
-        System.out.println("MatchingRecord 정보:");
-        System.out.println("Member: " + myMatchingRecord.getMember());
-        System.out.println("Mike: " + myMatchingRecord.getMike());
-        System.out.println("Rank: " + myMatchingRecord.getRank());
-        System.out.println("Tier: " + myMatchingRecord.getTier());
-        System.out.println("WinRate: " + myMatchingRecord.getWinRate());
-        System.out.println("Status: " + myMatchingRecord.getStatus());
-        System.out.println("MatchingType: " + myMatchingRecord.getMatchingType());
-        System.out.println("MainPosition: " + myMatchingRecord.getMainPosition());
-        System.out.println("SubPosition: " + myMatchingRecord.getSubPosition());
-        System.out.println("WantPosition: " + myMatchingRecord.getWantPosition());
-        System.out.println("MannerLevel: " + myMatchingRecord.getMannerLevel());
-        System.out.println("GameMode: " + myMatchingRecord.getGameMode());
-        System.out.println("TargetMember: " + myMatchingRecord.getTargetMember());
+        log.debug(
+            "MatchingRecord details: memberId: {}, mike: {}, rank: {}, tier: {}, winRate: {}, status: {}, matchingType: {}, mainPosition: {}, subPosition: {}, wantPosition: {}, mannerLevel: {}, gameMode: {}, targetMember: {}",
+            myMatchingRecord.getMember().getId(),
+            myMatchingRecord.getMike(),
+            myMatchingRecord.getRank(),
+            myMatchingRecord.getTier(),
+            myMatchingRecord.getWinRate(),
+            myMatchingRecord.getStatus(),
+            myMatchingRecord.getMatchingType(),
+            myMatchingRecord.getMainPosition(),
+            myMatchingRecord.getSubPosition(),
+            myMatchingRecord.getWantPosition(),
+            myMatchingRecord.getMannerLevel(),
+            myMatchingRecord.getGameMode(),
+            myMatchingRecord.getTargetMember());
 
         // 우선순위 리스트 초기화
         List<MemberPriority> myPriorityList = new ArrayList<>();
@@ -85,16 +93,21 @@ public class MatchingService {
 
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
-            System.out.println("MATCH JWT ID : "+otherMemberId);
+            log.debug("Evaluating matching record for otherMemberId: {}", otherMemberId);
             if (blockRepository.existsByBlockerMemberAndBlockedMember(member, record.getMember())) {
+                log.debug("Skipping blocked member: otherMemberId: {}", otherMemberId);
                 continue;
             }
             if (!id.equals(otherMemberId)) {
                 int otherPriority = calculatePriority(myMatchingRecord, record);
                 myPriorityList.add(new MemberPriority(otherMemberId, otherPriority));
+                log.info("Added to myPriorityList: otherMemberId: {}, priority: {}", otherMemberId,
+                    otherPriority);
 
                 int myPriority = calculatePriority(record, myMatchingRecord);
                 otherPriorityList.add(new MemberPriority(record.getMember().getId(), myPriority));
+                log.info("Added to otherPriorityList: myMemberId: {}, priority: {}",
+                    record.getMember().getId(), myPriority);
             }
         }
 
@@ -102,10 +115,10 @@ public class MatchingService {
         Map<String, List<MemberPriority>> priorityLists = new HashMap<>();
         priorityLists.put("myPriorityList", myPriorityList);
         priorityLists.put("otherPriorityList", otherPriorityList);
-        System.out.println("Calculate Finished! ");
+        log.info("Priority calculation completed for memberId: {}", id);
+
         return priorityLists;
     }
-
 
 
     /**
@@ -318,10 +331,11 @@ public class MatchingService {
      */
     @Transactional
     public void save(MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
-//        System.out.println("SAVE START");
+        log.info("Starting 'save' process for memberId: {}", id);
+
         // 회원 정보 불러오기
         Member member = profileService.findMember(id);
-//        System.out.println("FIND ID COMPLETE ID: "+member.getId());
+
         // 매칭 기록 저장
         MatchingRecord matchingRecord = MatchingRecord.builder()
             .mike(request.getMike())
@@ -339,17 +353,26 @@ public class MatchingService {
             .targetMember(null)
             .mannerMessageSent(false)
             .build();
-//        System.out.println("MAKE RECORD COMPLETE");
+        log.debug("Matching record created for memberId: {}, gameMode: {}", member.getId(),
+            request.getGameMode());
+
         // 매칭 기록에 따라 member 정보 변경하기
         if (request.getMainP() != null && request.getSubP() != null && request.getWantP() != null) {
             member.updateMemberFromMatching(request.getMainP(), request.getSubP(),
                 request.getMike());
+            log.info("Updated member information based on matching record, memberId: {}",
+                member.getId());
         }
         profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
-//        System.out.println("ADD GAMESTYLE COMPLETED");
+        log.debug("Game styles added for member, memberId: {}", member.getId());
 
         matchingRecordRepository.save(matchingRecord);
+        log.info("Matching record saved successfully for memberId: {}, gameMode: {}",
+            member.getId(), request.getGameMode());
+
         memberRepository.save(member);
+        log.info("Member record updated successfully for memberId: {}", member.getId());
+
     }
 
     /**
