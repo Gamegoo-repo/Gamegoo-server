@@ -1,7 +1,6 @@
 name: Java CICD with Gradle & Docker
 
 on:
-  push:
   pull_request:
     types: [ closed ]
   workflow_dispatch: # 수동 실행 가능

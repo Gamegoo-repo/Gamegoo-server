@@ -49,7 +49,7 @@ public class MatchingController {
     public ApiResponse<MatchingResponse.PriorityMatchingResponseDTO> saveMatching(
             @RequestBody @Valid MatchingRequest.InitializingMatchingRequestDTO request) {
         Long id = JWTUtil.getCurrentUserId();
-        System.out.println("=================================");
+        System.out.println("============MATCHING PRIORITY=============");
         System.out.println("JWT TOKEN USER ID : "+id);
         // 매칭 타입 유효성 검사
         try {
@@ -68,7 +68,7 @@ public class MatchingController {
         // DB에 기록하기
         matchingService.save(request, id);
 
-        System.out.println("SAVE COMPLETED!!!");
+//        System.out.println("SAVE COMPLETED!!!");
 
         // gameStyleList 가져오기
         Member member = profileService.findMember(id);
