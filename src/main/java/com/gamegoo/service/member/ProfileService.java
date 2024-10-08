@@ -121,6 +121,9 @@ public class ProfileService {
             }
         }
 
+        member.updateUpdatedAt();
+        memberRepository.save(member);
+      
         log.info("Completed adding game styles for memberId: {}", memberId);
 
         return member.getMemberGameStyleList();
@@ -201,6 +204,22 @@ public class ProfileService {
             .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updateProfileImage(profileImage);
+
+        memberRepository.save(member);
+    }
+
+    /**
+     * 프로필 이미지 수정
+     *
+     * @param userId
+     * @param isMike
+     */
+    @Transactional
+    public void modifyMike(Long userId, Boolean isMike) {
+        Member member = memberRepository.findById(userId)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.updateMike(isMike);
 
         memberRepository.save(member);
     }

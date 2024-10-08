@@ -12,6 +12,7 @@ import com.gamegoo.domain.report.Report;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,6 +109,15 @@ public class Member extends BaseDateTimeEntity {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<MemberChatroom> memberChatroomList = new ArrayList<>();
+
+    public void updateUpdatedAt() {
+        // 현재 시간을 updatedAt으로 설정
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void updateMike(Boolean isMike){
+        this.mike=isMike;
+    }
 
     public void updatePosition(Integer mainPosition, Integer subPosition) {
         this.mainPosition = mainPosition;
