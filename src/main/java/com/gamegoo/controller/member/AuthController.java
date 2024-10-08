@@ -60,7 +60,7 @@ public class AuthController {
     }
 
     @PostMapping("/email/send/user")
-    @Operation(summary = "이메일 인증코드 전송 API 입니다. 겜구 회원 조회 전용", description = "API for sending email")
+    @Operation(summary = "이메일 인증코드 전송 API 입니다. 겜구 회원 조회 전용", description = "API for sending email for exisiting user")
     public ApiResponse<String> sendEmailforUser(
             @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
