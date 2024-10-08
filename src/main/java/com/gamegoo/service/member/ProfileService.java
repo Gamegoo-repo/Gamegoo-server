@@ -88,6 +88,8 @@ public class ProfileService {
             }
         }
 
+        member.updateUpdatedAt();
+        memberRepository.save(member);
         return member.getMemberGameStyleList();
     }
 
