@@ -15,24 +15,26 @@ import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.util.CodeGeneratorUtil;
 import com.gamegoo.util.JWTUtil;
 import com.gamegoo.util.RiotUtil;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import javax.transaction.Transactional;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
+
     private final MemberRepository memberRepository;
     private final ChampionRepository championRepository;
     private final MemberChampionRepository memberChampionRepository;
@@ -52,7 +54,8 @@ public class AuthService {
      * @return
      */
     @Transactional
-    public Member joinMember(String email, String password, String gameName, String tag, Boolean isAgree) {
+    public Member joinMember(String email, String password, String gameName, String tag,
+        Boolean isAgree) {
 
         // 중복 확인하기
         if (memberRepository.existsByEmail(email)) {
@@ -79,30 +82,28 @@ public class AuthService {
         // 1. Riot 정보 제외 저장
         int randomProfileImage = ThreadLocalRandom.current().nextInt(1, 9);
         Member member = Member.builder()
-                .email(email)
-                .password(bCryptPasswordEncoder.encode(password))
-                .loginType(LoginType.GENERAL)
-                .profileImage(randomProfileImage)
-                .blind(false)
-                .mike(false)
-                .mannerLevel(1)
-                .isAgree(isAgree)
-                .build();
-
+            .email(email)
+            .password(bCryptPasswordEncoder.encode(password))
+            .loginType(LoginType.GENERAL)
+            .profileImage(randomProfileImage)
+            .blind(false)
+            .mike(false)
+            .mannerLevel(1)
+            .isAgree(isAgree)
+            .build();
 
         // 2. tier, rank, winrate 저장
         String encryptedSummonerId = riotUtil.getSummonerId(puuid);
         riotUtil.addTierRankWinRate(member, gameName, encryptedSummonerId, tag);
 
-
         // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
         //    (1) 해당 email을 가진 사용자의 정보가 MemberChampion 테이블에 있을 경우 제거
         if (member.getMemberChampionList() != null) {
             member.getMemberChampionList()
-                    .forEach(memberChampion -> {
-                        memberChampion.removeMember(member); // 양방향 연관관계 제거
-                        memberChampionRepository.delete(memberChampion);
-                    });
+                .forEach(memberChampion -> {
+                    memberChampion.removeMember(member); // 양방향 연관관계 제거
+                    memberChampionRepository.delete(memberChampion);
+                });
 
         }
 
@@ -110,19 +111,18 @@ public class AuthService {
 
         //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
         top3Champions
-                .forEach(championId -> {
-                    System.out.println(championId);
-                    Champion champion = championRepository.findById(Long.valueOf(championId))
-                            .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
+            .forEach(championId -> {
+                System.out.println(championId);
+                Champion champion = championRepository.findById(Long.valueOf(championId))
+                    .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
 
-                    MemberChampion memberChampion = MemberChampion.builder()
-                            .champion(champion)
-                            .build();
+                MemberChampion memberChampion = MemberChampion.builder()
+                    .champion(champion)
+                    .build();
 
-                    memberChampion.setMember(member);
-                    memberChampionRepository.save(memberChampion);
-                });
-
+                memberChampion.setMember(member);
+                memberChampionRepository.save(memberChampion);
+            });
 
         return member;
     }
@@ -161,9 +161,9 @@ public class AuthService {
 
         // 메일 전송 기록 DB에 저장하기
         EmailVerifyRecord emailVerifyRecord = EmailVerifyRecord.builder()
-                .email(email)
-                .code(certificationNumber)
-                .build();
+            .email(email)
+            .code(certificationNumber)
+            .build();
 
         emailVerifyRecordRepository.save(emailVerifyRecord);
     }
@@ -178,7 +178,7 @@ public class AuthService {
     public MemberResponse.RefreshTokenResponseDTO verifyRefreshToken(String refresh_token) {
         // refresh Token 검증하기
         Member member = memberRepository.findByRefreshToken(refresh_token)
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.REFRESHTOKEN_NULL));
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.REFRESHTOKEN_NULL));
 
         // refresh 토큰에서 id 가져오기
         Long id = member.getId();
@@ -202,12 +202,12 @@ public class AuthService {
      */
     public void verifyEmail(String email, String code) {
         // 이메일로 보낸 인증 코드 중 가장 최근의 데이터를 불러옴
-        EmailVerifyRecord emailVerifyRecord = emailVerifyRecordRepository.findByEmailOrderByUpdatedAtDesc(email, PageRequest.of(0, 1))
-                // 가장 최신 기록만 가져오기
-                .stream().findFirst()
-                // 해당 이메일이 없을 경우
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_NOT_FOUND));
-
+        EmailVerifyRecord emailVerifyRecord = emailVerifyRecordRepository.findByEmailOrderByUpdatedAtDesc(
+                email, PageRequest.of(0, 1))
+            // 가장 최신 기록만 가져오기
+            .stream().findFirst()
+            // 해당 이메일이 없을 경우
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.EMAIL_NOT_FOUND));
 
         LocalDateTime createdAt = emailVerifyRecord.getCreatedAt();
         LocalDateTime currentAt = LocalDateTime.now();
@@ -234,6 +234,9 @@ public class AuthService {
      */
     private void sendEmailInternal(String email, String certificationNumber) {
         try {
+            log.info("Starting email send process for email: {}, certificationNumber: {}", email,
+                certificationNumber);
+
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
 
@@ -242,10 +245,16 @@ public class AuthService {
             mimeMessageHelper.setTo(email);
             mimeMessageHelper.setSubject("GamgGoo 이메일 인증 코드");
             mimeMessageHelper.setText(htmlContent, true);
-            System.out.println(certificationNumber + " " + email);
+            log.debug("Prepared email message for email: {}", email);
+
             javaMailSender.send(message);
+            log.info("Email sent successfully to email: {}", email);
+
 
         } catch (MessagingException e) {
+            log.error("Failed to send email to email: {}, certificationNumber: {}, error: {}",
+                email, certificationNumber, e.getMessage());
+
             throw new MemberHandler(ErrorStatus.EMAIL_SEND_ERROR);
         }
     }
@@ -405,7 +414,8 @@ public class AuthService {
      */
     @Transactional
     public void deleteRefreshToken(Long id) {
-        Member member = memberRepository.findById(id).orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.updateRefreshToken(null);
         memberRepository.save(member);

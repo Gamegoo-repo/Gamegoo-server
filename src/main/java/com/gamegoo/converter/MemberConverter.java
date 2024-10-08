@@ -1,6 +1,7 @@
 package com.gamegoo.converter;
 
 import com.gamegoo.domain.friend.Friend;
+//import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.dto.member.MemberResponse;
 import com.gamegoo.dto.member.MemberResponse.friendInfoDTO;
@@ -125,7 +126,7 @@ public class MemberConverter {
     }
 
     public static MemberResponse.memberProfileDTO toMemberProfileDTO(Member member,
-        Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerScoreRank) {
+        Member targetMember, Boolean isFriend, Long friedRequestMemberId, Double mannerScoreRank, Long mannerRatingCount) {
         List<MemberResponse.GameStyleResponseDTO> gameStyleResponseDTOList = null;
         if (targetMember.getMemberGameStyleList() != null) {
             gameStyleResponseDTOList = targetMember.getMemberGameStyleList().stream()
@@ -155,6 +156,7 @@ public class MemberConverter {
             .profileImg(targetMember.getProfileImage())
             .mannerLevel(targetMember.getMannerLevel())
             .mannerRank(mannerScoreRank)
+            .mannerRatingCount(mannerRatingCount)
             .mainP(targetMember.getMainPosition())
             .subP(targetMember.getSubPosition())
             .isAgree(targetMember.getIsAgree())

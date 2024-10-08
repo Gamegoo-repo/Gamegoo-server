@@ -877,4 +877,10 @@ public class MannerService {
         }
     }
 
+    // 회원에게 매너평가를 한 사람의 수
+    public Long getMannerRatingCount(Long memberId){
+        Long mannerRatingCount = mannerRatingRepository.countDistinctFromMemberByToMemberId(memberId);
+        return mannerRatingCount;
+    }
+
 }

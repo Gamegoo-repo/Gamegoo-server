@@ -147,6 +147,7 @@ public class MemberResponse {
         Integer rank;
         Integer mannerLevel;
         Double mannerRank;
+        Long mannerRatingCount;  // 매너 평가를 한 사람의 수
         String updatedAt;
         Integer mainP;
         Integer subP;
