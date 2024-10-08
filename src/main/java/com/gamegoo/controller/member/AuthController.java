@@ -44,7 +44,9 @@ public class AuthController {
     public ApiResponse<String> sendEmailwithCheckDuplication(
             @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
-        authService.sendEmail(email, true);
+
+        authService.verifyEmail(email);
+        authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
     }
 
@@ -53,7 +55,20 @@ public class AuthController {
     public ApiResponse<String> sendEmail(
             @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
-        authService.sendEmail(email, false);
+        authService.sendEmail(email);
+        return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
+    }
+
+    @PostMapping("/email/send/user")
+    @Operation(summary = "이메일 인증코드 전송 API 입니다. 겜구 회원 조회 전용", description = "API for sending email")
+    public ApiResponse<String> sendEmailforUser(
+            @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
+        String email = emailRequestDTO.getEmail();
+
+        // DB에 없는 사용자일 경우 에러 발생
+        authService.verifyEmail(email);
+
+        authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
     }
 
