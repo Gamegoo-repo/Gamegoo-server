@@ -180,6 +180,10 @@ public class RiotUtil {
             }
         }
 
+        if (member.getTier() == null) {
+            member.updateRiotDetails(Tier.UNRANKED,0,0.0,0);
+        }
+
         // 솔랭을 하지 않는 유저는 gameName만 저장
         member.updateRiotBasic(gameName, tag);
     }
