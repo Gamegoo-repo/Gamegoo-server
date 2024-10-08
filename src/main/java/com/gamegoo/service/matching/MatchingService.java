@@ -18,13 +18,17 @@ import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.service.member.ProfileService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MatchingService {
 
     private final MemberRepository memberRepository;
@@ -37,21 +41,19 @@ public class MatchingService {
      *
      * @param request
      * @param id
-     * @return
      * @throws MemberHandler
      */
-    public MatchingResponse.PriorityMatchingResponseDTO getPriorityLists(
-        MatchingRequest.InitializingMatchingRequestDTO request, Long id) throws MemberHandler {
+    // 우선순위 계산
+    public Map<String, List<MemberPriority>> calculatePriorityList(
+        MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
 
-        // 게임 모드가 같고, 5분동안 매칭이 되지 않은 매칭 기록 가져오기
         LocalDateTime fiveMinutesAgo = LocalDateTime.now().minusMinutes(5);
+        log.info("Fetching matching records from the past 5 minutes");
+
         List<MatchingRecord> matchingRecords = matchingRecordRepository.findTopByCreatedAtAfterAndStatusAndGameModeGroupByMemberId(
             fiveMinutesAgo, MatchingStatus.PENDING, request.getGameMode());
 
         Member member = profileService.findMember(id);
-
-        List<MemberPriority> otherPriorityList = new ArrayList<>();
-        List<MemberPriority> myPriorityList = new ArrayList<>();
 
         MatchingRecord myMatchingRecord = MatchingRecord.builder()
             .member(member)
@@ -69,48 +71,53 @@ public class MatchingService {
             .targetMember(null)
             .build();
 
-        // 우선순위 계산하기
+        log.debug(
+            "MatchingRecord details: memberId: {}, mike: {}, rank: {}, tier: {}, winRate: {}, status: {}, matchingType: {}, mainPosition: {}, subPosition: {}, wantPosition: {}, mannerLevel: {}, gameMode: {}, targetMember: {}",
+            myMatchingRecord.getMember().getId(),
+            myMatchingRecord.getMike(),
+            myMatchingRecord.getRank(),
+            myMatchingRecord.getTier(),
+            myMatchingRecord.getWinRate(),
+            myMatchingRecord.getStatus(),
+            myMatchingRecord.getMatchingType(),
+            myMatchingRecord.getMainPosition(),
+            myMatchingRecord.getSubPosition(),
+            myMatchingRecord.getWantPosition(),
+            myMatchingRecord.getMannerLevel(),
+            myMatchingRecord.getGameMode(),
+            myMatchingRecord.getTargetMember());
+
+        // 우선순위 리스트 초기화
+        List<MemberPriority> myPriorityList = new ArrayList<>();
+        List<MemberPriority> otherPriorityList = new ArrayList<>();
+
         for (MatchingRecord record : matchingRecords) {
             Long otherMemberId = record.getMember().getId();
-
-            // 서로 차단한 사용자일 경우 우선순위 계산 X
+            log.debug("Evaluating matching record for otherMemberId: {}", otherMemberId);
             if (blockRepository.existsByBlockerMemberAndBlockedMember(member, record.getMember())) {
+                log.debug("Skipping blocked member: otherMemberId: {}", otherMemberId);
                 continue;
             }
-
             if (!id.equals(otherMemberId)) {
                 int otherPriority = calculatePriority(myMatchingRecord, record);
                 myPriorityList.add(new MemberPriority(otherMemberId, otherPriority));
+                log.info("Added to myPriorityList: otherMemberId: {}, priority: {}", otherMemberId,
+                    otherPriority);
 
                 int myPriority = calculatePriority(record, myMatchingRecord);
                 otherPriorityList.add(new MemberPriority(record.getMember().getId(), myPriority));
+                log.info("Added to otherPriorityList: myMemberId: {}, priority: {}",
+                    record.getMember().getId(), myPriority);
             }
-
-
         }
 
-        // 내 매칭 기록 dto 생성
-        MatchingResponse.matchingRequestResponseDTO myMatchingInfo = matchingRequestResponseDTO.builder()
-            .memberId(member.getId())
-            .gameName(member.getGameName())
-            .tag(member.getTag())
-            .tier(member.getTier())
-            .rank(member.getRank())
-            .mannerLevel(member.getMannerLevel())
-            .profileImg(member.getProfileImage())
-            .gameMode(request.getGameMode())
-            .mainPosition(request.getMainP())
-            .subPosition(request.getSubP())
-            .wantPosition(request.getWantP())
-            .mike(request.getMike())
-            .gameStyleList(profileService.getGameStyleList(member))
-            .build();
+        // 두 리스트를 Map으로 반환
+        Map<String, List<MemberPriority>> priorityLists = new HashMap<>();
+        priorityLists.put("myPriorityList", myPriorityList);
+        priorityLists.put("otherPriorityList", otherPriorityList);
+        log.info("Priority calculation completed for memberId: {}", id);
 
-        return MatchingResponse.PriorityMatchingResponseDTO.builder()
-            .myPriorityList(myPriorityList)
-            .otherPriorityList(otherPriorityList)
-            .myMatchingInfo(myMatchingInfo)
-            .build();
+        return priorityLists;
     }
 
 
@@ -324,6 +331,8 @@ public class MatchingService {
      */
     @Transactional
     public void save(MatchingRequest.InitializingMatchingRequestDTO request, Long id) {
+        log.info("Starting 'save' process for memberId: {}", id);
+
         // 회원 정보 불러오기
         Member member = profileService.findMember(id);
 
@@ -344,18 +353,26 @@ public class MatchingService {
             .targetMember(null)
             .mannerMessageSent(false)
             .build();
+        log.debug("Matching record created for memberId: {}, gameMode: {}", member.getId(),
+            request.getGameMode());
 
         // 매칭 기록에 따라 member 정보 변경하기
         if (request.getMainP() != null && request.getSubP() != null && request.getWantP() != null) {
             member.updateMemberFromMatching(request.getMainP(), request.getSubP(),
                 request.getMike());
+            log.info("Updated member information based on matching record, memberId: {}",
+                member.getId());
         }
-        if (request.getGameStyleIdList() != null) {
-            profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
-        }
+        profileService.addMemberGameStyles(request.getGameStyleIdList(), member.getId());
+        log.debug("Game styles added for member, memberId: {}", member.getId());
 
         matchingRecordRepository.save(matchingRecord);
+        log.info("Matching record saved successfully for memberId: {}, gameMode: {}",
+            member.getId(), request.getGameMode());
+
         memberRepository.save(member);
+        log.info("Member record updated successfully for memberId: {}", member.getId());
+
     }
 
     /**
@@ -502,7 +519,6 @@ public class MatchingService {
      *
      * @param memberId
      * @param targetMemberId
-     * @return
      */
     @Transactional
     public void successMatching(Long memberId, Long targetMemberId, Integer gameMode) {

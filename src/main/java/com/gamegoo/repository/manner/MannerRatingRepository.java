@@ -14,6 +14,9 @@ public interface MannerRatingRepository extends JpaRepository<MannerRating, Long
     List<MannerRating> findByFromMemberIdAndToMemberId(Long fromMember, Long toMember);
     List<MannerRating> findByFromMemberId(Long memberId);
 
+    @Query("SELECT COUNT(DISTINCT mr.fromMember.id) FROM MannerRating mr WHERE mr.toMember.id = :memberId")
+    Long countDistinctFromMemberByToMemberId(@Param("memberId") Long memberId);
+
     @Query("DELETE FROM MannerRating mr WHERE mr.fromMember.id = :memberId")
     void deleteByMemberId(@Param("memberId") Long memberId);
 }

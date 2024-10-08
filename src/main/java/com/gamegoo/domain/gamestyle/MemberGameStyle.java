@@ -1,10 +1,22 @@
 package com.gamegoo.domain.gamestyle;
 
-import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.common.BaseDateTimeEntity;
-import lombok.*;
-
-import javax.persistence.*;
+import com.gamegoo.domain.member.Member;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
@@ -42,5 +54,14 @@ public class MemberGameStyle extends BaseDateTimeEntity {
     public void removeMember(Member member) {
         member.getMemberGameStyleList().remove(this);
         this.member = null;
+    }
+
+    @Override
+    public String toString() {
+        return "MemberGameStyle{" +
+            "id=" + id +
+            ", gameStyleId=" + (gameStyle != null ? gameStyle.getId() : "null") +
+            ", memberId=" + (member != null ? member.getId() : "null") +
+            '}';
     }
 }
