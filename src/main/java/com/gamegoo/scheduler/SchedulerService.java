@@ -33,7 +33,7 @@ public class SchedulerService {
     @Transactional
     @Scheduled(fixedRate = 1000 * 60) // 60초 주기로 실행
     public void mannerSystemMessageRun() {
-        log.info("scheduler start");
+//        log.info("scheduler start");
 
         // 매칭 성공 1분이 경과된 matchingRecord 엔티티 조회 (실제로는 60분으로 해야함)
         LocalDateTime updatedTime = LocalDateTime.now().minusSeconds(MANNER_MESSAGE_TIME);
