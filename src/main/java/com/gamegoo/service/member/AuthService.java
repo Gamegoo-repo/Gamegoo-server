@@ -124,6 +124,11 @@ public class AuthService {
                 memberChampionRepository.save(memberChampion);
             });
 
+        // 회원가입 완료된 사용자 정보 로그로 출력
+        log.info("회원가입 완료 - 이메일: {}, 프로필 이미지: {}, 소환사명: {}, 태그: {}, 티어: {}, 랭크: {}",
+                member.getEmail(), member.getProfileImage(), member.getGameName(), member.getTag(), member.getTier(), member.getRank());
+
+
         return member;
     }
 
