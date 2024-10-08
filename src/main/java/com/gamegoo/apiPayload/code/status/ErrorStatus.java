@@ -46,6 +46,7 @@ public enum ErrorStatus implements BaseErrorCode {
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "EMAIL401", "해당 이메일을 찾을 수 없습니다."),
     EMAIL_INVALID_CODE(HttpStatus.BAD_REQUEST, "EMAIL402", "인증 코드가 불일치합니다."),
     EMAIL_INVALID_TIME(HttpStatus.BAD_REQUEST, "EMAIL403", "이메일 인증 시간이 3분 초과했습니다."),
+    EMAIL_INVALID_USER(HttpStatus.BAD_REQUEST,"EMAIL404","DB에 없는 이메일을 요청했습니다."),
 
     // 매칭 관련 에러
     MATCHING_STATUS_BAD_REQUEST(HttpStatus.BAD_REQUEST, "MATCH400",
