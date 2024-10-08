@@ -65,17 +65,18 @@ public class LogAspect {
             log.error("LoggerAspect error", e);
         }
 
+        log.info("<REQUEST> [{}] {} | IP: {} | Controller: {} | Method: {} | Params: {}",
+            params.get("http_method"), params.get("request_uri"), params.get("client_ip"),
+            controllerName, methodName, params.get("params"));
+
         long start = System.currentTimeMillis();
         Object result = joinPoint.proceed();
 
         long executionTime = System.currentTimeMillis() - start;
 
-        log.info(
-            "[{}] {} | IP: {} | Controller: {} | Method: {} | Params: {} | Execution Time: {}ms",
+        log.info("<RESPONSE> [{}] {} | IP: {} | Controller: {} | Method: {} | Execution Time: {}ms",
             params.get("http_method"), params.get("request_uri"), params.get("client_ip"),
-            controllerName,
-            methodName, params.get("params"),
-            executionTime);
+            controllerName, methodName, executionTime);
 
         return result;
     }

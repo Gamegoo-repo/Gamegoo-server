@@ -52,3 +52,7 @@ socket:
 #  level:
 #    org.hibernate.SQL: debug # logger에 출력하려면
 #    org.hibernate.type.descriptor.sql: trace # 파라미터 값 출력
+
+logging:
+  level:
+    com.gamegoo: DEBUG  # 특정 패키지(com.gamegoo)에 대해 DEBUG 이상 레벨만 출력
