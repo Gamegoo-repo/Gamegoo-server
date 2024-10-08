@@ -115,6 +115,9 @@ public class Member extends BaseDateTimeEntity {
         this.setUpdatedAt(LocalDateTime.now());
     }
 
+    public void updateMike(Boolean isMike){
+        this.mike=isMike;
+    }
 
     public void updatePosition(Integer mainPosition, Integer subPosition) {
         this.mainPosition = mainPosition;

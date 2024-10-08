@@ -174,6 +174,22 @@ public class ProfileService {
     }
 
     /**
+     * 프로필 이미지 수정
+     *
+     * @param userId
+     * @param isMike
+     */
+    @Transactional
+    public void modifyMike(Long userId, Boolean isMike) {
+        Member member = memberRepository.findById(userId)
+            .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.updateMike(isMike);
+
+        memberRepository.save(member);
+    }
+
+    /**
      * 회원 정보 조회
      *
      * @param memberId
