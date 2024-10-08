@@ -75,6 +75,18 @@ public class ProfileController {
         return ApiResponse.onSuccess("프로필 이미지 수정이 완료되었습니다.");
     }
 
+    @PutMapping("/mike")
+    @Operation(summary = "마이크 여부 수정 API 입니다.", description = "API for Mike Modification")
+    public ApiResponse<String> modifyMike(
+        @Valid @RequestBody MemberRequest.MikeRequestDTO mikeRequestDTO) {
+        Long userId = JWTUtil.getCurrentUserId();
+        Boolean isMike = mikeRequestDTO.getIsMike();
+
+        profileService.modifyMike(userId, isMike);
+
+        return ApiResponse.onSuccess("마이크 여부 수정이 완료되었습니다.");
+    }
+
     @DeleteMapping("")
     @Operation(summary = "회원 탈퇴 API 입니다.", description = "API for Blinding Member")
     public ApiResponse<String> blindMember() {

@@ -90,6 +90,12 @@ public class MemberRequest {
     }
 
     @Getter
+    public static class MikeRequestDTO {
+        @NotNull(message = "isMike 값은 비워둘 수 없습니다.")
+        Boolean isMike;
+    }
+
+    @Getter
     public static class RefreshTokenRequestDTO {
         @NotBlank(message = "refreshToken 값은 비워둘 수 없습니다.")
         String refreshToken;
