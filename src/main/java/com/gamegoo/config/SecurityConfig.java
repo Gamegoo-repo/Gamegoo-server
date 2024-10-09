@@ -2,8 +2,9 @@ package com.gamegoo.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.gamegoo.apiPayload.exception.handler.JWTExceptionHandlerFilter;
+import com.gamegoo.filter.JWTExceptionHandlerFilter;
 import com.gamegoo.filter.JWTFilter;
+import com.gamegoo.filter.LoggingFilter;
 import com.gamegoo.filter.LoginFilter;
 import com.gamegoo.repository.member.MemberRepository;
 import com.gamegoo.security.CustomUserDetailService;
@@ -74,6 +75,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated())
             .addFilterBefore(new JWTExceptionHandlerFilter(),
                 UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(new LoggingFilter(jwtUtil), JWTExceptionHandlerFilter.class)
             .addFilterAt(
                 new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil,
                     memberRepository), UsernamePasswordAuthenticationFilter.class)
