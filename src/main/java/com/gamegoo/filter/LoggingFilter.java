@@ -28,13 +28,19 @@ public class LoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain)
         throws ServletException, IOException {
+        // /v1/member/login 경로에 대해서는 필터 pass
+        String requestUrl = request.getRequestURI();
+        if ("/v1/member/login".equals(requestUrl)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String requestId = UUID.randomUUID().toString();  // 고유한 requestId 생성
 
         try {
             MDC.put("requestId", requestId);
 
             // 요청 정보 추출
-            String requestUrl = request.getRequestURI();
             String httpMethod = request.getMethod(); // HTTP 메소드 추출
             String clientIp = getClientIp(request);
             String jwtToken = extractJwtToken(request);
