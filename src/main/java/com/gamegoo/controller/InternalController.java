@@ -38,7 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/v1")
+@RequestMapping("/v1/internal")
 @Tag(name = "Internal", description = "3000 서버용 API")
 public class InternalController {
 
