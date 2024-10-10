@@ -42,6 +42,18 @@ public class NotificationConverter {
     public static NotificationResponse.notificationDTO toNotificationDTO(
         Notification notification) {
 
+        // notificationType 설정
+        Integer notificationType = null;
+        Integer originType = notification.getNotificationType().getId().intValue();
+        if (originType.equals(7)) {
+            notificationType = 3;
+        } else if (originType.equals(5) || originType.equals(6)) {
+            notificationType = 2;
+        } else {
+            notificationType = 1;
+        }
+
+        // pageUrl 값 생성
         String pageUrl = null;
 
         if (notification.getNotificationType().getSourceUrl() != null) {
@@ -59,6 +71,7 @@ public class NotificationConverter {
 
         }
 
+        // content 값 생성
         String content = notification.getContent();
 
         // sourceMember 닉네임 표시
@@ -73,7 +86,7 @@ public class NotificationConverter {
 
         return NotificationResponse.notificationDTO.builder()
             .notificationId(notification.getId())
-            .notificationType(notification.getNotificationType().getId().intValue())
+            .notificationType(notificationType)
             .content(content)
             .pageUrl(pageUrl)
             .read(notification.isRead())
