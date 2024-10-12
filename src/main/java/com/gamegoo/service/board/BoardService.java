@@ -60,19 +60,41 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
         }
 
+        // 칼바람일때만 포지션 null 값 허용
+
         // 주 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getMainPosition() < 0 || request.getMainPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getMainPosition() != null && (request.getMainPosition() < 0 || request.getMainPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+            }
+        }
+        else {
+            if (request.getMainPosition() == null || request.getMainPosition() < 0 || request.getMainPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+            }
         }
 
         // 부 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getSubPosition() < 0 || request.getSubPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getSubPosition() != null && (request.getSubPosition() < 0 || request.getSubPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+            }
+        }
+        else {
+            if (request.getSubPosition() == null || request.getSubPosition() < 0 || request.getSubPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+            }
         }
 
         // 상대 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getWantPosition() < 0 || request.getWantPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getWantPosition() != null && (request.getWantPosition() < 0 || request.getWantPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+            }
+        }else {
+            if (request.getWantPosition() == null || request.getWantPosition() < 0 || request.getWantPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+            }
         }
 
         // 마이크 설정 (default=false)
@@ -151,19 +173,41 @@ public class BoardService {
             throw new BoardHandler(ErrorStatus.GAME_MODE_INVALID);
         }
 
+        // 칼바람일때만 포지션 null 값 허용
+
         // 주 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getMainPosition() < 0 || request.getMainPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getMainPosition() != null && (request.getMainPosition() < 0 || request.getMainPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+            }
+        }
+        else {
+            if (request.getMainPosition() == null || request.getMainPosition() < 0 || request.getMainPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.MAIN_POSITION_INVALID);
+            }
         }
 
         // 부 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getSubPosition() < 0 || request.getSubPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getSubPosition() != null && (request.getSubPosition() < 0 || request.getSubPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+            }
+        }
+        else {
+            if (request.getSubPosition() == null || request.getSubPosition() < 0 || request.getSubPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.SUB_POSITION_INVALID);
+            }
         }
 
         // 상대 포지션 값 검증. (0 ~ 5값만 가능)
-        if (request.getWantPosition() < 0 || request.getWantPosition() > 5) {
-            throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+        if (request.getGameMode()==4) {
+            if (request.getWantPosition() != null && (request.getWantPosition() < 0 || request.getWantPosition() > 5)) {
+                throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+            }
+        }else {
+            if (request.getWantPosition() == null || request.getWantPosition() < 0 || request.getWantPosition() > 5) {
+                throw new BoardHandler(ErrorStatus.WANT_POSITION_INVALID);
+            }
         }
 
         // 게임 스타일 길이 검증.
