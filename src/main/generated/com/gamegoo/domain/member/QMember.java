@@ -80,6 +80,8 @@ public class QMember extends EntityPathBase<Member> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
+    public final NumberPath<Integer> wantPosition = createNumber("wantPosition", Integer.class);
+
     public final NumberPath<Double> winRate = createNumber("winRate", Double.class);
 
     public QMember(String variable) {
