@@ -133,18 +133,30 @@ public class AuthService {
     }
 
     /**
-     * 이메일 중복 확인 검증
+     * 회원가입용 이메일 중복 확인 검증
      * @param email
      */
-    public void verifyEmail(String email){
+    public void verifyEmailforNewUser(String email){
         // 해당 이메일이 DB에 있는지 확인하기
         boolean isPresent = memberRepository.findByEmail(email).isPresent();
 
         if (isPresent) {
             // 중복확인 (회원가입 전용)
             throw new MemberHandler(ErrorStatus.MEMBER_CONFLICT);
-        }else{
-            // DB에 없는 사용자인지 확인 (비밀번호 찾기 전용)
+        }
+
+    }
+
+    /**
+     * 비밀번호 찾기용 이메일 중복 확인 검증
+     * @param email
+     */
+    public void verifyEmailforExistUser(String email){
+        // 해당 이메일이 DB에 있는지 확인하기
+        boolean isPresent = memberRepository.findByEmail(email).isPresent();
+
+        if (!isPresent) {
+            // 중복확인 (비밀번호 찾기 전용)
             throw new MemberHandler(ErrorStatus.EMAIL_INVALID_USER);
         }
 

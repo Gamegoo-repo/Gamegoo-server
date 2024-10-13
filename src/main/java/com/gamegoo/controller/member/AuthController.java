@@ -45,7 +45,7 @@ public class AuthController {
             @Valid @RequestBody MemberRequest.EmailRequestDTO emailRequestDTO) {
         String email = emailRequestDTO.getEmail();
 
-        authService.verifyEmail(email);
+        authService.verifyEmailforNewUser(email);
         authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
     }
@@ -66,7 +66,7 @@ public class AuthController {
         String email = emailRequestDTO.getEmail();
 
         // DB에 없는 사용자일 경우 에러 발생
-        authService.verifyEmail(email);
+        authService.verifyEmailforExistUser(email);
 
         authService.sendEmail(email);
         return ApiResponse.onSuccess("인증 이메일을 발송했습니다.");
