@@ -79,6 +79,10 @@ public class MemberRequest {
         @Min(value = 0, message = "서브 포지션의 값은 0이상이어야 합니다.")
         @Max(value = 5, message = "서브 포지션의 값은 5이하이어야합니다.")
         int subP;
+
+        @Min(value = 0, message = "원하는 포지션의 값은 0이상이어야 합니다.")
+        @Max(value = 5, message = "원하는 포지션의 값은 5이하이어야합니다.")
+        int wantP;
     }
 
     @Getter

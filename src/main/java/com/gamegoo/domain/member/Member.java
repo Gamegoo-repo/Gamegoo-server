@@ -122,9 +122,10 @@ public class Member extends BaseDateTimeEntity {
         this.mike=isMike;
     }
 
-    public void updatePosition(Integer mainPosition, Integer subPosition) {
+    public void updatePosition(Integer mainPosition, Integer subPosition, Integer wantPosition) {
         this.mainPosition = mainPosition;
         this.subPosition = subPosition;
+        this.wantPosition = wantPosition;
     }
 
     public void updateProfileImage(Integer profileImage) {

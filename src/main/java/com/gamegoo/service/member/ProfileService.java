@@ -180,15 +180,15 @@ public class ProfileService {
      * @param subP
      */
     @Transactional
-    public void modifyPosition(Long userId, int mainP, int subP) {
-        if (mainP < 0 || subP < 0 || mainP > 5 || subP > 5) {
+    public void modifyPosition(Long userId, int mainP, int subP, int wantP) {
+        if (mainP < 0 || subP < 0 || wantP < 0 || mainP > 5 || subP > 5 || wantP > 5) {
             throw new MemberHandler(ErrorStatus.POSITION_NOT_FOUND);
         }
 
         Member member = memberRepository.findById(userId)
             .orElseThrow(() -> new MemberHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
-        member.updatePosition(mainP, subP);
+        member.updatePosition(mainP, subP, wantP);
         memberRepository.save(member);
     }
 
