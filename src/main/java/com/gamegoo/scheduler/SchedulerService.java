@@ -1,5 +1,6 @@
 package com.gamegoo.scheduler;
 
+import com.gamegoo.domain.chat.Chat;
 import com.gamegoo.domain.matching.MatchingRecord;
 import com.gamegoo.domain.matching.MatchingStatus;
 import com.gamegoo.repository.matching.MatchingRecordRepository;
@@ -31,7 +32,7 @@ public class SchedulerService {
      * 매칭 성공 1시간이 경과한 경우, 두 사용자에게 매너평가 시스템 메시지 전송
      */
     @Transactional
-    @Scheduled(fixedRate = 1000 * 60) // 60초 주기로 실행
+    @Scheduled(fixedRate = 5 * 60 * 1000) // 5 * 60초 주기로 실행
     public void mannerSystemMessageRun() {
 //        log.info("scheduler start");
 
@@ -47,7 +48,7 @@ public class SchedulerService {
             ).ifPresentOrElse(
                 chatroom -> {
                     // 시스템 메시지 생성 및 db 저장
-                    chatCommandService.createAndSaveSystemChat(
+                    Chat createdChat = chatCommandService.createAndSaveSystemChat(
                         chatroom, matchingRecord.getMember(), MANNER_SYSTEM_MESSAGE, null, 1);
 
                     // 매너 평가 메시지 전송 여부 업데이트
@@ -55,7 +56,7 @@ public class SchedulerService {
 
                     // socket 서버에게 메시지 전송 API 요청
                     socketService.sendSystemMessage(matchingRecord.getMember().getId(),
-                        chatroom.getUuid(), MANNER_SYSTEM_MESSAGE);
+                        chatroom.getUuid(), MANNER_SYSTEM_MESSAGE, createdChat.getTimestamp());
                 },
                 () -> log.info("Chatroom not found, member ID: {}, target member ID: {}",
                     matchingRecord.getMember().getId(), matchingRecord.getTargetMember().getId()));
