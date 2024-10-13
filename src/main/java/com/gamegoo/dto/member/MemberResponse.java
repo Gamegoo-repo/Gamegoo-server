@@ -98,6 +98,7 @@ public class MemberResponse {
         String updatedAt;
         Integer mainP;
         Integer subP;
+        Integer wantP;
         Boolean isAgree;
         Boolean isBlind;
         String loginType;
@@ -123,6 +124,7 @@ public class MemberResponse {
         String updatedAt;
         Integer mainP;
         Integer subP;
+        Integer wantP;
         Boolean isAgree;
         Boolean isBlind;
         String loginType;
@@ -151,6 +153,7 @@ public class MemberResponse {
         String updatedAt;
         Integer mainP;
         Integer subP;
+        Integer wantP;
         Boolean isAgree;
         Boolean isBlind;
         String loginType;

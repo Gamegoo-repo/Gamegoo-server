@@ -84,7 +84,7 @@ public class ProfileController {
 
         profileService.modifyMike(userId, isMike);
 
-        return ApiResponse.onSuccess("마이크 여부 수정이 완료되었습니다.");
+        return ApiResponse.onSuccess("마이크 여부z 수정이 완료되었습니다.");
     }
 
     @DeleteMapping("")
