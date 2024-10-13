@@ -67,6 +67,9 @@ public class NotificationConverter {
                     pageUrl = urlBuilder.toString();
 
                 }
+            } else {// sourceMember가 없는 경우: 매너평가 관련 알림
+                pageUrl = urlBuilder.toString();
+
             }
 
         }
