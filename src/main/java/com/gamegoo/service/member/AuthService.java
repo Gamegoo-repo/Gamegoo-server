@@ -88,6 +88,9 @@ public class AuthService {
             .profileImage(randomProfileImage)
             .blind(false)
             .mike(false)
+                .mainPosition(0)
+                .subPosition(0)
+                .wantPosition(0)
             .mannerLevel(1)
             .isAgree(isAgree)
             .build();
@@ -112,7 +115,6 @@ public class AuthService {
         //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
         top3Champions
             .forEach(championId -> {
-                System.out.println(championId);
                 Champion champion = championRepository.findById(Long.valueOf(championId))
                     .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
 
