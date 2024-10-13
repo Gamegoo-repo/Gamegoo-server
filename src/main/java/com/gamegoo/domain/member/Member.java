@@ -69,10 +69,13 @@ public class Member extends BaseDateTimeEntity {
     private Double winRate;
 
     @Column(name = "main_position")
-    private Integer mainPosition;
+    private Integer mainPosition = 0;
 
     @Column(name = "sub_position")
-    private Integer subPosition;
+    private Integer subPosition = 0;
+
+    @Column(name = "want_position")
+    private Integer wantPosition = 0;
 
     @Column(name = "refresh_token")
     private String refreshToken;
@@ -119,9 +122,10 @@ public class Member extends BaseDateTimeEntity {
         this.mike=isMike;
     }
 
-    public void updatePosition(Integer mainPosition, Integer subPosition) {
+    public void updatePosition(Integer mainPosition, Integer subPosition, Integer wantPosition) {
         this.mainPosition = mainPosition;
         this.subPosition = subPosition;
+        this.wantPosition = wantPosition;
     }
 
     public void updateProfileImage(Integer profileImage) {
@@ -132,9 +136,10 @@ public class Member extends BaseDateTimeEntity {
         this.blind = true;
     }
 
-    public void updateMemberFromMatching(Integer mainPosition, Integer subPosition, Boolean mike) {
+    public void updateMemberFromMatching(Integer mainPosition, Integer subPosition, Integer wantPosition, Boolean mike) {
         this.mainPosition = mainPosition;
         this.subPosition = subPosition;
+        this.wantPosition = wantPosition;
         this.mike = mike;
     }
 

@@ -57,8 +57,8 @@ public class ProfileController {
         Long userId = JWTUtil.getCurrentUserId();
         int mainP = positionRequestDTO.getMainP();
         int subP = positionRequestDTO.getSubP();
-
-        profileService.modifyPosition(userId, mainP, subP);
+        int wantP = positionRequestDTO.getWantP();
+        profileService.modifyPosition(userId, mainP, subP, wantP);
 
         return ApiResponse.onSuccess("포지션 수정이 완료되었습니다. ");
     }
