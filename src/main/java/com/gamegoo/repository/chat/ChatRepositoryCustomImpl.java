@@ -7,6 +7,7 @@ import com.gamegoo.domain.chat.Chat;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -131,8 +132,9 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom {
     //--- BooleanExpression ---//
     private BooleanExpression createdAtGreaterThanLastViewDateSubQuery(Long memberChatroomId) {
         return chat.createdAt.gt(
-            JPAExpressions.select(memberChatroom.lastViewDate)
-                .from(memberChatroom)
+            JPAExpressions.select(
+                    memberChatroom.lastViewDate.coalesce(LocalDateTime.MIN)
+                ).from(memberChatroom)
                 .where(memberChatroom.id.eq(memberChatroomId))
         );
     }
