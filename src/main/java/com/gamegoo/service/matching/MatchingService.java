@@ -358,8 +358,7 @@ public class MatchingService {
 
         // 매칭 기록에 따라 member 정보 변경하기
         if (request.getMainP() != null && request.getSubP() != null && request.getWantP() != null) {
-            member.updateMemberFromMatching(request.getMainP(), request.getSubP(),
-                request.getMike());
+            member.updateMemberFromMatching(request.getMainP(), request.getSubP(), request.getWantP(), request.getMike());
             log.info("Updated member information based on matching record, memberId: {}",
                 member.getId());
         }
