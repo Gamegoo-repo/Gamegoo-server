@@ -544,6 +544,7 @@ public class MannerService {
             List<Long> mannerKeywordIds = Collections.emptyList();
 
             return MannerResponse.mannerKeywordResponseDTO.builder()
+                .mannerId(null)
                 .isPositive(true)
                 .isExist(isExist)
                 .mannerRatingKeywordList(mannerKeywordIds)
@@ -560,6 +561,7 @@ public class MannerService {
                 .collect(Collectors.toList());
 
             return MannerResponse.mannerKeywordResponseDTO.builder()
+                .mannerId(positiveMannerRating.getId())
                 .isPositive(true)
                 .isExist(isExist)
                 .mannerRatingKeywordList(mannerKeywordIds)
@@ -595,6 +597,7 @@ public class MannerService {
             List<Long> badMannerKeywordIds = Collections.emptyList();
 
             return MannerResponse.badMannerKeywordResponseDTO.builder()
+                .mannerId(null)
                 .isPositive(false)
                 .isExist(isExist)
                 .mannerRatingKeywordList(badMannerKeywordIds)
@@ -611,6 +614,7 @@ public class MannerService {
                 .collect(Collectors.toList());
 
             return MannerResponse.badMannerKeywordResponseDTO.builder()
+                .mannerId(negativeMannerRating.getId())
                 .isPositive(false)
                 .isExist(isExist)
                 .mannerRatingKeywordList(badMannerKeywordIds)
