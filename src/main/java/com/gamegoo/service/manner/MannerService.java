@@ -544,6 +544,7 @@ public class MannerService {
             List<Long> mannerKeywordIds = Collections.emptyList();
 
             return MannerResponse.mannerKeywordResponseDTO.builder()
+                .mannerId(null)
                 .isPositive(true)
                 .isExist(isExist)
                 .mannerRatingKeywordList(mannerKeywordIds)
@@ -560,6 +561,7 @@ public class MannerService {
                 .collect(Collectors.toList());
 
             return MannerResponse.mannerKeywordResponseDTO.builder()
+                .mannerId(positiveMannerRating.getId())
                 .isPositive(true)
                 .isExist(isExist)
                 .mannerRatingKeywordList(mannerKeywordIds)
