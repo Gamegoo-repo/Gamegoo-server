@@ -159,7 +159,7 @@ public class InternalController {
 
     }
 
-    @PatchMapping("/{memberId}/success/target/{targetMemberId}/{gameMode}")
+    @PatchMapping("/{memberId}/matching/success/target/{targetMemberId}/{gameMode}")
     @Parameter(name = "targetMemberId", description = "매칭 상대 회원의 id 입니다.")
     @Operation(summary = "매칭 SUCCESS API", description = "나와 특정 상대 회원의 매칭 기록 상태를 SUCCESS 상태로 변경하고, 채팅방을 시작해 uuid를 리턴하는 API 입니다.")
     public ApiResponse<String> matchingSuccess(
