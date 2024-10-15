@@ -5,6 +5,7 @@ import com.gamegoo.apiPayload.exception.handler.MemberHandler;
 import com.gamegoo.domain.member.Member;
 import com.gamegoo.domain.member.Tier;
 import com.gamegoo.dto.member.RiotResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class RiotUtil {
     private final RestTemplate restTemplate;
     @Value("${spring.riot.api.key}")
@@ -70,7 +72,8 @@ public class RiotUtil {
                 }
             }
         } catch (Exception e) {
-            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
+            log.info("회원가입 - 최근 선호 챔피언 값을 불러올 수 없습니다.");
+            throw e;
         }
 
         // 최근 선호 챔피언 수가 충분하지 않을 경우 에러 발생
@@ -201,7 +204,7 @@ public class RiotUtil {
         String[] matchIds = restTemplate.getForObject(matchUrl, String[].class);
 
         if (matchIds == null || matchIds.length == 0) {
-            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
+
         }
 
         return Arrays.asList(matchIds);
@@ -229,7 +232,11 @@ public class RiotUtil {
                 .filter(participant -> gameName.equals(participant.getRiotIdGameName()))
                 .map(RiotResponse.ParticipantDTO::getChampionId)
                 .findFirst()
-                .orElseThrow(() -> new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND));
+                .orElseGet(() -> {
+                    log.info("회원가입 - 최근 선호 챔피언 값 중 id가 없는 챔피언이 있습니다.");
+                    return null;
+                });
+
     }
 
 }
