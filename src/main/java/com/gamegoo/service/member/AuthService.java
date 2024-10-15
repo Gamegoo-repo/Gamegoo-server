@@ -53,7 +53,6 @@ public class AuthService {
      * @param tag
      * @return
      */
-    @Transactional
     public Member joinMember(String email, String password, String gameName, String tag,
         Boolean isAgree) {
 
@@ -68,14 +67,6 @@ public class AuthService {
 
         // puuid 조회
         String puuid = riotUtil.getRiotPuuid(gameName, tag);
-
-        // 최근 선호 챔피언 3개 리스트 조회
-        List<Integer> top3Champions = null;
-        try {
-            top3Champions = riotUtil.getPreferChampionfromMatch(gameName, puuid);
-        } catch (Exception e) {
-            throw new MemberHandler(ErrorStatus.RIOT_MATCH_NOT_FOUND);
-        }
 
         // tier, rank, winrate
         // DB 저장
@@ -99,32 +90,34 @@ public class AuthService {
         String encryptedSummonerId = riotUtil.getSummonerId(puuid);
         riotUtil.addTierRankWinRate(member, gameName, encryptedSummonerId, tag);
 
-        // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
-        //    (1) 해당 email을 가진 사용자의 정보가 MemberChampion 테이블에 있을 경우 제거
-        if (member.getMemberChampionList() != null) {
-            member.getMemberChampionList()
-                .forEach(memberChampion -> {
-                    memberChampion.removeMember(member); // 양방향 연관관계 제거
-                    memberChampionRepository.delete(memberChampion);
-                });
-
-        }
-
         memberRepository.save(member);
 
-        //    (2) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
-        top3Champions
-            .forEach(championId -> {
-                Champion champion = championRepository.findById(Long.valueOf(championId))
-                    .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
 
-                MemberChampion memberChampion = MemberChampion.builder()
-                    .champion(champion)
-                    .build();
+        // 최근 선호 챔피언 3개 리스트 조회
+        List<Integer> top3Champions = null;
+        try {
+            top3Champions = riotUtil.getPreferChampionfromMatch(gameName, puuid);
+        } catch (Exception e) {
+            log.info("회원가입 - 최근 선호 챔피언 값을 저장하지 못했습니다.");
+        }
 
-                memberChampion.setMember(member);
-                memberChampionRepository.save(memberChampion);
-            });
+        // 3. 캐릭터와 유저 데이터 매핑해서 DB에 저장하기
+        //    (1) Champion id, Member id 엮어서 MemberChampion 테이블에 넣기
+        if (top3Champions != null) {
+            top3Champions
+                    .forEach(championId -> {
+                        Champion champion = championRepository.findById(Long.valueOf(championId))
+                                .orElseThrow(() -> new MemberHandler(ErrorStatus.CHAMPION_NOT_FOUND));
+
+                        MemberChampion memberChampion = MemberChampion.builder()
+                                .champion(champion)
+                                .build();
+
+                        memberChampion.setMember(member);
+                        memberChampionRepository.save(memberChampion);
+                    });
+
+        }
 
         // 회원가입 완료된 사용자 정보 로그로 출력
         log.info("회원가입 완료 - 이메일: {}, 프로필 이미지: {}, 소환사명: {}, 태그: {}, 티어: {}, 랭크: {}",
