@@ -47,6 +47,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             String memberId = null;
             boolean jwtTokenPresent = jwtToken != null;
             String params = getParamsAsString(request);
+            String userAgent = getUserAgent(request);  // 클라이언트 기기 및 브라우저 정보 추출
 
             // 토큰이 있을 경우 사용자 ID 추출
             if (jwtTokenPresent) {
@@ -61,12 +62,14 @@ public class LoggingFilter extends OncePerRequestFilter {
             }
 
             // 요청 로그 기록
+            // 요청 로그 기록
             if (params != null && !params.isEmpty() && !params.equals("{}")) {
-                log.info("[requestId: {}] [{}] {} | IP: {} | Member ID: {} | Params: {}", requestId,
-                    httpMethod, requestUrl, clientIp, memberId, params);
+                log.info(
+                    "[requestId: {}] [{}] {} | IP: {} | Member ID: {} | Params: {} | User-Agent: {}",
+                    requestId, httpMethod, requestUrl, clientIp, memberId, params, userAgent);
             } else {
-                log.info("[requestId: {}] [{}] {} | IP: {} | Member ID: {}", requestId,
-                    httpMethod, requestUrl, clientIp, memberId);
+                log.info("[requestId: {}] [{}] {} | IP: {} | Member ID: {} | User-Agent: {}",
+                    requestId, httpMethod, requestUrl, clientIp, memberId, userAgent);
             }
 
             // 실행 시간 측정을 위한 시작 시간
@@ -121,5 +124,10 @@ public class LoggingFilter extends OncePerRequestFilter {
         } catch (JsonProcessingException e) {
             return "Unable to parse parameters";
         }
+    }
+
+    // User-Agent 헤더에서 브라우저 및 기기 정보를 추출하는 메소드
+    private String getUserAgent(HttpServletRequest request) {
+        return request.getHeader("User-Agent");
     }
 }
