@@ -26,22 +26,24 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
         String httpMethod = request.getMethod();  // HTTP 메소드 추출
         String clientIp = getClientIp(request);
         String memberId = "Unauthenticated";  // 기본값으로 설정 (로그인 상태가 아닐 때)
+        String userAgent = getUserAgent(request);  // 클라이언트 기기 및 브라우저 정보 추출
+
         try {
             filterChain.doFilter(request, response);
         } catch (JwtException e) {
 
             if (Objects.equals(e.getMessage(), "Token expired")) {
                 setErrorResponse(response, ErrorStatus.TOKEN_EXPIRED, requestId, httpMethod,
-                    requestUrl, clientIp, memberId);
+                    requestUrl, clientIp, memberId, userAgent);
             } else if (Objects.equals(e.getMessage(), "Token null")) {
                 setErrorResponse(response, ErrorStatus.TOKEN_NULL, requestId, httpMethod,
-                    requestUrl, clientIp, memberId);
+                    requestUrl, clientIp, memberId, userAgent);
             } else if (Objects.equals(e.getMessage(), "No Member")) {
                 setErrorResponse(response, ErrorStatus.MEMBER_NOT_FOUND, requestId, httpMethod,
-                    requestUrl, clientIp, memberId);
+                    requestUrl, clientIp, memberId, userAgent);
             } else {
                 setErrorResponse(response, ErrorStatus.INVALID_TOKEN, requestId, httpMethod,
-                    requestUrl, clientIp, memberId);
+                    requestUrl, clientIp, memberId, userAgent);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -49,7 +51,8 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
     }
 
     private void setErrorResponse(HttpServletResponse response, ErrorStatus errorStatus,
-        String requestId, String httpMethod, String requestUrl, String clientIp, String memberId)
+        String requestId, String httpMethod, String requestUrl, String clientIp, String memberId,
+        String userAgent)
         throws IOException {
         // 에러 응답 생성하기
         ApiResponse<Object> apiResponse = ApiResponse.onFailure(errorStatus.getCode(),
@@ -58,9 +61,10 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        log.info("[requestId: {}] [{}] {} | IP: {} | Member ID: {} | Status: {}", requestId,
+        log.info("[requestId: {}] [{}] {} | IP: {} | Member ID: {} | Status: {} | User-Agent: {}",
+            requestId,
             httpMethod, requestUrl, clientIp, memberId,
-            errorStatus.getHttpStatus().value() + " " + errorStatus.getMessage());
+            errorStatus.getHttpStatus().value() + " " + errorStatus.getMessage(), userAgent);
 
         new ObjectMapper().writeValue(response.getWriter(), apiResponse);
     }
@@ -72,6 +76,11 @@ public class JWTExceptionHandlerFilter extends OncePerRequestFilter {
             return ip.split(",")[0].trim();
         }
         return request.getRemoteAddr();
+    }
+
+    // User-Agent 헤더에서 브라우저 및 기기 정보를 추출하는 메소드
+    private String getUserAgent(HttpServletRequest request) {
+        return request.getHeader("User-Agent");
     }
 }
 
