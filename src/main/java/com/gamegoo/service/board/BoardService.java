@@ -446,8 +446,8 @@ public class BoardService {
             mannerKeywordDTOs);
 
         List<MemberResponse.ChampionResponseDTO> championResponseDTOList = null;
-        if (member.getMemberChampionList() != null) {
-            championResponseDTOList = member.getMemberChampionList().stream()
+        if (poster.getMemberChampionList() != null) {
+            championResponseDTOList = poster.getMemberChampionList().stream()
                 .map(memberChampion -> MemberResponse.ChampionResponseDTO.builder()
                     .championId(memberChampion.getChampion().getId())
                     .championName(memberChampion.getChampion().getName())
