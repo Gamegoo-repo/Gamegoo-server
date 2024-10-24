@@ -88,6 +88,7 @@ public class BoardResponse {
         Long memberId;
         Integer profileImage;
         String gameName;
+        String tag;
         Integer mannerLevel;
         Tier tier;
         Integer rank;
