@@ -352,6 +352,7 @@ public class BoardService {
                 .memberId(member.getId())
                 .profileImage(board.getBoardProfileImage())
                 .gameName(member.getGameName())
+                .tag(member.getTag())
                 .mannerLevel(member.getMannerLevel())
                 .tier(member.getTier())
                 .rank(member.getRank())
